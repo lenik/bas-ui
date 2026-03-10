@@ -1,0 +1,36 @@
+# Debian
+debian/.debhelper/
+debian/debhelper-build-stamp
+debian/files
+debian/*bas-ui*/
+debian/tmp/
+debian/*.log
+debian/*.substvars
+*.gz
+
+# Perl
+*.pmc
+*.bs
+blib/
+pm_to_blib
+*.pod
+.cover_db/
+
+# Test
+t/*.bak
+t/tmp*
+
+# Editor
+*.swp
+*.swo
+*~
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build
+/.cache
+*.Tpo
+

@@ -1,0 +1,6 @@
+bas-ui (1.0.0) testing; urgency=medium
+
+  * Initial release of bas-ui with Meson-based build system and embedded assets.
+
+ -- Lenik (谢继雷) <lenik@bodz.net>  Tue, 10 Mar 2026 00:00:00 +0000
+

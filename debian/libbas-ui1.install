@@ -1,0 +1,3 @@
+usr/lib/*/libbas-ui.so
+usr/lib/*/libbas-ui.so.[0-9]*
+

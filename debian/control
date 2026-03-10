@@ -1,0 +1,45 @@
+Source: bas-ui
+Section: devel
+Priority: optional
+Maintainer: BAS Developers <debian@example.com>
+Build-Depends:
+ debhelper-compat (= 13),
+ meson,
+ ninja-build,
+ pkg-config,
+ libglib2.0-dev,
+ libicu-dev,
+ libcurl4-openssl-dev,
+ libssl-dev,
+ libwxgtk3.2-dev
+    | libwxgtk3.0-gtk3-dev
+    ,
+ libboost-dev,
+ zlib1g-dev
+Standards-Version: 4.7.0
+Homepage: https://example.com/bas-ui
+Rules-Requires-Root: no
+
+Package: libbas-ui1
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Scriptable UI library for BAS (runtime)
+ A C++ library that provides a scriptable UI stack built on
+ wxWidgets and GLib, with assets embedded via Meson.
+
+Package: libbas-ui-dev
+Section: libdevel
+Architecture: any
+Depends: libbas-ui1 (= ${binary:Version}), ${misc:Depends}
+Description: Development files for libbas-ui
+ Header files and other development resources required to
+ build applications against libbas-ui.
+
+Package: bas-ui
+Architecture: any
+Depends: libbas-ui1 (= ${binary:Version}), ${misc:Depends}
+Description: Tools and applications using bas-ui
+ Command-line and GUI tools built on top of the bas-ui
+ library.
+
