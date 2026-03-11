@@ -8,6 +8,8 @@ project(
     ],
 )
 
+pkgdatadir = get_option('datadir') / meson.project_name()
+
 fs = import('fs')
 cpp = meson.get_compiler('cpp')
 
@@ -126,13 +128,19 @@ exe_inc = [
 lib_bas_ui = library(
     'bas-ui',
     cpp_sources,
+    'src/module.cpp',
     dependencies: exe_deps,
     include_directories: exe_inc,
-    cpp_args: cpp_nowarn + ['-DLOGGER_NAME=bas-ui'],
+    cpp_args: cpp_nowarn + ['-DLOGGER_NAME=ui'],
     override_options: ['b_lundef=false'], # Allows undefined symbols at link time
     version: meson.project_version(),
     soversion: meson.project_version().split('.')[0],
     install: true,
+)
+
+bas_ui_dep = declare_dependency(
+    link_with: lib_bas_ui,
+    include_directories: exe_inc
 )
 
 # ---- pkg-config ----
@@ -210,9 +218,11 @@ foreach test_rel_path : all_test_files
     test_exe = executable(
         test_name,
         all_sources,
+        assets_o,
+        'src/module.cpp',
         include_directories: exe_inc,
-        dependencies: exe_deps,
-        cpp_args: cpp_nowarn + ['-DLOGGER_NAME=' + test_name],
+        dependencies: exe_deps + [bas_ui_dep],
+        cpp_args: cpp_nowarn + ['-DLOGGER_NAME=test'],
     )
 
     # Register the test with meson
@@ -232,15 +242,21 @@ endif
 
 foreach app_cpp : app_cpp_list
     app_name = app_cpp.split('/')[-1].replace('.cpp', '')
+    if app_name == 'notepad'
+        install_dir = get_option('bindir')
+    else
+        install_dir = pkgdatadir / 'app'
+    endif
     executable(
         app_name,
         app_cpp,
         assets_o,
-        link_with: lib_bas_ui,
+        'src/module.cpp',
         include_directories: exe_inc,
-        dependencies: exe_deps,
+        dependencies: exe_deps + [bas_ui_dep],
         cpp_args: cpp_nowarn + ['-DLOGGER_NAME=' + app_name],
         install: true,
+        install_dir : install_dir,
     )
 endforeach
 
