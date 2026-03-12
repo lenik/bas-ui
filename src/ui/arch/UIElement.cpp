@@ -34,13 +34,16 @@ int UIElement::compare(const UIElement* other) const {
     int cmp = priority.get() - other->priority.get();
     if (cmp != 0) return cmp;
 
-    std::string_view an = name();
-    std::string_view bn = other->name();
-    cmp = an.compare(bn);
+    cmp = id - other->id;
     if (cmp != 0) return cmp;
 
-    cmp = id - other->id;
-    return cmp;
+    // std::string_view an = name();
+    // std::string_view bn = other->name();
+    // cmp = an.compare(bn);
+    // if (cmp != 0) return cmp;
+
+    assert(false);
+    return -1;
 }
 
 std::string UIElement::str() const {
@@ -48,8 +51,6 @@ std::string UIElement::str() const {
     std::string line;
     if (!this->enabled.get())
         line.append("# ");
-    if (this->checked.get())
-        line.append("[x]");
     if (!line.empty())
         line.append(" ");
     if (!visible.get())

@@ -77,6 +77,9 @@ public:
 
     bool isGroup() const override { return true; }
     
+    int actionCount() const;
+    int flattenActionCount() const;
+    
     /** path is relative, leading slash is ignored */
     UIElement* resolve(std::string_view path);
     /** path is relative, leading slash is ignored */
@@ -92,11 +95,11 @@ public:
      * for element.dir() and install group -> submenu/subgroup, action -> menuitem/toolitem,
      * state -> checked item or radio submenu/radio tools. Call tearDown() to remove.
      */
-    void setUp(UIWidgetsContext& context, InstallRecords& installs);
+    void setUp(UIWidgetsContext* context, InstallRecords* installs);
 
     /** Remove all menu/toolbar items installed by setUp(). */
-    void tearDown(UIWidgetsContext& context);
-    void tearDown(InstallRecords& installs);
+    void tearDown(UIWidgetsContext* context);
+    void tearDown(InstallRecords* installs);
 
     /** Dump node tree to output stream in format "id - label [priority]" */
     void dump(std::ostream& output = std::cout) const;
@@ -137,10 +140,17 @@ public:
         builder_t& internal(bool v)
             { m_internal = v; return this->self(); }
 
-        void applyTo(UIGroup* el) {
+        void applyTo(UIGroup* el) const {
             UIElement::_Builder<builder_t, T>::applyTo(el);
             el->internal = m_internal;
         }
+
+        std::unique_ptr<UIGroup> build() const {
+            std::unique_ptr<UIGroup> el = std::make_unique<UIGroup>();
+            applyTo(el.get());
+            return el;
+        }
+        
     private:
         bool m_internal{false};
     };

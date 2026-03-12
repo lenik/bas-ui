@@ -22,13 +22,25 @@ std::vector<wxMenu*> UIWidgetsContext::getMenus(std::string_view path) {
     return matches;
 }
 
-std::vector<wxToolBar*> UIWidgetsContext::getToolbars(std::string_view path) {
+std::vector<wxToolBar*> UIWidgetsContext::getToolbars(std::string_view _path) {
     std::vector<wxToolBar*> matches;
 
-    auto it = m_toolbars.find(std::string(path));
-    if (it != m_toolbars.end())
-        matches = it->second;
+    std::string path = std::string(_path);
 
+    while (true) {
+        auto it = m_toolbars.find(path);
+        if (it != m_toolbars.end()) {
+            matches.insert(matches.end(), it->second.begin(), it->second.end());
+        }
+        if (path.empty())
+            break;
+        
+        size_t last_slash = path.find_last_of('/');
+        if (last_slash == std::string::npos)
+            path = "";
+        else
+            path = path.substr(0, last_slash);
+    }
     return matches;
 }
 

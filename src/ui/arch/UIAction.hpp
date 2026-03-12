@@ -3,6 +3,7 @@
 
 #include "UIElement.hpp"
 
+#include <bas/log/uselog.h>
 #include <bas/script/property_support.hpp>
 
 #include <wx/event.h>
@@ -17,7 +18,7 @@ class PerformContext {
     static const char *EMPTY_ARGS[];
 
 public:
-    const UIAction* action{nullptr};
+    UIAction* const action{nullptr};
     std::time_t timestamp{std::time(nullptr)};
 
     int argc{0};
@@ -31,7 +32,7 @@ public:
     // PerformContext() = default;
 
     PerformContext(
-        const UIAction* action_
+        UIAction* const action_
         , int argc
         , const char* const* argv
         , const wxEvent* event_
@@ -65,16 +66,12 @@ public:
 
     bool isAction() const override { return true; }
 
-    /** For checkable menu/tool items. */
-    bool isChecked() const { return checked.get(); }
-
     /** Invoke the action (e.g. from menu command). */
-    void perform(PerformContext* ctx) const { if (performFn) performFn(ctx); }
+    void perform(PerformContext* ctx);
 
 protected:
     std::vector<std::string> shortcuts;
     PerformFn performFn;
-    observable<bool> checked;
     
 public:
     template<class builder_t, class T>
@@ -107,22 +104,24 @@ public:
                 { m_shortcuts = v; return this->self(); }
             builder_t& addShortcut(std::string s)
                 { m_shortcuts.push_back(s); return this->self(); }
-            builder_t& performFn(UIAction::PerformFn fn)
-                { m_performFn = fn; return this->self(); }
-            builder_t& checked(bool v)
-                { m_checked = v; return this->self(); }
+            builder_t& performFn(UIAction::PerformFn&& fn)
+                { m_performFn = std::move(fn); return this->self(); }
         
-            void applyTo(UIAction* el) {
+            void applyTo(UIAction* el) const {
                 UIElement::_Builder<builder_t, T>::applyTo(el);
                 el->shortcuts = m_shortcuts;
-                el->performFn = m_performFn;
-                el->checked.set(m_checked);
+                el->performFn = std::move(m_performFn);
             }
 
+            std::unique_ptr<UIAction> build() const {
+                std::unique_ptr<UIAction> el = std::make_unique<UIAction>();
+                applyTo(el.get());
+                return el;
+            }
+            
         private:
             std::vector<std::string> m_shortcuts;
             UIAction::PerformFn m_performFn;
-            bool m_checked{false};
     };
 
     class Builder : public _Builder<Builder, UIAction> {};

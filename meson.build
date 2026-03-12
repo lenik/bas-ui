@@ -5,6 +5,7 @@ project(
     default_options: [
         #'warning_level=0',
         'cpp_std=c++17',
+        'buildtype=debug',
     ],
 )
 
@@ -14,28 +15,28 @@ fs = import('fs')
 cpp = meson.get_compiler('cpp')
 
 # libbas
-    bas_c_dep = dependency('bas-c', required: true)
-    bas_cpp_dep = dependency('bas-cpp', required: true)
+bas_c_dep = dependency('bas-c', required: true)
+bas_cpp_dep = dependency('bas-cpp', required: true)
 
 # wxWidgets dependencies (must use a single GTK toolkit to avoid "GTK+ 2.x and GTK+ 3 in the same process" error)
-    wx_dep = dependency('wxwidgets', method: 'config-tool', required: true)
-    # Detect toolkit from default wx-config so we link only gtk2 or only gtk3
-    wx_config = find_program('wx-config', required: true)
-    wx_libs_out = run_command(wx_config, '--libs', check: true, capture: true).stdout()
-    wx_use_gtk3 = wx_libs_out.contains('gtk3')
-    if wx_use_gtk3
-        wx_gtk_prefix = 'wx_gtk3u'
-        wx_ver = '3.0'
-    else
-        wx_gtk_prefix = 'wx_gtk2u'
-        wx_ver = '3.1'
-    endif
-    # wxWidgets media (wxMediaCtrl) and extras - use same toolkit as core
-    # Media/webview optional on GTK2 (often not built for gtk2)
-    wx_media_lib = cpp.find_library(wx_gtk_prefix + '_media-' + wx_ver, required: false)
-    wx_richtext_lib = cpp.find_library(wx_gtk_prefix + '_richtext-' + wx_ver, required: true)
-    wx_stc_lib = cpp.find_library(wx_gtk_prefix + '_stc-' + wx_ver, required: true)
-    wx_webview_lib = cpp.find_library(wx_gtk_prefix + '_webview-' + wx_ver, required: false)
+wx_dep = dependency('wxwidgets', method: 'config-tool', required: true)
+# Detect toolkit from default wx-config so we link only gtk2 or only gtk3
+wx_config = find_program('wx-config', required: true)
+wx_libs_out = run_command(wx_config, '--libs', check: true, capture: true).stdout()
+wx_use_gtk3 = wx_libs_out.contains('gtk3')
+if wx_use_gtk3
+    wx_gtk_prefix = 'wx_gtk3u'
+    wx_ver = '3.0'
+else
+    wx_gtk_prefix = 'wx_gtk2u'
+    wx_ver = '3.1'
+endif
+# wxWidgets media (wxMediaCtrl) and extras - use same toolkit as core
+# Media/webview optional on GTK2 (often not built for gtk2)
+wx_media_lib = cpp.find_library(wx_gtk_prefix + '_media-' + wx_ver, required: false)
+wx_richtext_lib = cpp.find_library(wx_gtk_prefix + '_richtext-' + wx_ver, required: true)
+wx_stc_lib = cpp.find_library(wx_gtk_prefix + '_stc-' + wx_ver, required: true)
+wx_webview_lib = cpp.find_library(wx_gtk_prefix + '_webview-' + wx_ver, required: false)
 
 # wx_dep = dependency('wxwidgets', modules : [
 #     'core',
@@ -45,15 +46,18 @@ cpp = meson.get_compiler('cpp')
 #     'webview',
 #     ], required : true)
 
-    if wx_dep.version() < '3.1'
-        # wx 3.0: media and webview are in separate libs; core setup has wxUSE_*=0, so enable for our build
-        wx_defines = ['-DwxUSE_MEDIACTRL=1', '-DwxUSE_WEBVIEW=1']
-        add_project_arguments(wx_defines, language: 'cpp')
-    endif
+if wx_dep.version() < '3.1'
+    # wx 3.0: media and webview are in separate libs; core setup has wxUSE_*=0, so enable for our build
+    wx_defines = ['-DwxUSE_MEDIACTRL=1', '-DwxUSE_WEBVIEW=1']
+    add_project_arguments(wx_defines, language: 'cpp')
+endif
 
 # Disable all warnings (wx 3.0 and deps are noisy)
 cpp_nowarn = cpp.get_supported_arguments(['-w', '/w'])
 cpp_nowarn = cpp_nowarn + wx_defines
+
+# Precompiled header for wxWidgets
+wx_pch = 'src/wx_pch.h'
 
 cpp_sources = files(
     './src/proc/wx_assets.cpp',
@@ -65,6 +69,8 @@ cpp_sources = files(
     './src/ui/arch/UIGroup.cpp',
     './src/ui/arch/UIState.cpp',
     './src/ui/arch/UIWidgetsContext.cpp',
+    './src/wx/menus.cpp',
+    './src/wx/toolbars.cpp',
 )
 
 # Assets will be zipped and linked as a section in the executable
@@ -122,45 +128,49 @@ exe_deps = [
 
 exe_inc = [
     include_directories('src'),
-    include_directories('.'),
 ]
 
-lib_bas_ui = library(
+lib_bas_ui = shared_library(
     'bas-ui',
     cpp_sources,
     'src/module.cpp',
     dependencies: exe_deps,
     include_directories: exe_inc,
-    cpp_args: cpp_nowarn + ['-DLOGGER_NAME=ui'],
+    cpp_args: cpp_nowarn + ['-DLOGGER_NAME=ui', '-gdwarf-4'],
+    cpp_pch: wx_pch,
+    link_args: ['-rdynamic', '-Wl,-E', '-Wl,--export-dynamic'],
     override_options: ['b_lundef=false'], # Allows undefined symbols at link time
     version: meson.project_version(),
     soversion: meson.project_version().split('.')[0],
     install: true,
 )
 
-bas_ui_dep = declare_dependency(
-    link_with: lib_bas_ui,
-    include_directories: exe_inc
-)
+bas_ui_dep = declare_dependency(link_with: lib_bas_ui, include_directories: exe_inc)
 
 # ---- pkg-config ----
 pkgconfig = import('pkgconfig')
 pkgconfig.generate(
     lib_bas_ui,
-    name : 'bas-ui',
-    description : 'bas-ui',
-    version : meson.project_version(),
-    subdirs : 'bas',
-    requires : ['bas-c', 'bas-cpp'],
+    name: 'bas-ui',
+    description: 'bas-ui',
+    version: meson.project_version(),
+    subdirs: 'bas',
+    requires: ['bas-c', 'bas-cpp'],
 )
 
 # ---- Headers for libbas-c package (includedir/bas-c) ----
-find_other_cmd = run_command('find', 'src',
-          '-name', '*.h',
-    '-o', '-name', '*.hpp',
-    '-o', '-type', 'd',
-    '-o', '-print',
-    check: true)
+find_other_cmd = run_command(
+    'find',
+    'src',
+    '-name', '*.h',
+    '-o',
+    '-name', '*.hpp',
+    '-o',
+    '-type', 'd',
+    '-o',
+    '-print',
+    check: true,
+)
 other_files = find_other_cmd.stdout().strip().split('\n')
 
 other_list = []
@@ -168,10 +178,11 @@ foreach f : other_files
     other_list += f.substring(4)
 endforeach
 
-install_subdir('src',
-    install_dir : get_option('includedir') / 'bas',
-    exclude_files : other_list,
-    strip_directory : true,
+install_subdir(
+    'src',
+    install_dir: get_option('includedir') / 'bas',
+    exclude_files: other_list,
+    strip_directory: true,
 )
 
 # Unit tests generator
@@ -223,6 +234,9 @@ foreach test_rel_path : all_test_files
         include_directories: exe_inc,
         dependencies: exe_deps + [bas_ui_dep],
         cpp_args: cpp_nowarn + ['-DLOGGER_NAME=test'],
+        cpp_pch: wx_pch,
+        link_args: ['-rdynamic', '-no-pie'],
+        install: false,
     )
 
     # Register the test with meson
@@ -255,8 +269,10 @@ foreach app_cpp : app_cpp_list
         include_directories: exe_inc,
         dependencies: exe_deps + [bas_ui_dep],
         cpp_args: cpp_nowarn + ['-DLOGGER_NAME=' + app_name],
+        cpp_pch: wx_pch,
+        link_args: ['-rdynamic', '-no-pie'],
         install: true,
-        install_dir : install_dir,
+        install_dir: install_dir,
     )
 endforeach
 

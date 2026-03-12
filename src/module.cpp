@@ -1,1 +1,4 @@
-#include <bas/log/uselog1.h>
+#include <bas/log/deflog.h>
+
+define_logger();
+

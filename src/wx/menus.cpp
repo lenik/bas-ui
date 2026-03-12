@@ -1,0 +1,40 @@
+#include "menus.hpp"
+
+#include <wx/menu.h>
+
+namespace wx {
+
+bool isSeparator(wxMenuBar* menubar, int pos) {
+    auto label = menubar->GetMenuLabelText(pos);
+    return label == "|";
+}
+
+wxMenu* addNecessarySeparator(wxMenuBar* menuBar) {
+    int menuCount = menuBar->GetMenuCount();
+    if (menuCount == 0)
+        return nullptr;
+
+    if (isSeparator(menuBar, menuCount - 1))
+        return nullptr;
+
+    wxMenu* menu = new wxMenu();
+
+    menuBar->Append(menu, "|");
+    return menu;
+}
+
+wxMenuItem* addNecessarySeparator(wxMenu* menu) {
+    int menuCount = menu->GetMenuItemCount();
+    if (menuCount == 0)
+        return nullptr;
+
+    auto last = menu->FindItemByPosition(menuCount - 1);
+    if (last->IsSeparator())
+        return nullptr;
+
+    auto sep = new wxMenuItem(menu, wxID_SEPARATOR, "");
+    menu->Append(sep);
+    return sep;
+}
+
+} // namespace wx

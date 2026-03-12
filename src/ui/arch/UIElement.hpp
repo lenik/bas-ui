@@ -8,6 +8,7 @@
 #include <bas/script/property_support.hpp>
 #include <bas/util/Path.hpp>
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -18,26 +19,27 @@
 class UIElement {
 public:
     UIElement() = default;
-    UIElement(int id
-            , const std::string& dir
-            , const std::string& name
-            , int priority = 0
-            , const std::string& label = ""
-            , const std::string& description = ""
-            , const std::string& doc = ""
-            , const ImageSet& icon = ImageSet()
-            , bool visible = true
-            , bool enabled = true
+    UIElement(int id_
+            , const std::string& dir_
+            , const std::string& name_
+            , int priority_ = 0
+            , const std::string& label_ = ""
+            , const std::string& description_ = ""
+            , const std::string& doc_ = ""
+            , const ImageSet& icon_ = ImageSet()
+            , bool visible_ = true
+            , bool enabled_ = true
+            , bool checked_ = false
             )
-            : path(Path(dir, name))
-            , id(id)
-            , priority(priority)
-            , label(label)
-            , description(description)
-            , doc(doc)
-            , icon(icon)
-            , visible(visible)
-            , enabled(enabled)
+            : path(Path(dir_, name_))
+            , id(id_)
+            , priority(priority_)
+            , label(label_)
+            , description(description_)
+            , doc(doc_)
+            , icon(icon_)
+            , visible(visible_)
+            , enabled(enabled_)
             {}
 
     virtual ~UIElement() = default;
@@ -74,7 +76,15 @@ public:
 
     observable<bool> visible;
     observable<bool> enabled;
-    observable<bool> checked;
+
+
+    bool isEnabled() const { return enabled.get(); }
+    bool isVisible() const { return visible.get(); }
+    
+    bool no_menu{false};
+    bool no_tool{false};
+    bool menuWanted() { return !no_menu; }
+    bool toolWanted() { return !no_tool; }
 
     int compare(const UIElement* other) const;
     bool operator<(const UIElement& other) const { return compare(&other) < 0; }
@@ -158,9 +168,13 @@ public:
             builder_t& icon(const ImageSet& v)
                 { m_icon = v; return self(); }
         
+            builder_t& no_menu()
+                { m_no_menu = true; return self(); }
+            builder_t& no_tool()
+                { m_no_tool = true; return self(); }
+
             void applyTo(UIElement* el) const {
                 if (m_id == 0) throw std::invalid_argument("id is required");
-                if (m_dir.empty()) throw std::invalid_argument("dir is required");
                 if (m_name.empty()) throw std::invalid_argument("name is required");
 
                 el->id = m_id;
@@ -177,14 +191,10 @@ public:
                 el->visible.set(m_visible);
                 el->enabled.set(m_enabled);
                 el->icon.set(m_icon);
+                el->no_menu = m_no_menu;
+                el->no_tool = m_no_tool;
             }
         
-            std::unique_ptr<T> build() const {
-                std::unique_ptr<T> el = std::make_unique<T>();
-                applyTo(el.get());
-                return el;
-            }
-            
         protected:
             std::string m_dir;
             std::string m_name;
@@ -195,7 +205,10 @@ public:
             std::string m_doc;
             bool m_visible{true};
             bool m_enabled{true};
+            bool m_checkable{false};
             ImageSet m_icon;
+            bool m_no_menu{false};
+            bool m_no_tool{false};
     };
     
 };

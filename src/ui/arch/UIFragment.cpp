@@ -10,7 +10,7 @@ std::vector<std::string> UIFragment::findVars(std::string_view prefix) {
         if (el->name().find(prefix) == 0) {
             if (el->isAction()) {
                 symbols.push_back(el->name());
-                symbols.push_back(el->name() + ".checked");
+                symbols.push_back(el->name() + ".checkable");
                 symbols.push_back(el->name() + ".visible");
                 symbols.push_back(el->name() + ".enabled");
             }
@@ -75,14 +75,6 @@ std::string UIFragment::formatVar(std::string_view name) {
         }
         return "undefined";
     }
-    if (ends_with(name, ".checked"))
-        name = name.substr(0, name.size() - 8);
-    for (auto& element : m_elements) {
-        if (element->name() == name) {
-            bool val = element->checked.get();
-            return std::to_string(val);
-        }
-    }
     return "undefined";
 }
 
@@ -101,14 +93,6 @@ void UIFragment::parseVar(std::string_view name, std::string_view str) {
             if (element->name() == element_name) {
                 element->enabled.set(str == "true");
             }
-        }
-    }
-    if (ends_with(name, ".checked"))
-        name = name.substr(0, name.size() - 8);
-
-    for (auto& element : m_elements) {
-        if (element->name() == name) {
-            element->checked.set(str == "true");
         }
     }
 }

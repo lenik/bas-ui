@@ -27,6 +27,9 @@ public:
     void registerMenu(std::string_view path, wxMenu* menu);
     void registerToolbar(std::string_view path, wxToolBar* toolbar);
 
+    int preferredMenuIconSize() const { return 16; }
+    int preferredToolIconSize() const { return 32; }
+    
 private:
     std::unordered_map<std::string, std::vector<wxMenuBar*>> m_menubars;
     std::unordered_map<std::string, std::vector<wxMenu*>> m_menus;

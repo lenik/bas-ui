@@ -99,16 +99,34 @@ public:
                 { m_stateType = t; return this->self(); }      
             builder_t& valueDescriptorFn(UIState::ValueDescriptorFn fn)
                 { m_valueDescriptorFn = fn; return this->self(); }
-        
-            void applyTo(UIState* el) {
+            builder_t& initValue(UIStateVariant v)
+                { m_initValue = v; return this->self(); }
+            builder_t& connect(observable<UIStateVariant>::slot_type&& slot)
+                { m_slot = std::move(slot); return this->self(); }
+
+            void applyTo(UIState* el) const {
                 UIElement::_Builder<builder_t, T>::applyTo(el);
                 el->stateType = m_stateType;
                 el->valueDescriptorFn = m_valueDescriptorFn;
+                if (m_initValue) {
+                    el->value.set(*m_initValue);
+                }
+                if (m_slot) {
+                    el->value.connect(*m_slot);
+                }
             }
 
+            std::unique_ptr<UIState> build() const {
+                std::unique_ptr<UIState> el = std::make_unique<UIState>();
+                applyTo(el.get());
+                return el;
+            }
+            
         private:
             UIStateType m_stateType{UIStateType::BOOL};
             UIState::ValueDescriptorFn m_valueDescriptorFn{nullptr};
+            std::optional<UIStateVariant> m_initValue;
+            std::optional<observable<UIStateVariant>::slot_type> m_slot;
     };
 
     class Builder : public _Builder<Builder, UIState> {};
