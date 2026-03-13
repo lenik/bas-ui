@@ -61,14 +61,20 @@ wx_pch = 'src/wx_pch.h'
 
 cpp_sources = files(
     './src/proc/wx_assets.cpp',
+    './src/ui/arch/BuildViewContext.cpp',
+    './src/ui/arch/BuildViewLog.cpp',
+    './src/ui/arch/CreateViewContext.cpp',
     './src/ui/arch/EditHistory.cpp',
     './src/ui/arch/ImageSet.cpp',
     './src/ui/arch/UIAction.cpp',
     './src/ui/arch/UIElement.cpp',
     './src/ui/arch/UIFragment.cpp',
+    './src/ui/arch/UIGroup-build.cpp',
+    './src/ui/arch/UIGroup-remove.cpp',
     './src/ui/arch/UIGroup.cpp',
     './src/ui/arch/UIState.cpp',
-    './src/ui/arch/UIWidgetsContext.cpp',
+    './src/wx/app.cpp',
+    './src/wx/appframe.cpp',
     './src/wx/menus.cpp',
     './src/wx/toolbars.cpp',
 )

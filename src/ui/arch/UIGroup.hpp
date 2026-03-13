@@ -2,6 +2,7 @@
 #define UI_GROUP_H
 
 #include "UIElement.hpp"
+#include "BuildViewLog.hpp"
 
 #include <wx/menu.h>
 #include <wx/toolbar.h>
@@ -9,34 +10,6 @@
 #include <iostream>
 #include <memory>
 #include <vector>
-
-class UIWidgetsContext;
-class UIGroup;
-
-struct InstallRecord {
-    virtual ~InstallRecord();
-
-    enum Kind { MENU, SUBMENU, MENU_ITEM, TOOLBAR_TOOL };
-    Kind kind{MENU_ITEM};
-    wxMenuBar* menuBar{nullptr};
-    int menuPos{-1};
-
-    wxMenu* menu{nullptr};
-    int subMenuId{-1};
-    wxMenuItem* menuItem{nullptr};
-
-    wxToolBar* toolbar{nullptr};
-    int toolId{-1};
-    
-    UIGroup* group{nullptr};
-};
-
-struct InstallRecords
-    : public std::vector<std::unique_ptr<InstallRecord>>
-{
-    /** Dump install records to output stream */
-    void dump(std::ostream& output = std::cout) const;
-};
 
 /**
 * Group node. buildTree(elements) builds parent/children from a flat list
@@ -95,11 +68,11 @@ public:
      * for element.dir() and install group -> submenu/subgroup, action -> menuitem/toolitem,
      * state -> checked item or radio submenu/radio tools. Call tearDown() to remove.
      */
-    void setUp(UIWidgetsContext* context, InstallRecords* installs);
+    void buildView(BuildViewContext* context, BuildViewLogs* logs);
 
     /** Remove all menu/toolbar items installed by setUp(). */
-    void tearDown(UIWidgetsContext* context);
-    void tearDown(InstallRecords* installs);
+    void removeBuild(BuildViewContext* context);
+    void removeBuild(BuildViewLogs* logs);
 
     /** Dump node tree to output stream in format "id - label [priority]" */
     void dump(std::ostream& output = std::cout) const;

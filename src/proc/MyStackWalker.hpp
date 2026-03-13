@@ -65,7 +65,7 @@ std::optional<SourceLocation> addr2line(size_t offset, std::string_view lib_path
     std::string content;
     // The first line is the function name, the second is file:line
 
-    // line 1: UIGroup::setUp(UIWidgetsContext&, InstallRecords&)
+    // line 1: UIGroup::setUp(BuildViewContext*, BuildViewLogs*)
     // line 2: /home/udisk/bas-ui/build/../src/ui/arch/UIGroup.cpp:387 (discriminator 2)
 
     while (fgets(blk.data(), blk.size(), pipe.get()) != nullptr) {

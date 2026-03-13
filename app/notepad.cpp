@@ -2,9 +2,10 @@
  * Simple notepad application using ui/arch action/group models.
  * Menubar and toolbar are built from a UIFragment and UIWidgetsContext.
  */
+#include "wx/app.hpp"
+#include "wx/appframe.hpp"
+
 #include "ui/arch/UIFragment.hpp"
-#include "ui/arch/UIGroup.hpp"
-#include "ui/arch/UIWidgetsContext.hpp"
 
 #include "proc/MyStackWalker.hpp"
 #include "wx/artprov.h"
@@ -23,8 +24,6 @@
 #include <bas/log/uselog.h>
 #include <bas/proc/stackdump.h>
 
-#include <iostream>
-
 enum {
     ID_ZOOM_IN = wxID_HIGHEST + 1,
     ID_ZOOM_OUT,
@@ -33,12 +32,10 @@ enum {
     ID_TOOLBAR_SHOW_LABEL,
 };
 
-class NotepadFragment : public UIFragment {
+class NotepadCore : public UIFragment {
   public:
-    explicit NotepadFragment(wxFrame* frame, wxTextCtrl* text) : m_frame(frame), m_text(text) {
+    explicit NotepadCore() {
         int seq = 0;
-
-        // Store lambdas in local variables to ensure they live long enough
         action(wxID_NEW, "file", "new", seq++, "&New", "New document")
             .icon(wxART_NEW)
             .performFn([this](PerformContext* ctx) { onNew(ctx); })
@@ -54,13 +51,6 @@ class NotepadFragment : public UIFragment {
         action(wxID_SAVEAS, "file", "saveas", seq++, "Save &As...", "Save as")
             .icon(wxART_FILE_SAVE_AS)
             .performFn([this](PerformContext* ctx) { onSaveAs(ctx); })
-            .install();
-
-        seq = 1000;
-        action(wxID_EXIT, "file", "exit", seq++, "E&xit", "Exit")
-            .icon(wxART_QUIT)
-            .performFn([this](PerformContext* ctx) { onExit(ctx); })
-            .no_tool()
             .install();
 
         seq = 0;
@@ -111,10 +101,17 @@ class NotepadFragment : public UIFragment {
             .install();
     }
 
-    wxEvtHandler* getEventHandler() override { return m_frame; }
+    void createView(CreateViewContext* ctx) override {
+        wxWindow* parent = ctx->getParent();
+        const wxPoint& pos = ctx->getPos();
+        const wxSize& size = ctx->getSize();
+        m_text = new wxTextCtrl(parent, wxID_ANY, "", pos, size, wxTE_MULTILINE | wxTE_WORDWRAP);
+    }
+
+    wxEvtHandler* getEventHandler() override { return m_text->GetEventHandler(); }
 
   private:
-    wxFrame* m_frame;
+    // wxFrame* m_frame;
     wxTextCtrl* m_text;
     wxString m_filePath;
     bool m_loaded{false};
@@ -180,8 +177,6 @@ class NotepadFragment : public UIFragment {
         }
     }
 
-    void onExit(PerformContext*) { m_frame->Close(); }
-
     void onUndo(PerformContext*) { m_text->Undo(); }
     void onRedo(PerformContext*) { m_text->Redo(); }
 
@@ -207,203 +202,7 @@ class NotepadFragment : public UIFragment {
     }
 };
 
-std::vector<UIElement*> operator+(const std::vector<UIElement*>& a,
-                                  const std::vector<UIElement*>& b) {
-    std::vector<UIElement*> result = a;
-    result.insert(result.end(), b.begin(), b.end());
-    return result;
-}
-
-class NotepadFrame : public wxFrame, public UIFragment {
-  public:
-    NotepadFrame() : wxFrame(nullptr, wxID_ANY, "Notepad", wxDefaultPosition, wxSize(640, 480)) {
-        wxTextCtrl* text = new wxTextCtrl(this, wxID_ANY, "", wxDefaultPosition, wxDefaultSize,
-                                          wxTE_MULTILINE | wxTE_WORDWRAP);
-
-        auto f_this = dynamic_cast<UIFragment*>(this);
-        f_editor = std::make_unique<NotepadFragment>(this, text);
-
-        group(1, "", "file", 10, "&File").install();
-        group(2, "", "edit", 20, "&Edit").install();
-        group(3, "", "view", 30, "&View").install();
-
-        int seq = 1000;
-
-        // action(ID_TOOLBAR_SMALL, "view", "toolbar_small", seq++, "Toolbar &Small", "Toolbar
-        // small")
-        //     .icon(wxART_LIST)
-        //     .performFn([this](PerformContext* ctx) { onToolbarSmall(ctx); })
-        //     .install();
-
-        state(ID_TOOLBAR_SHOW_LABEL, "view", "toolbar_show_label", seq++, "Toolbar &Show Label",
-              "Toolbar show label")
-            .icon(wxART_LIST_VIEW)
-            .stateType(UIStateType::BOOL)
-            .valueDescriptorFn([this](int value) {
-                return UIStateValueDescriptor{
-                    .label = value ? "Show Label" : "Hide Label",       //
-                    .description = value ? "Show label" : "Hide label", //
-                };
-            })
-            .initValue(false)
-            .connect([this](UIStateVariant const value, UIStateVariant const old_value) {
-                onToolbarShowLabel(std::get<bool>(value));
-            })
-        .install();
-
-        m_menubar = new wxMenuBar();
-        m_toolbar = CreateToolBar(wxTB_FLAT | wxTB_TEXT);
-
-        UIWidgetsContext ctx;
-        ctx.registerMenubar("", m_menubar);
-        ctx.registerToolbar("", m_toolbar);
-
-        std::vector<UIElement*> elements;
-        elements = f_this->loadElements() + f_editor->loadElements();
-
-        m_root = UIGroup(0, "", "", 0, "", "", "", ImageSet(), true, true);
-        m_root.buildTree(elements);
-        m_root.setUp(&ctx, &m_installs);
-
-        SetMenuBar(m_menubar);
-        m_toolbar->Realize();
-
-        // Connect menu and toolbar events for each action ID
-        for (auto& el : elements) {
-            if (el->isAction()) {
-                Bind(wxEVT_MENU, &NotepadFrame::onCommand, this, el->id);
-                Bind(wxEVT_TOOL, &NotepadFrame::onCommand, this, el->id);
-            }
-        }
-
-        // Bind to window show event to simulate exit after window opens
-        Bind(wxEVT_SHOW, &NotepadFrame::onShow, this);
-
-        // std::cout << "Menubar:" << std::endl;
-        // dumpMenubar("  ");
-        // std::cout << "Toolbar:" << std::endl;
-        // dumpToolbar("  ");
-    }
-
-    void dumpMenubar(std::string prefix) {
-        for (int i = 0; i < m_menubar->GetMenuCount(); i++) {
-            wxMenu* menu = m_menubar->GetMenu(i);
-            wxString menuLabel = m_menubar->GetMenuLabel(i);
-            std::cout << prefix << "Menu: " << menuLabel << std::endl;
-            for (int j = 0; j < menu->GetMenuItemCount(); j++) {
-                wxMenuItem* item = menu->FindItemByPosition(j);
-                if (item) {
-                    std::cout << prefix << "  Item: " << item->GetLabel() << std::endl;
-                    if (item->IsSubMenu()) {
-                        dumpMenu(item->GetSubMenu(), prefix + "    ");
-                    }
-                }
-            }
-        }
-    }
-    void dumpMenu(wxMenu* menu, std::string prefix) {
-        for (int j = 0; j < menu->GetMenuItemCount(); j++) {
-            wxMenuItem* item = menu->FindItemByPosition(j);
-            if (item) {
-                std::cout << prefix << "Item: " << item->GetLabel() << std::endl;
-                if (item->GetSubMenu()) {
-                    dumpMenu(item->GetSubMenu(), prefix + "  ");
-                }
-            }
-        }
-    }
-    void dumpToolbar(std::string prefix) {
-        for (size_t i = 0; i < m_toolbar->GetToolsCount(); ++i) {
-            const wxToolBarToolBase* tool = m_toolbar->GetToolByPos(i);
-            if (tool) {
-                std::cout << prefix << tool->GetLabel() << std::endl;
-            }
-        }
-    }
-
-  private:
-    std::unique_ptr<NotepadFragment> f_editor;
-    UIGroup m_root;
-    InstallRecords m_installs;
-
-    wxMenuBar* m_menubar;
-    wxToolBar* m_toolbar;
-
-    void onCommand(wxCommandEvent& event) {
-        PerformContext ctx = f_editor->toPerformContext(event);
-        if (ctx.action) {
-            ctx.action->perform(&ctx);
-        }
-    }
-
-    void onShow(wxShowEvent& event) {
-        // Simulate exit command after window is shown (for testing)
-        // std::cout << "Window shown, simulating exit..." << std::endl;
-        // wxCommandEvent exitEvent(wxEVT_MENU, wxID_EXIT);
-        // GetEventHandler()->AddPendingEvent(exitEvent);
-    }
-
-    // UIFragment
-  public:
-    wxEvtHandler* getEventHandler() override { return this; }
-
-    void onToolbarNormal(PerformContext*) {
-        // m_toolbar->SetToolBarStyle(wxTB_TEXT | wxTB_HORIZONTAL);
-    }
-    void onToolbarSmall(PerformContext*) {
-        // m_toolbar->SetToolBarStyle(wxTB_TEXT | wxTB_HORIZONTAL | wxTB_FLAT | wxTB_SMALL_ICONS);
-    }
-    void onToolbarShowLabel(bool value) {
-        long style = m_toolbar->GetWindowStyle();
-        if (value) {
-            style |= wxTB_TEXT;     // Add text
-            style &= ~wxTB_NOICONS; // Ensure icons are NOT hidden
-        } else {
-            style &= ~wxTB_TEXT; // Remove text
-        }
-        m_toolbar->SetWindowStyle(style);
-        m_toolbar->Realize();
-        // m_toolbar->GetParent()->Layout();
-    }
-};
-
-class NotepadApp : public wxApp {
-  public:
-    bool OnInit() override {
-        NotepadFrame* frame = new NotepadFrame();
-        frame->Show();
-        return true;
-    }
-
-    void OnAssertFailure(const wxChar* file, int line, const wxChar* func, const wxChar* cond,
-                         const wxChar* msg) {
-        // Print basic assert info to stdout
-        printf("Assert failed: %ls:%d in %ls: %ls (%ls)\n", file, line, func, cond, msg);
-
-        // Use wxStackWalker to print the stack trace here if supported
-        MyStackWalker walker;
-        walker.Walk();
-    }
-};
-
 int main(int argc, char** argv) {
-    stackdump_install_crash_handler(&stackdump_color_schema_default);
-    stackdump_set_interactive(1);
-
-    // Explicit wxWidgets lifecycle management (no wxEntry()).
-    wxApp::SetInstance(new NotepadApp());
-    if (!wxEntryStart(argc, argv)) {
-        return 1;
-    }
-
-    int rc = 0;
-    if (wxTheApp && wxTheApp->CallOnInit()) {
-        rc = wxTheApp->OnRun();
-        wxTheApp->OnExit();
-    } else {
-        rc = 1;
-    }
-
-    wxEntryCleanup();
-    return rc;
+    AppFrame frame("Notepad", {new NotepadCore()});
+    return uiApp::main(argc, argv, &frame, nullptr);
 }

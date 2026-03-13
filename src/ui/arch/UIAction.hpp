@@ -13,12 +13,14 @@
 #include <vector>
 
 class UIAction;
+class UIState;
 
 class PerformContext {
     static const char *EMPTY_ARGS[];
 
 public:
     UIAction* const action{nullptr};
+    UIState* const state{nullptr};
     std::time_t timestamp{std::time(nullptr)};
 
     int argc{0};

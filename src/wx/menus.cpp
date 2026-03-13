@@ -4,6 +4,35 @@
 
 namespace wx {
 
+void dumpMenubar(wxMenuBar* menubar, std::string prefix, std::ostream& out) {
+    for (int i = 0; i < menubar->GetMenuCount(); i++) {
+        wxMenu* menu = menubar->GetMenu(i);
+        wxString menuLabel = menubar->GetMenuLabel(i);
+        out << prefix << "Menu: " << menuLabel << std::endl;
+        for (int j = 0; j < menu->GetMenuItemCount(); j++) {
+            wxMenuItem* item = menu->FindItemByPosition(j);
+            if (item) {
+                out << prefix << "  Item: " << item->GetLabel() << std::endl;
+                if (item->IsSubMenu()) {
+                    dumpMenu(item->GetSubMenu(), prefix + "    ", out);
+                }
+            }
+        }
+    }
+}
+
+void dumpMenu(wxMenu* menu, std::string prefix, std::ostream& out) {
+    for (int j = 0; j < menu->GetMenuItemCount(); j++) {
+        wxMenuItem* item = menu->FindItemByPosition(j);
+        if (item) {
+            out << prefix << "Item: " << item->GetLabel() << std::endl;
+            if (item->GetSubMenu()) {
+                dumpMenu(item->GetSubMenu(), prefix + "  ", out);
+            }
+        }
+    }
+}
+
 bool isSeparator(wxMenuBar* menubar, int pos) {
     auto label = menubar->GetMenuLabelText(pos);
     return label == "|";

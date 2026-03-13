@@ -3,7 +3,11 @@
 
 #include <wx/toolbar.h>
 
+#include <iostream>
+
 namespace wx {
+
+void dumpToolbar(wxToolBar* toolbar, std::string prefix, std::ostream& out = std::cout);
 
 wxToolBarToolBase* addNecessarySeparator(wxToolBar* toolbar);
 

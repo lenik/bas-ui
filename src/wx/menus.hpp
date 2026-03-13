@@ -3,7 +3,12 @@
 
 #include <wx/menu.h>
 
+#include <iostream>
+
 namespace wx {
+
+void dumpMenubar(wxMenuBar* menubar, std::string prefix, std::ostream& out = std::cout);
+void dumpMenu(wxMenu* menu, std::string prefix, std::ostream& out = std::cout);
 
 wxMenu* addNecessarySeparator(wxMenuBar* menuBar);
 wxMenuItem* addNecessarySeparator(wxMenu* menu);

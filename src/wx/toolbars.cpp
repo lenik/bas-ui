@@ -4,6 +4,15 @@
 
 namespace wx {
 
+void dumpToolbar(wxToolBar* toolbar, std::string prefix, std::ostream& out) {
+    for (size_t i = 0; i < toolbar->GetToolsCount(); ++i) {
+        const wxToolBarToolBase* tool = toolbar->GetToolByPos(i);
+        if (tool) {
+            out << prefix << tool->GetLabel() << std::endl;
+        }
+    }
+}
+
 wxToolBarToolBase* addNecessarySeparator(wxToolBar* toolbar) {
     // if the last tool isn't separator
     int toolCount = toolbar->GetToolsCount();
