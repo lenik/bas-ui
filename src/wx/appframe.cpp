@@ -3,6 +3,7 @@
  * Menubar and toolbar are built from a UIFragment and BuildViewContext.
  */
 #include "appframe.hpp"
+#include "ui/arch/CreateViewContext.hpp"
 
 #include <bas/log/uselog.h>
 
@@ -19,6 +20,11 @@ AppFrame::AppFrame(const wxString& title,              //
 {
     m_fragments.push_back(this);
     m_fragments.insert(m_fragments.end(), fragments.begin(), fragments.end());
+
+    CreateViewContext createViewContext(wxID_ANY, this, "");
+    for (auto& fragment : m_fragments) {
+        fragment->createView(&createViewContext);
+    }
 
     group(1, "", "file", 10, "&File").install();
     group(2, "", "edit", 20, "&Edit").install();
@@ -50,17 +56,20 @@ AppFrame::AppFrame(const wxString& title,              //
             };
         })
         .initValue(false)
+        .valueRef(&m_showLabel)
         .connect([this](UIStateVariant const value, UIStateVariant const old_value) {
-            onToolbarShowLabel(std::get<bool>(value));
+            bool showLabel = std::get<bool>(value);
+            onToolbarShowLabel(showLabel);
         })
         .install();
 
-    m_menubar = new wxMenuBar();
-    m_toolbar = CreateToolBar(wxTB_FLAT | wxTB_TEXT);
+    BuildViewContext buildViewContext;
 
-    BuildViewContext ctx;
-    ctx.registerMenubar("", m_menubar);
-    ctx.registerToolbar("", m_toolbar);
+    m_menubar = new wxMenuBar();
+    m_toolbar = CreateToolBar(wxTB_FLAT);
+
+    buildViewContext.registerMenubar("", m_menubar);
+    buildViewContext.registerToolbar("", m_toolbar);
 
     std::vector<UIElement*> elements;
     for (auto& fragment : m_fragments) {
@@ -71,12 +80,12 @@ AppFrame::AppFrame(const wxString& title,              //
     m_root = UIGroup(0, "", "", 0, "<root>", "", "", //
                      ImageSet(), true, true);
     m_root.buildTree(elements);
-    m_root.buildView(&ctx, &m_buildViewLogs);
+    m_root.buildView(&buildViewContext, &m_buildViewLogs);
 
     SetMenuBar(m_menubar);
     m_toolbar->Realize();
 
-    // Connect menu and toolbar events for each action ID
+    // Connect menu and toolbar events for each action/state ID where supported
     for (auto& el : elements) {
         if (el->isAction()) {
             UIAction* action = dynamic_cast<UIAction*>(el);
@@ -109,9 +118,16 @@ AppFrame::AppFrame(const wxString& title,              //
                 el->id);
         }
     }
+}
 
-    if (m_exitOnShow) {
+AppFrame::~AppFrame() {}
+
+void AppFrame::exitOnShow(bool exit) {
+    m_exitOnShow = exit;
+    if (exit) {
         Bind(wxEVT_SHOW, &AppFrame::onShowExit, this);
+    } else {
+        Unbind(wxEVT_SHOW, &AppFrame::onShowExit, this);
     }
 }
 
@@ -130,7 +146,6 @@ void AppFrame::onCommand(wxCommandEvent& event, UIAction* action) {
 void AppFrame::onExit(PerformContext* ctx) { Close(); }
 
 void AppFrame::onStateChange(wxCommandEvent& event, UIState* state) {
-    std::cerr << "onStateChange: " << state->id << "," << state->name() << std::endl;
     bool checked = event.IsChecked();
     state->value.set(checked);
 }
@@ -140,7 +155,6 @@ void AppFrame::onToolbarSize(int size) {
 }
 
 void AppFrame::onToolbarShowLabel(bool value) {
-    std::cout << "onToolbarShowLabel: " << value << std::endl;
     long style = m_toolbar->GetWindowStyle();
     if (value) {
         style |= wxTB_TEXT;     // Add text

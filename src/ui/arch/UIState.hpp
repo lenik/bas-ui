@@ -101,6 +101,8 @@ public:
                 { m_valueDescriptorFn = fn; return this->self(); }
             builder_t& initValue(UIStateVariant v)
                 { m_initValue = v; return this->self(); }
+            builder_t& valueRef(observable<UIStateVariant>** ref)
+                { m_valueRef = ref; return this->self(); }
             builder_t& connect(observable<UIStateVariant>::slot_type&& slot)
                 { m_slot = std::move(slot); return this->self(); }
 
@@ -119,12 +121,16 @@ public:
             std::unique_ptr<UIState> build() const {
                 std::unique_ptr<UIState> el = std::make_unique<UIState>();
                 applyTo(el.get());
+                if (m_valueRef) {
+                    *m_valueRef = &el->value;
+                }
                 return el;
             }
             
         private:
             UIStateType m_stateType{UIStateType::BOOL};
             UIState::ValueDescriptorFn m_valueDescriptorFn{nullptr};
+            observable<UIStateVariant> ** m_valueRef;
             std::optional<UIStateVariant> m_initValue;
             std::optional<observable<UIStateVariant>::slot_type> m_slot;
     };

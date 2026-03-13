@@ -205,7 +205,6 @@ public:
             std::string m_doc;
             bool m_visible{true};
             bool m_enabled{true};
-            bool m_checkable{false};
             ImageSet m_icon;
             bool m_no_menu{false};
             bool m_no_tool{false};

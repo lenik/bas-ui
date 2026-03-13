@@ -2,14 +2,10 @@
  * Simple notepad application using ui/arch action/group models.
  * Menubar and toolbar are built from a UIFragment and UIWidgetsContext.
  */
+#include "proc/MyStackWalker.hpp"
+#include "ui/arch/UIFragment.hpp"
 #include "wx/app.hpp"
 #include "wx/appframe.hpp"
-
-#include "ui/arch/UIFragment.hpp"
-
-#include "proc/MyStackWalker.hpp"
-#include "wx/artprov.h"
-#include "wx/defs.h"
 
 #include <wx/app.h>
 #include <wx/filedlg.h>
@@ -25,11 +21,9 @@
 #include <bas/proc/stackdump.h>
 
 enum {
-    ID_ZOOM_IN = wxID_HIGHEST + 1,
+    ID_ZOOM_IN = AppFrame::ID_APP_HIGHEST + 1,
     ID_ZOOM_OUT,
     ID_ZOOM_RESET,
-    ID_TOOLBAR_SMALL,
-    ID_TOOLBAR_SHOW_LABEL,
 };
 
 class NotepadCore : public UIFragment {
@@ -86,7 +80,7 @@ class NotepadCore : public UIFragment {
             .performFn([this](PerformContext* ctx) { onPaste(ctx); })
             .install();
 
-        seq = 0;
+        seq = 2000;
         action(ID_ZOOM_IN, "view", "zoom_in", seq++, "Zoom &In", "Zoom in")
             .icon(wxART_PLUS)
             .performFn([this](PerformContext* ctx) { onZoomIn(ctx); })
@@ -111,7 +105,6 @@ class NotepadCore : public UIFragment {
     wxEvtHandler* getEventHandler() override { return m_text->GetEventHandler(); }
 
   private:
-    // wxFrame* m_frame;
     wxTextCtrl* m_text;
     wxString m_filePath;
     bool m_loaded{false};
@@ -202,7 +195,26 @@ class NotepadCore : public UIFragment {
     }
 };
 
+class Notepad : public uiApp {
+  public:
+    Notepad() : uiApp() {
+    }
+
+    bool OnInit() override {
+        AppFrame* frame = new AppFrame("Notepad", {&m_core});
+        frame->CenterOnScreen();
+        frame->Show();
+        return true;
+    }
+
+  private:
+    NotepadCore m_core;
+};
+
 int main(int argc, char** argv) {
-    AppFrame frame("Notepad", {new NotepadCore()});
-    return uiApp::main(argc, argv, &frame, nullptr);
+    stackdump_install_crash_handler(&stackdump_color_schema_default);
+    stackdump_set_interactive(1);
+
+    Notepad app;
+    return app.main(argc, argv);
 }

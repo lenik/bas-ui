@@ -16,7 +16,7 @@
 class AppFrame : public wxFrame, public UIFragment {
   public:
     enum {
-        ID_TOOLBAR_SMALL = wxID_HIGHEST + 1,
+        ID_TOOLBAR_SMALL = wxID_HIGHEST + 1000,
         ID_TOOLBAR_SHOW_LABEL,
         ID_APP_HIGHEST = ID_TOOLBAR_SHOW_LABEL,
     };
@@ -26,24 +26,29 @@ class AppFrame : public wxFrame, public UIFragment {
              wxWindow* parent = nullptr,             //
              wxWindowID id = wxID_ANY,               //
              const wxPoint& pos = wxDefaultPosition, //
-             const wxSize& size = wxDefaultSize,     //
-             long style = wxDEFAULT,                 //
+             const wxSize& size = wxSize(800, 600),  //
+             long style = wxDEFAULT_FRAME_STYLE,     //
              const wxString& name = wxFrameNameStr   //
     );
+    virtual ~AppFrame();
 
-    void exitOnShow(bool exit = true) { m_exitOnShow = exit; }
+    void exitOnShow(bool exit = true);
 
-    wxEvtHandler* getEventHandler() override { return this->getEventHandler(); }
+    wxEvtHandler* getEventHandler() override {
+        wxFrame* frame = dynamic_cast<wxFrame*>(this);
+        return frame->GetEventHandler();
+    }
 
   private:
     std::vector<UIFragment*> m_fragments;
     UIGroup m_root;
     BuildViewLogs m_buildViewLogs;
 
-    wxMenuBar* m_menubar;
-    wxToolBar* m_toolbar;
+    wxMenuBar* m_menubar{nullptr};
+    wxToolBar* m_toolbar{nullptr};
 
     bool m_exitOnShow{false};
+    observable<UIStateVariant>* m_showLabel;
 
   private:
     void onShowExit(wxShowEvent& event);

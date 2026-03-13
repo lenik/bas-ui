@@ -132,7 +132,10 @@ void buildActionView(UIAction* action, wxToolBar* toolbar, BuildViewContext* con
     wxBitmap bmp = icon.loadBitmap(iconSize, iconSize);
     wxString toolLabel = label;
     toolLabel.Replace("&", "");
-    toolbar->AddTool(action->id, toolLabel, bmp, help, wxITEM_NORMAL);
+
+    // auto tool =
+    toolbar->AddTool(action->id, toolLabel, bmp, help, //
+                     wxITEM_NORMAL);
 
     auto log = std::make_unique<BuildViewLog>();
     log->kind = BuildViewLog::TOOLBAR_TOOL;
