@@ -2,20 +2,20 @@
  * Simple notepad application using ui/arch action/group models.
  * Menubar and toolbar are built from a UIFragment and BuildViewContext.
  */
-#include "appframe.hpp"
+#include "uiframe.hpp"
 #include "ui/arch/CreateViewContext.hpp"
 
 #include <bas/log/uselog.h>
 
-AppFrame::AppFrame(const wxString& title,              //
-                   std::vector<UIFragment*> fragments, //
-                   wxWindow* parent,                   //
-                   wxWindowID id,                      //
-                   const wxPoint& pos,                 //
-                   const wxSize& size,                 //
-                   long style,                         //
-                   const wxString& name                //
-                   )
+uiFrame::uiFrame(const wxString& title,              //
+                 std::vector<UIFragment*> fragments, //
+                 wxWindow* parent,                   //
+                 wxWindowID id,                      //
+                 const wxPoint& pos,                 //
+                 const wxSize& size,                 //
+                 long style,                         //
+                 const wxString& name                //
+                 )
     : wxFrame(parent, id, title, pos, size, style, name) //
 {
     m_fragments.push_back(this);
@@ -26,13 +26,16 @@ AppFrame::AppFrame(const wxString& title,              //
         fragment->createView(&createViewContext);
     }
 
+    std::string dir = "streamline-vectors/core/pop/interface-essential";
+    std::string dir2 = "streamline-vectors/core/pop/map-travel";
+
     group(1, "", "file", 10, "&File").install();
     group(2, "", "edit", 20, "&Edit").install();
     group(3, "", "view", 30, "&View").install();
 
     int seq = 100000;
     action(wxID_EXIT, "file", "exit", seq++, "E&xit", "Exit")
-        .icon(wxART_QUIT)
+        .icon(wxART_QUIT, dir2, "emergency-exit.svg")
         .performFn([this](PerformContext* ctx) { onExit(ctx); })
         .no_tool()
         .install();
@@ -47,7 +50,7 @@ AppFrame::AppFrame(const wxString& title,              //
 
     state(ID_TOOLBAR_SHOW_LABEL, "view", "toolbar_show_label", seq++, "Toolbar &Show Label",
           "Toolbar show label")
-        .icon(wxART_LIST_VIEW)
+        .icon(wxART_LIST_VIEW, dir, "text-square.svg")
         .stateType(UIStateType::BOOL)
         .valueDescriptorFn([this](int value) {
             return UIStateValueDescriptor{
@@ -120,41 +123,41 @@ AppFrame::AppFrame(const wxString& title,              //
     }
 }
 
-AppFrame::~AppFrame() {}
+uiFrame::~uiFrame() {}
 
-void AppFrame::exitOnShow(bool exit) {
+void uiFrame::exitOnShow(bool exit) {
     m_exitOnShow = exit;
     if (exit) {
-        Bind(wxEVT_SHOW, &AppFrame::onShowExit, this);
+        Bind(wxEVT_SHOW, &uiFrame::onShowExit, this);
     } else {
-        Unbind(wxEVT_SHOW, &AppFrame::onShowExit, this);
+        Unbind(wxEVT_SHOW, &uiFrame::onShowExit, this);
     }
 }
 
-void AppFrame::onShowExit(wxShowEvent& event) {
+void uiFrame::onShowExit(wxShowEvent& event) {
     // Simulate exit command after window is shown (for testing)
     std::cout << "Window shown, simulating exit..." << std::endl;
     wxCommandEvent exitEvent(wxEVT_MENU, wxID_EXIT);
     GetEventHandler()->AddPendingEvent(exitEvent);
 }
 
-void AppFrame::onCommand(wxCommandEvent& event, UIAction* action) {
+void uiFrame::onCommand(wxCommandEvent& event, UIAction* action) {
     PerformContext ctx(action, 0, nullptr, &event, getEventHandler());
     action->perform(&ctx);
 }
 
-void AppFrame::onExit(PerformContext* ctx) { Close(); }
+void uiFrame::onExit(PerformContext* ctx) { Close(); }
 
-void AppFrame::onStateChange(wxCommandEvent& event, UIState* state) {
+void uiFrame::onStateChange(wxCommandEvent& event, UIState* state) {
     bool checked = event.IsChecked();
     state->value.set(checked);
 }
 
-void AppFrame::onToolbarSize(int size) {
+void uiFrame::onToolbarSize(int size) {
     // m_toolbar->SetToolBarStyle(wxTB_TEXT | wxTB_HORIZONTAL);
 }
 
-void AppFrame::onToolbarShowLabel(bool value) {
+void uiFrame::onToolbarShowLabel(bool value) {
     long style = m_toolbar->GetWindowStyle();
     if (value) {
         style |= wxTB_TEXT;     // Add text

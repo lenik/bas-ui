@@ -5,7 +5,7 @@
 #include "proc/MyStackWalker.hpp"
 #include "ui/arch/UIFragment.hpp"
 #include "wx/app.hpp"
-#include "wx/appframe.hpp"
+#include "wx/uiframe.hpp"
 
 #include <wx/app.h>
 #include <wx/filedlg.h>
@@ -19,9 +19,10 @@
 
 #include <bas/log/uselog.h>
 #include <bas/proc/stackdump.h>
+#include <bas/util/Path.hpp>
 
 enum {
-    ID_ZOOM_IN = AppFrame::ID_APP_HIGHEST + 1,
+    ID_ZOOM_IN = uiFrame::ID_APP_HIGHEST + 1,
     ID_ZOOM_OUT,
     ID_ZOOM_RESET,
 };
@@ -29,68 +30,73 @@ enum {
 class NotepadCore : public UIFragment {
   public:
     explicit NotepadCore() {
+        std::string dir = "streamline-vectors/core/pop/interface-essential";
+        std::string dir2 = "streamline-vectors/core/pop/artificial-intelligence";
+
         int seq = 0;
         action(wxID_NEW, "file", "new", seq++, "&New", "New document")
-            .icon(wxART_NEW)
+            .icon(wxART_NEW, dir, "new-file.svg")
             .performFn([this](PerformContext* ctx) { onNew(ctx); })
             .install();
         action(wxID_OPEN, "file", "open", seq++, "&Open...", "Open file")
-            .icon(wxART_FILE_OPEN)
+            .icon(wxART_FILE_OPEN, dir, "open-book.svg")
             .performFn([this](PerformContext* ctx) { onOpen(ctx); })
             .install();
         action(wxID_SAVE, "file", "save", seq++, "&Save", "Save file")
-            .icon(wxART_FILE_SAVE)
+            .icon(wxART_FILE_SAVE, dir, "file-add-alternate.svg")
             .performFn([this](PerformContext* ctx) { onSave(ctx); })
             .install();
         action(wxID_SAVEAS, "file", "saveas", seq++, "Save &As...", "Save as")
-            .icon(wxART_FILE_SAVE_AS)
+            .icon(wxART_FILE_SAVE_AS, dir, "multiple-file-2.svg")
             .performFn([this](PerformContext* ctx) { onSaveAs(ctx); })
             .install();
 
         seq = 0;
         action(wxID_UNDO, "edit", "undo", seq++, "Undo", "Undo")
-            .icon(wxART_UNDO)
+            .icon(wxART_UNDO, dir,
+                  "line-arrow-reload-horizontal-1."
+                  "svg")
             .performFn([this](PerformContext* ctx) { onUndo(ctx); })
             .install();
         action(wxID_REDO, "edit", "redo", seq++, "Redo", "Redo")
-            .icon(wxART_REDO)
+            .icon(wxART_REDO, dir2, "ai-redo-spark.svg")
             .performFn([this](PerformContext* ctx) { onRedo(ctx); })
             .install();
 
         seq = 1000;
         action(wxID_SELECTALL, "edit", "select_all", seq++, "Select &All", "Select all")
-            .icon(wxART_REPORT_VIEW)
+            .icon(wxART_REPORT_VIEW, dir, "clipboard-check.svg")
             .performFn([this](PerformContext* ctx) { onSelectAll(ctx); })
             .install();
         action(wxID_CLEAR, "edit", "clear", seq++, "Clear", "Clear")
-            .icon(wxART_DELETE)
+            .icon(wxART_DELETE, dir, "clipboard-remove.svg")
             .performFn([this](PerformContext* ctx) { onClear(ctx); })
             .install();
 
         action(wxID_CUT, "edit", "cut", seq++, "Cu&t", "Cut")
-            .icon(wxART_CUT)
+            .icon(wxART_CUT, dir, "cut.svg")
             .performFn([this](PerformContext* ctx) { onCut(ctx); })
             .install();
         action(wxID_COPY, "edit", "copy", seq++, "&Copy", "Copy")
-            .icon(wxART_COPY)
+            .icon(wxART_COPY, dir, "clipboard-add.svg")
             .performFn([this](PerformContext* ctx) { onCopy(ctx); })
             .install();
         action(wxID_PASTE, "edit", "paste", seq++, "&Paste", "Paste")
-            .icon(wxART_PASTE)
+            .icon(wxART_PASTE, dir, "empty-clipboard.svg")
             .performFn([this](PerformContext* ctx) { onPaste(ctx); })
             .install();
 
         seq = 2000;
         action(ID_ZOOM_IN, "view", "zoom_in", seq++, "Zoom &In", "Zoom in")
-            .icon(wxART_PLUS)
+            .icon(wxART_PLUS, dir, "magnifying-glass-circle.svg")
             .performFn([this](PerformContext* ctx) { onZoomIn(ctx); })
             .install();
         action(ID_ZOOM_OUT, "view", "zoom_out", seq++, "Zoom &Out", "Zoom out")
-            .icon(wxART_MINUS)
+            .icon(wxART_MINUS, dir, "magnifying-glass.svg")
             .performFn([this](PerformContext* ctx) { onZoomOut(ctx); })
             .install();
         action(ID_ZOOM_RESET, "view", "zoom_reset", seq++, "Zoom &Reset", "Zoom reset")
-            .icon(wxART_CROSS_MARK)
+            .icon(wxART_CROSS_MARK, dir, "search-visual.svg")
             .performFn([this](PerformContext* ctx) { onZoomReset(ctx); })
             .install();
     }
@@ -197,11 +203,10 @@ class NotepadCore : public UIFragment {
 
 class Notepad : public uiApp {
   public:
-    Notepad() : uiApp() {
-    }
+    Notepad() : uiApp() {}
 
-    bool OnInit() override {
-        AppFrame* frame = new AppFrame("Notepad", {&m_core});
+    bool OnUserInit() override {
+        uiFrame* frame = new uiFrame("Notepad", {&m_core});
         frame->CenterOnScreen();
         frame->Show();
         return true;

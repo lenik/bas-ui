@@ -5,6 +5,14 @@
 #include <wx/app.h>
 #include <wx/frame.h>
 
+bool uiApp::OnInit() {
+    if (!wxApp::OnInit()) {
+        return false;
+    }
+    wxInitAllImageHandlers();
+    return OnUserInit();
+}
+
 void uiApp::OnAssertFailure(const wxChar* file, int line, const wxChar* func, const wxChar* cond,
                             const wxChar* msg) {
     // Print basic assert info to stdout

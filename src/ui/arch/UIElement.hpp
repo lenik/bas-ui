@@ -167,6 +167,12 @@ public:
                 { m_icon = ImageSet(id); return self(); }
             builder_t& icon(const ImageSet& v)
                 { m_icon = v; return self(); }
+            builder_t& icon(wxArtID id, Path path)
+                { m_icon = ImageSet(id, path); return self(); }
+            builder_t& icon(wxArtID id, std::string path)
+                { m_icon = ImageSet(id, Path(path)); return self(); }
+            builder_t& icon(wxArtID id, std::string dir, std::string name)
+                { m_icon = ImageSet(id, Path(dir, name)); return self(); }
         
             builder_t& no_menu()
                 { m_no_menu = true; return self(); }

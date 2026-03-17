@@ -60,7 +60,6 @@ cpp_nowarn = cpp_nowarn + wx_defines
 wx_pch = 'src/wx_pch.h'
 
 cpp_sources = files(
-    './src/proc/wx_assets.cpp',
     './src/ui/arch/BuildViewContext.cpp',
     './src/ui/arch/BuildViewLog.cpp',
     './src/ui/arch/CreateViewContext.cpp',
@@ -73,10 +72,12 @@ cpp_sources = files(
     './src/ui/arch/UIGroup-remove.cpp',
     './src/ui/arch/UIGroup.cpp',
     './src/ui/arch/UIState.cpp',
+    './src/util/mem.cpp',
     './src/wx/app.cpp',
-    './src/wx/appframe.cpp',
+    './src/wx/artprovs.cpp',
     './src/wx/menus.cpp',
     './src/wx/toolbars.cpp',
+    './src/wx/uiframe.cpp',
 )
 
 # Assets will be zipped and linked as a section in the executable

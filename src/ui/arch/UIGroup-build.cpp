@@ -34,7 +34,7 @@ void buildGroupView(UIGroup* group, wxMenuBar* menubar, BuildViewContext* contex
 
     // menu icon not useful
     // if (icon.isSet())
-    //     menu->SetBitmap(icon.loadBitmap(24, 24));
+    //     menu->SetBitmap(icon.loadBitmap(24, 24, wxART_MENU));
 
     std::string menuPath = group->path ? group->path->str() : group->dir();
     context->registerMenu(menuPath, menu);
@@ -58,9 +58,9 @@ void buildGroupView(UIGroup* group, wxMenu* menu, BuildViewContext* context, Bui
     wxMenuItem* item = menu->AppendSubMenu(submenu, label, help);
 
     if (icon.isSet()) {
-        wxBitmap bmp = icon.loadBitmap(iconSize, iconSize);
-        if (bmp.IsOk())
-            item->SetBitmap(bmp);
+        auto bmp = icon.toBitmap(iconSize, iconSize, wxART_MENU);
+        if (bmp && bmp->IsOk())
+            item->SetBitmap(*bmp);
     }
 
     std::string menuPath = group->path ? group->path->str() : group->dir();
@@ -107,12 +107,13 @@ void buildActionView(UIAction* action, wxMenu* menu, BuildViewContext* context,
     ImageSet icon = action->icon.get();
     int iconSize = context->preferredMenuIconSize();
 
-    wxMenuItem* item = menu->Append(action->id, label, help);
+    wxMenuItem* item = new wxMenuItem(menu, wxID_ANY, label, help);
     if (icon.isSet()) {
-        wxBitmap bmp = icon.loadBitmap(iconSize, iconSize);
-        if (bmp.IsOk())
-            item->SetBitmap(bmp);
+        auto bmp = icon.toBitmap(iconSize, iconSize, wxART_MENU);
+        if (bmp && bmp->IsOk())
+            item->SetBitmap(*bmp);
     }
+    menu->Append(item);
 
     auto log = std::make_unique<BuildViewLog>();
     log->kind = BuildViewLog::MENU_ITEM;
@@ -129,7 +130,7 @@ void buildActionView(UIAction* action, wxToolBar* toolbar, BuildViewContext* con
     ImageSet icon = action->icon.get();
     int iconSize = context->preferredToolIconSize();
 
-    wxBitmap bmp = icon.loadBitmap(iconSize, iconSize);
+    wxBitmap bmp = *icon.toBitmap(iconSize, iconSize, wxART_TOOLBAR);
     wxString toolLabel = label;
     toolLabel.Replace("&", "");
 
@@ -197,7 +198,7 @@ void buildStateView(UIState* state, wxToolBar* toolbar, BuildViewContext* contex
 
         wxBitmap bmp;
         if (icon.isSet()) {
-            bmp = icon.loadBitmap(toolIconSize, toolIconSize);
+            bmp = *icon.toBitmap(toolIconSize, toolIconSize, wxART_TOOLBAR);
         } else {
             wxSize size(toolIconSize, toolIconSize);
             bmp = wxArtProvider::GetBitmap(wxART_MISSING_IMAGE, //

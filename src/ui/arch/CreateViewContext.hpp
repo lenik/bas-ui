@@ -3,6 +3,8 @@
 
 #include "BuildViewContext.hpp"
 
+#include <wx/frame.h>
+
 class CreateViewContext : public BuildViewContext {
   public:
     CreateViewContext() = default;

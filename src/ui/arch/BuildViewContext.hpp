@@ -1,9 +1,10 @@
 #ifndef UI_BUILD_VIEW_CONTEXT_H
 #define UI_BUILD_VIEW_CONTEXT_H
 
-#include "wx/gdicmn.h"
-#include "wx/gtk/window.h"
 #include <bas/util/Path.hpp>
+
+#include <wx/gdicmn.h>
+#include <wx/window.h>
 
 #include <string>
 #include <unordered_map>

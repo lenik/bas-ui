@@ -1,5 +1,5 @@
-#ifndef WX_APPFRAME_HPP
-#define WX_APPFRAME_HPP
+#ifndef WX_UIFRAME_HPP
+#define WX_UIFRAME_HPP
 
 #include "ui/arch/BuildViewContext.hpp"
 #include "ui/arch/UIFragment.hpp"
@@ -13,7 +13,7 @@
 
 #include <vector>
 
-class AppFrame : public wxFrame, public UIFragment {
+class uiFrame : public wxFrame, public UIFragment {
   public:
     enum {
         ID_TOOLBAR_SMALL = wxID_HIGHEST + 1000,
@@ -21,7 +21,7 @@ class AppFrame : public wxFrame, public UIFragment {
         ID_APP_HIGHEST = ID_TOOLBAR_SHOW_LABEL,
     };
 
-    AppFrame(const wxString& title,                  //
+    uiFrame(const wxString& title,                  //
              std::vector<UIFragment*> fragments,     //
              wxWindow* parent = nullptr,             //
              wxWindowID id = wxID_ANY,               //
@@ -30,7 +30,7 @@ class AppFrame : public wxFrame, public UIFragment {
              long style = wxDEFAULT_FRAME_STYLE,     //
              const wxString& name = wxFrameNameStr   //
     );
-    virtual ~AppFrame();
+    virtual ~uiFrame();
 
     void exitOnShow(bool exit = true);
 
@@ -61,4 +61,4 @@ class AppFrame : public wxFrame, public UIFragment {
     void onToolbarShowLabel(bool value);
 };
 
-#endif // WX_APPFRAME_HPP
+#endif // WX_UIFRAME_HPP
