@@ -1,0 +1,20 @@
+#!/bin/bash
+
+while read svg; do
+    
+    #dir="${svg%/*}"
+    #pngdir=${dir/\/svg\//\/png\/}
+
+    #svg2assets -s 16,24,32,48 -o "$pngdir" "$svg"
+    missing=0
+    for size in 16 24 32 48; do
+        png=${svg%.svg}-${size}x${size}.png
+        if [ ! -f "$png" ]; then
+            (( missing++ ))
+        fi
+    done
+    if [ $missing != 0 ]; then
+        svg2assets -s 16,24,32,48 "$svg"
+    fi
+
+done < <(find -name '*.svg')
