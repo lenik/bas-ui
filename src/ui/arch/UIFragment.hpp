@@ -21,7 +21,7 @@ class UIFragment : public IScriptSymbols {
     virtual ~UIFragment() {}
 
     // override this to load elements delayed after object construction
-    virtual std::vector<UIElement*> loadElements() { return m_elements; }
+    // virtual std::vector<UIElement*> loadElements() { return m_elements; }
 
     virtual wxEvtHandler* getEventHandler() = 0;
 
@@ -29,8 +29,12 @@ class UIFragment : public IScriptSymbols {
 
     // UI lifecycle
 
-    virtual void createView(CreateViewContext* ctx) {}
-    virtual void destroyView(CreateViewContext* ctx) {}
+    // virtual void create() = 0;
+    virtual std::vector<UIElement*> elements() { return m_elements; }
+    // virtual void destroy() {}
+    
+    virtual void createFragmentView(CreateViewContext* ctx) {}
+    virtual void destroyFragmentView(CreateViewContext* ctx) {}
 
     // scripting
     std::vector<std::string> findVars(std::string_view prefix) override;

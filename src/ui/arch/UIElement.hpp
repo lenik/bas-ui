@@ -12,6 +12,8 @@
 #include <string>
 #include <vector>
 
+class UIGroup;
+
 /**
 * Base for all UI tree nodes. Elements are organized in a tree by path (Path, always absolute).
 * The main UI builds the tree from a flat list via UIGroup::buildTree().
@@ -21,7 +23,7 @@ public:
     UIElement() = default;
     UIElement(int id_
             , const std::string& dir_
-            , const std::string& name_
+            , const std::string& tail_
             , int priority_ = 0
             , const std::string& label_ = ""
             , const std::string& description_ = ""
@@ -31,7 +33,7 @@ public:
             , bool enabled_ = true
             , bool checked_ = false
             )
-            : path(Path(dir_, name_))
+            : path(Path(dir_, tail_))
             , id(id_)
             , priority(priority_)
             , label(label_)
@@ -95,10 +97,10 @@ public:
     std::string str() const;
 
 public:
-    void attach(UIElement* parent);
+    void attach(UIGroup* parent);
     void detach();
 
-    UIElement* getParent() const { return parent; }
+    UIGroup* getParent() const { return parent; }
     UIElement* getChild(std::string_view name) const {
         for (UIElement* child : children) {
             if (child->name() == name)
@@ -111,7 +113,7 @@ public:
     
 protected:
     // runtime wired
-    UIElement* parent{nullptr};
+    UIGroup* parent{nullptr};
     std::vector<UIElement*> children;
 
 public:
@@ -171,8 +173,8 @@ public:
                 { m_icon = ImageSet(id, path); return self(); }
             builder_t& icon(wxArtID id, std::string path)
                 { m_icon = ImageSet(id, Path(path)); return self(); }
-            builder_t& icon(wxArtID id, std::string dir, std::string name)
-                { m_icon = ImageSet(id, Path(dir, name)); return self(); }
+            builder_t& icon(wxArtID id, std::string dir, std::string tail)
+                { m_icon = ImageSet(id, Path(dir, tail)); return self(); }
         
             builder_t& no_menu()
                 { m_no_menu = true; return self(); }

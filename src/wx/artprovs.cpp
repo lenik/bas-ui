@@ -11,13 +11,13 @@
 namespace wxArtProviders {
 
 static const std::map<std::string, std::string> alternativeArtIdMap = {
-    {"wxART_REFRESH", "interface-essential/line-arrow-reload-horizontal-1.png"},
-    {"wxART_FULL_SCREEN", "interface-essential/line-arrow-expand-window-1.png"},
-    {"wxART_REPORT_VIEW", "interface-essential/dashboard-3.png"},
-    {"wxART_HELP_SETTINGS", "interface-essential/cog-1.png"},
-    {"wxART_USER_MANAGEMENT", "interface-essential/user-multiple-group.png"},
-    {"wxART_ACL_MANAGEMENT", "interface-essential/shield-check.png"},
-    {"wxART_STORAGE_ANALYSIS", "computer-devices/hard-disk.png"},
+    {"wxART_REFRESH", "interface-essential/line-arrow-reload-horizontal-1.svg"},
+    {"wxART_FULL_SCREEN", "interface-essential/line-arrow-expand-window-1.svg"},
+    {"wxART_REPORT_VIEW", "interface-essential/dashboard-3.svg"},
+    {"wxART_HELP_SETTINGS", "interface-essential/cog-1.svg"},
+    {"wxART_USER_MANAGEMENT", "interface-essential/user-multiple-group.svg"},
+    {"wxART_ACL_MANAGEMENT", "interface-essential/shield-check.svg"},
+    {"wxART_STORAGE_ANALYSIS", "computer-devices/hard-disk.svg"},
 };
 
 /// Returns asset path for a wxArtID when using embedded fallback (wx 3.2+).

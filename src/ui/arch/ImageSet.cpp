@@ -1,6 +1,7 @@
 #include "ImageSet.hpp"
 
 #include "../../wx/artprovs.hpp"
+#include "../../wx/images.hpp"
 
 #include <bas/log/uselog.h>
 #include <bas/proc/Assets.hpp>
@@ -8,10 +9,12 @@
 
 #include <wx/artprov.h>
 #include <wx/bitmap.h>
+#include <wx/image.h>
 #include <wx/mstream.h>
 #include <wx/string.h>
 
 #include <algorithm>
+#include <cstdlib>
 #include <optional>
 
 auto ident = [](const std::string& path) { return path; };
@@ -25,14 +28,15 @@ const BitmapMode BitmapMode::DEFAULT = BitmapMode{
     .no_asset = false,
     .assets_preferred = true,
     .exactly = false,
+    .include_raw = true,
     .translate = nullptr, // ident,
     .fallback = blank_bitmap,
 };
 
 const ImageSet ImageSet::EMPTY = ImageSet(wxString(), std::nullopt);
 
-ImageSet::ImageSet(wxArtID artId, std::string dir, std::string name, std::string text)
-    : m_artId(artId), m_asset(Path(dir, name)) {
+ImageSet::ImageSet(wxArtID artId, std::string dir, std::string tail, std::string text)
+    : m_artId(artId), m_asset(Path(dir, tail)) {
     if (text.empty())
         if (!artId.empty())
             text = artId.ToStdString();
@@ -42,7 +46,7 @@ ImageSet::ImageSet(wxArtID artId, std::string dir, std::string name, std::string
     init();
 }
 
-ImageSet::ImageSet(std::optional<Path> asset, std::string text) : m_asset(asset) {
+ImageSet::ImageSet(std::optional<Path> asset, std::string text) : m_artId(), m_asset(asset) {
     if (text.empty())
         if (asset)
             text = asset->name();
@@ -121,7 +125,7 @@ ImageSet& ImageSet::detect(Volume* volume) {
         if (width <= 0 || height <= 0)
             continue;
 
-        logdebug_fmt("found scale %dx%d for %s", width, height, _path.str().c_str());
+        // logerror_fmt("found scale %dx%d for %s", width, height, _path.str().c_str());
         this->scale(width, height, _path);
     }
     return *this;
@@ -158,8 +162,8 @@ static int size_diff(int expected_w, int expected_h, int actual_w, int actual_h)
     return dw * dw + dh * dh;
 }
 
-std::optional<ScaledAsset> ImageSet::findBestMatch(int width, int height,
-                                                   const wxArtClient& client) const {
+std::optional<ScaledAsset> ImageSet::findBestMatch(int width, int height, const wxArtClient& client,
+                                                   bool include_raw) const {
     std::optional<ScaledAsset> result = std::nullopt;
     int best_diff = -1;
     if (m_asset) {
@@ -199,7 +203,8 @@ std::optional<ScaledAsset> ImageSet::findExactly(int width, int height,
 }
 
 std::optional<std::string> ImageSet::findBestMatchAssetPath(int width, int height,
-                                                            const wxArtClient& client) const {
+                                                            const wxArtClient& client,
+                                                            bool include_raw) const {
     std::optional<ScaledAsset> sa = findBestMatch(width, height);
     if (sa) {
         return sa->path.str();
@@ -226,7 +231,7 @@ std::optional<wxBitmap> ImageSet::toBitmap(int width, int height, const wxArtCli
     bool stockart_preferred = !assets_preferred;
 
     if (use_stockart && stockart_preferred) {
-        std::optional<wxBitmap> bmp = bitmapFromArt(width, height, client, mode);
+        std::optional<wxBitmap> bmp = _bitmapFromArt(width, height, client, mode);
         if (bmp && bmp->IsOk())
             return bmp;
     }
@@ -235,65 +240,32 @@ std::optional<wxBitmap> ImageSet::toBitmap(int width, int height, const wxArtCli
         if (!use_asset)
             break;
 
-        std::optional<std::string> path = match_best ? findBestMatchAssetPath(width, height, client)
-                                                     : findExactlyAssetPath(width, height, client);
-        if (!path) {
-            // logerror_fmt("No asset: %s", imageSet.name);
+        std::optional<std::string> _path =
+            match_best ? findBestMatchAssetPath(width, height, client, mode.include_raw)
+                       : findExactlyAssetPath(width, height, client);
+        if (!_path) {
+            logerror_fmt("No matched asset path for %s - %dx%d",
+                         m_asset ? m_asset->str().c_str() : "(none)", width, height);
             break;
         }
 
-        std::vector<uint8_t> data = assets_get_data(*path);
-        if (data.empty()) {
-            logerror_fmt("No asset: %s", path->c_str());
-            // assets_dump_tree();
-            break;
-        }
+        std::string path = *_path;
 
-        wxMemoryInputStream stream(data.data(), data.size());
+        logdebug_fmt("found asset %s %dx%d at path: %s", //
+                     match_best ? "best match" : "exactly", width, height, path.c_str());
 
-        wxImage image;
-        wxLogBuffer logBuf;
-        wxLog* oldLog = wxLog::SetActiveTarget(&logBuf);
-        bool loadStatus = image.LoadFile(stream);
-        wxLog::SetActiveTarget(oldLog); // Restore original logger
+        std::optional<wxBitmap> bmp = imageLoadAsset(path, width, height);
 
-        if (!loadStatus) {
-            // This will contain the specific reason (e.g., "no handler for this type")
-            wxString reason = logBuf.GetBuffer();
-            logerror_fmt("Failed to load bitmap from asset: %s, reason %s", //
-                         path->c_str(),                                     //
-                         reason.ToStdString().c_str());
-
-            // dump header of data
-            // loginfo_fmt("file %s size %d", path.data(), data.size());
-            // size_t hdrsize = std::min((size_t)1024, data.size());
-            // hexdump(data, hdrsize);
-            break;
-        }
-
-        if (!image.IsOk()) {
-            logerror_fmt("error loaded bitmap from asset: %s, use empty image", path->c_str());
-            break;
-        }
-
-        if ((width > 0 && height > 0) &&
-            (image.GetWidth() != width || image.GetHeight() != height)) {
-            loglog_fmt("Bitmap %s scaled from %dx%d to %dx%d", path->c_str(), //
-                       image.GetWidth(), image.GetHeight(), width, height);
-            image = image.Scale(width, height, wxIMAGE_QUALITY_BILINEAR);
-        }
-
-        wxBitmap bmp(image);
-        if (!bmp.IsOk()) {
+        if (!bmp || !bmp->IsOk()) {
             logwarn_fmt("Failed to create bitmap from image: %s, fallback to empty image",
-                        path->c_str());
+                        path.c_str());
             break;
         }
         return bmp;
     } while (false);
 
     if (use_stockart && !stockart_preferred) {
-        std::optional<wxBitmap> bmp = bitmapFromArt(width, height, client, mode);
+        std::optional<wxBitmap> bmp = _bitmapFromArt(width, height, client, mode);
         if (bmp && bmp->IsOk())
             return bmp;
     }
@@ -306,8 +278,8 @@ std::optional<wxBitmap> ImageSet::toBitmap(int width, int height, const wxArtCli
     return std::nullopt;
 }
 
-std::optional<wxBitmap> ImageSet::bitmapFromArt(int width, int height, const wxArtClient& client,
-                                                const BitmapMode& mode) const {
+std::optional<wxBitmap> ImageSet::_bitmapFromArt(int width, int height, const wxArtClient& client,
+                                                 const BitmapMode& mode) const {
     if (m_artId.empty()) {
         if (mode.fallback) {
             wxBitmap bmp = mode.fallback(width, height, client);
@@ -339,6 +311,7 @@ std::optional<wxBitmap> ImageSet::bitmapFromArt(int width, int height, const wxA
         .no_asset = false,
         .assets_preferred = mode.assets_preferred,
         .exactly = false,
+        .include_raw = mode.include_raw,
         .translate = mode.translate,
         .fallback = mode.fallback,
     };
@@ -362,9 +335,9 @@ wxBitmap ImageSet::toBitmap1(int width, int height, const wxArtClient& client,
     return wxBitmap(width, height, 24);
 }
 
-wxBitmap ImageSet::bitmapFromArt1(int width, int height, const wxArtClient& client,
-                                  const BitmapMode& mode) const {
-    std::optional<wxBitmap> bmp = bitmapFromArt(width, height, client, mode);
+wxBitmap ImageSet::_bitmapFromArt1(int width, int height, const wxArtClient& client,
+                                   const BitmapMode& mode) const {
+    std::optional<wxBitmap> bmp = _bitmapFromArt(width, height, client, mode);
     if (bmp && bmp->IsOk())
         return *bmp;
     return wxBitmap(width, height, 24);

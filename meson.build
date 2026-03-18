@@ -1,6 +1,6 @@
 project(
     'bas-ui',
-    'cpp',
+    ['c', 'cpp'],
     version: '1.0.0',
     default_options: [
         #'warning_level=0',
@@ -17,6 +17,8 @@ cpp = meson.get_compiler('cpp')
 # libbas
 bas_c_dep = dependency('bas-c', required: true)
 bas_cpp_dep = dependency('bas-cpp', required: true)
+
+nanosvg_dep = dependency('nanosvg', required: false)
 
 # wxWidgets dependencies (must use a single GTK toolkit to avoid "GTK+ 2.x and GTK+ 3 in the same process" error)
 wx_dep = dependency('wxwidgets', method: 'config-tool', required: true)
@@ -75,6 +77,7 @@ cpp_sources = files(
     './src/util/mem.cpp',
     './src/wx/app.cpp',
     './src/wx/artprovs.cpp',
+    './src/wx/images.cpp',
     './src/wx/menus.cpp',
     './src/wx/toolbars.cpp',
     './src/wx/uiframe.cpp',
@@ -121,6 +124,7 @@ assets_o = custom_target(
 exe_deps = [
     bas_c_dep,
     bas_cpp_dep,
+    nanosvg_dep,
     wx_dep,
 ]
 

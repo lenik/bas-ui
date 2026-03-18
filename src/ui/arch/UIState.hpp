@@ -6,6 +6,7 @@
 #include <bas/script/property_support.hpp>
 
 #include <functional>
+#include <initializer_list>
 #include <string>
 #include <variant>
 
@@ -44,7 +45,7 @@ public:
     using ValueDescriptorFn = std::function<UIStateValueDescriptor(int value)>;
 
     UIStateType stateType{UIStateType::BOOL};
-    int enumValueCount{0};
+    std::vector<int> enumValues;
     ValueDescriptorFn valueDescriptorFn;
 
     observable<UIStateVariant> value;
@@ -64,7 +65,8 @@ public:
     bool isState() const override { return true; }
     
     UIStateType getType() const { return stateType; }
-    int getEnumCount() const { return enumValueCount; }
+    const std::vector<int>& getEnumValues() const { return enumValues; }
+    int getEnumCount() const { return enumValues.size(); }
 
     /** For ENUM: return label, icon, helpDoc for the given value. */
     UIStateValueDescriptor getValueDescriptor(int value) const;
@@ -96,7 +98,9 @@ public:
                 ) {}
 
             builder_t& stateType(UIStateType t)
-                { m_stateType = t; return this->self(); }      
+                { m_stateType = t; return this->self(); }
+            builder_t& enumValues(std::initializer_list<int> values)
+                { m_enumValues = values; return this->self(); }
             builder_t& valueDescriptorFn(UIState::ValueDescriptorFn fn)
                 { m_valueDescriptorFn = fn; return this->self(); }
             builder_t& initValue(UIStateVariant v)
@@ -109,6 +113,7 @@ public:
             void applyTo(UIState* el) const {
                 UIElement::_Builder<builder_t, T>::applyTo(el);
                 el->stateType = m_stateType;
+                el->enumValues = m_enumValues;
                 el->valueDescriptorFn = m_valueDescriptorFn;
                 if (m_initValue) {
                     el->value.set(*m_initValue);
@@ -129,6 +134,7 @@ public:
             
         private:
             UIStateType m_stateType{UIStateType::BOOL};
+            std::vector<int> m_enumValues;
             UIState::ValueDescriptorFn m_valueDescriptorFn{nullptr};
             observable<UIStateVariant> ** m_valueRef;
             std::optional<UIStateVariant> m_initValue;

@@ -149,7 +149,9 @@ void buildStateView(UIState* state, wxMenu* menu, BuildViewContext* context, Bui
     wxString label(state->label.get().empty() ? state->name() : state->label.get());
     wxString help(state->description.get());
 
-    if (state->getType() == UIStateType::BOOL) {
+    UIStateType type = state->getType();
+    switch (type) {
+    case UIStateType::BOOL: {
         bool checked = false;
         if (auto* p = std::get_if<bool>(&state->value.get()))
             checked = *p;
@@ -162,17 +164,26 @@ void buildStateView(UIState* state, wxMenu* menu, BuildViewContext* context, Bui
         log->menu = menu;
         log->menuItem = item;
         logs->push_back(std::move(log));
+        break;
     }
 
-    else if (state->getType() == UIStateType::ENUM) {
-        const int enumCount = state->getEnumCount();
+    case UIStateType::ENUM: {
+        const std::vector<int> enumValues = state->getEnumValues();
+
+        int currentValue = 0;
+        if (auto* p = std::get_if<int>(&state->value.get()))
+            currentValue = *p;
 
         wxMenu* submenu = new wxMenu();
-        for (int v = 0; v < enumCount; ++v) {
+        for (int v : enumValues) {
             UIStateValueDescriptor d = state->getValueDescriptor(v);
             if (d.label.empty())
-                break;
-            submenu->AppendRadioItem(wxID_ANY, d.label, d.description);
+                continue;
+            int itemId = state->id * 1000 + v;
+            submenu->AppendRadioItem(itemId, d.label, d.description);
+            if (v == currentValue) {
+                submenu->Check(itemId, true);
+            }
         }
         wxMenuItem* item = menu->Append(state->id, label, submenu, help);
         auto log = std::make_unique<BuildViewLog>();
@@ -180,6 +191,12 @@ void buildStateView(UIState* state, wxMenu* menu, BuildViewContext* context, Bui
         log->menu = menu;
         log->menuItem = item;
         logs->push_back(std::move(log));
+        break;
+    }
+
+    default:
+        // not supported yet.
+        break;
     }
 }
 
@@ -191,7 +208,9 @@ void buildStateView(UIState* state, wxToolBar* toolbar, BuildViewContext* contex
     ImageSet icon = state->icon.get();
     int toolIconSize = context->preferredToolIconSize();
 
-    if (state->getType() == UIStateType::BOOL) {
+    UIStateType type = state->getType();
+    switch (type) {
+    case UIStateType::BOOL: {
         bool checked = false;
         if (auto* p = std::get_if<bool>(&state->value.get()))
             checked = *p;
@@ -211,33 +230,51 @@ void buildStateView(UIState* state, wxToolBar* toolbar, BuildViewContext* contex
         log->toolbar = toolbar;
         log->toolId = state->id;
         logs->push_back(std::move(log));
+        break;
     }
 
-    else if (state->getType() == UIStateType::ENUM) {
-        const int enumCount = state->getEnumCount();
-
-        for (int v = 0; v < enumCount; ++v) {
+    case UIStateType::ENUM: {
+        const std::vector<int> enumValues = state->getEnumValues();
+        for (int v : enumValues) {
             int toolId = state->id * 1000 + v;
             UIStateValueDescriptor d = state->getValueDescriptor(v);
             if (d.label.empty())
                 break;
-            toolbar->AddTool(toolId + v, d.label, wxBitmap(), d.description, wxITEM_RADIO);
+            toolbar->AddTool(toolId, d.label, wxBitmap(), d.description, wxITEM_RADIO);
             auto log = std::make_unique<BuildViewLog>();
             log->kind = BuildViewLog::TOOLBAR_TOOL;
             log->toolbar = toolbar;
             log->toolId = toolId;
             logs->push_back(std::move(log));
         }
+        break;
+    }
+
+    default:
+        // not supported yet.
+        break;
     }
 }
 
-void UIGroup::buildView(BuildViewContext* context, BuildViewLogs* logs) {
+void UIGroup::buildView(BuildViewContext* context, BuildViewLogs* logs, //
+                        std::optional<std::unordered_set<UIElement*>> white_set) {
     int menuIconSize = context->preferredMenuIconSize();
     int toolIconSize = context->preferredToolIconSize();
 
     int klast = -1;
 
     for (UIElement* child : children) {
+        if (white_set && white_set->find(child) == white_set->end()) {
+            // ignore, but recursive into the group
+            if (child->isGroup()) {
+                UIGroup* gchild = dynamic_cast<UIGroup*>(child);
+                if (!gchild)
+                    continue;
+                gchild->buildView(context, logs, white_set);
+            }
+            continue;
+        }
+
         if (!child->visible.get())
             continue;
         std::string dir = child->dir();

@@ -59,6 +59,7 @@ struct BitmapMode {
     bool no_asset = false;
     bool assets_preferred = false;
     bool exactly = false;
+    bool include_raw = true;
 
     translate_fn translate = nullptr;
     fallback_fn fallback = nullptr;
@@ -76,7 +77,7 @@ class ImageSet {
 
     ImageSet(wxArtID artId = wxString(), std::optional<Path> asset = std::nullopt,
              std::string text = "");
-    ImageSet(wxArtID artId, std::string dir, std::string name, std::string text = "");
+    ImageSet(wxArtID artId, std::string dir, std::string tail, std::string text = "");
     explicit ImageSet(std::optional<Path> asset, std::string text = "");
 
     ImageSet& detect(Volume* volume = nullptr);
@@ -95,14 +96,16 @@ class ImageSet {
     std::optional<Path> getAsset() const { return m_asset; }
 
     std::optional<ScaledAsset> findBestMatch(int width, int height,
-                                             const wxArtClient& client = wxART_FRAME_ICON) const;
+                                             const wxArtClient& client = wxART_FRAME_ICON,
+                                             bool include_raw=true) const;
 
     std::optional<ScaledAsset> findExactly(int width, int height,
                                            const wxArtClient& client = wxART_FRAME_ICON) const;
 
     std::optional<std::string>
     findBestMatchAssetPath(int width, int height,
-                           const wxArtClient& client = wxART_FRAME_ICON) const;
+                           const wxArtClient& client = wxART_FRAME_ICON,
+                           bool include_raw=true) const;
 
     std::optional<std::string>
     findExactlyAssetPath(int width, int height, const wxArtClient& client = wxART_FRAME_ICON) const;
@@ -111,14 +114,14 @@ class ImageSet {
                                      const wxArtClient& client = wxART_FRAME_ICON,
                                      const BitmapMode& mode = BitmapMode::DEFAULT) const;
 
-    std::optional<wxBitmap> bitmapFromArt(int width, int height,
+    std::optional<wxBitmap> _bitmapFromArt(int width, int height,
                                           const wxArtClient& client = wxART_FRAME_ICON,
                                           const BitmapMode& mode = BitmapMode::DEFAULT) const;
 
     wxBitmap toBitmap1(int width, int height, const wxArtClient& client = wxART_FRAME_ICON,
                        const BitmapMode& mode = BitmapMode::DEFAULT) const;
 
-    wxBitmap bitmapFromArt1(int width, int height, const wxArtClient& client = wxART_FRAME_ICON,
+    wxBitmap _bitmapFromArt1(int width, int height, const wxArtClient& client = wxART_FRAME_ICON,
                             const BitmapMode& mode = BitmapMode::DEFAULT) const;
 
     void dump(std::ostream& os) const;
@@ -127,8 +130,8 @@ class ImageSet {
     std::string m_text;
     wxArtID m_artId;
     std::optional<Path> m_asset;
-    int m_asset_width;
-    int m_asset_height;
+    int m_asset_width{0};
+    int m_asset_height{0};
     std::map<std::pair<int, int>, Path> m_scaledAssets;
 
     void init();

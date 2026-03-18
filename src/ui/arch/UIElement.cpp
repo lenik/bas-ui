@@ -76,7 +76,7 @@ std::string UIElement::str() const {
     return line;
 }
     
-void UIElement::attach(UIElement* parent) {
+void UIElement::attach(UIGroup* parent) {
     if (this->parent != parent) {
         detach();
         this->parent = parent;

@@ -91,16 +91,29 @@ void removeState(UIState* state, wxToolBar* toolbar) {
     }
 
     else if (state->getType() == UIStateType::ENUM) {
-        const int enumCount = state->getEnumCount();
-        for (int v = 0; v < enumCount; ++v) {
+        const std::vector<int> enumValues = state->getEnumValues();
+        for (int v : enumValues) {
             int toolId = state->id * 1000 + v;
             toolbar->RemoveTool(toolId);
         }
     }
 }
 
-void UIGroup::removeBuild(BuildViewContext* context) {
+void UIGroup::removeBuild(BuildViewContext* context, //
+                          std::optional<std::unordered_set<UIElement*>> white_set) {
     for (UIElement* child : children) {
+
+        if (white_set && white_set->find(child) == white_set->end()) {
+            // ignore, but recursive into the group
+            if (child->isGroup()) {
+                UIGroup* gchild = dynamic_cast<UIGroup*>(child);
+                if (!gchild)
+                    continue;
+                gchild->removeBuild(context, white_set);
+            }
+            continue;
+        }
+
         if (!child->visible.get())
             continue;
         std::string dir = child->dir();

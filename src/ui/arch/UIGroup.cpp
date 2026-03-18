@@ -69,7 +69,7 @@ UIGroup* UIGroup::resolveGroup(std::string_view path) {
     return gchild->resolveGroup(tail);
 }
 
-void UIGroup::buildTree(std::vector<UIElement*>& elements) {
+void UIGroup::addToTree(std::vector<UIElement*>& elements) {
     for (UIElement* el : elements) {
         std::optional<Path> path = el->path;
         if (!path)
@@ -82,6 +82,29 @@ void UIGroup::buildTree(std::vector<UIElement*>& elements) {
         el->attach(parent);
         logdebug_fmt("resolved path %s dir %s attached to %s\n", path->str().c_str(), dir.c_str(),
                      parent->str().c_str());
+    }
+}
+
+void UIGroup::removeFromTree(std::vector<UIElement*>& elements) {
+    for (UIElement* el : elements) {
+        std::optional<Path> path = el->path;
+        if (!path)
+            continue;
+        el->detach();
+        
+        // remove internal parent groups
+        std::string dir = path->dir();
+        UIGroup* parent = resolveGroup(dir);
+        assert(parent);
+        while (parent && parent != this) {
+            if (!parent->internal)
+                break;
+            if (parent->getChildCount() == 0) {
+                parent->detach();
+                delete parent;
+            }
+            parent = parent->getParent();
+        }
     }
 }
 

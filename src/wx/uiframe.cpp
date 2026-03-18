@@ -3,29 +3,34 @@
  * Menubar and toolbar are built from a UIFragment and BuildViewContext.
  */
 #include "uiframe.hpp"
+#include "ui/arch/BuildViewContext.hpp"
 #include "ui/arch/CreateViewContext.hpp"
 
 #include <bas/log/uselog.h>
 
-uiFrame::uiFrame(const wxString& title,              //
-                 std::vector<UIFragment*> fragments, //
-                 wxWindow* parent,                   //
-                 wxWindowID id,                      //
-                 const wxPoint& pos,                 //
-                 const wxSize& size,                 //
-                 long style,                         //
-                 const wxString& name                //
+uiFrame::uiFrame(const wxString& title,                             //
+                 std::optional<std::vector<UIFragment*>> fragments, //
+                 wxWindow* parent,                                  //
+                 wxWindowID id,                                     //
+                 const wxPoint& pos,                                //
+                 const wxSize& size,                                //
+                 long style,                                        //
+                 const wxString& name                               //
                  )
     : wxFrame(parent, id, title, pos, size, style, name) //
 {
+    create();
+
     m_fragments.push_back(this);
-    m_fragments.insert(m_fragments.end(), fragments.begin(), fragments.end());
-
-    CreateViewContext createViewContext(wxID_ANY, this, "");
-    for (auto& fragment : m_fragments) {
-        fragment->createView(&createViewContext);
+    if (fragments) {
+        m_fragments.insert(m_fragments.end(), fragments->begin(), fragments->end());
+        createView();
     }
+}
 
+uiFrame::~uiFrame() {}
+
+void uiFrame::create() {
     std::string dir = "streamline-vectors/core/pop/interface-essential";
     std::string dir2 = "streamline-vectors/core/pop/map-travel";
 
@@ -65,31 +70,41 @@ uiFrame::uiFrame(const wxString& title,              //
             onToolbarShowLabel(showLabel);
         })
         .install();
+}
 
-    BuildViewContext buildViewContext;
+void uiFrame::addFragment(UIFragment* fragment) { //
+    m_fragments.push_back(fragment);
+}
 
-    m_menubar = new wxMenuBar();
-    m_toolbar = CreateToolBar(wxTB_FLAT);
+void uiFrame::removeFragment(UIFragment* fragment) {
+    m_fragments.erase(std::remove(m_fragments.begin(), m_fragments.end(), fragment),
+                      m_fragments.end());
+}
 
-    buildViewContext.registerMenubar("", m_menubar);
-    buildViewContext.registerToolbar("", m_toolbar);
-
-    std::vector<UIElement*> elements;
+void uiFrame::createView() {
+    CreateViewContext ctx(wxID_ANY, this, "");
     for (auto& fragment : m_fragments) {
-        auto part = fragment->loadElements();
-        elements.insert(elements.end(), part.begin(), part.end());
+        fragment->createFragmentView(&ctx);
+    }
+
+    m_buildViewContext.registerMenubar("", m_menubar);
+    m_buildViewContext.registerToolbar("", m_toolbar);
+
+    std::vector<UIElement*> all;
+    for (auto& fragment : m_fragments) {
+        auto part = fragment->elements();
+        all.insert(all.end(), part.begin(), part.end());
     }
 
     m_root = UIGroup(0, "", "", 0, "<root>", "", "", //
                      ImageSet(), true, true);
-    m_root.buildTree(elements);
-    m_root.buildView(&buildViewContext, &m_buildViewLogs);
+    m_root.addToTree(all);
+    m_root.buildView(&m_buildViewContext, &m_buildViewLogs);
 
-    SetMenuBar(m_menubar);
     m_toolbar->Realize();
 
     // Connect menu and toolbar events for each action/state ID where supported
-    for (auto& el : elements) {
+    for (auto& el : all) {
         if (el->isAction()) {
             UIAction* action = dynamic_cast<UIAction*>(el);
             Bind(
@@ -107,23 +122,83 @@ uiFrame::uiFrame(const wxString& title,              //
         }
         if (el->isState()) {
             UIState* state = dynamic_cast<UIState*>(el);
-            Bind(
-                wxEVT_MENU,
-                [this, state](wxCommandEvent& event) { //
-                    onStateChange(event, state);
-                },
-                el->id);
-            Bind(
-                wxEVT_TOOL,
-                [this, state](wxCommandEvent& event) { //
-                    onStateChange(event, state);
-                },
-                el->id);
+            UIStateType type = state->getType();
+            switch (type) {
+            case UIStateType::BOOL:
+                Bind(
+                    wxEVT_MENU,
+                    [this, state](wxCommandEvent& event) { //
+                        onBoolStateChange(event, state);
+                    },
+                    el->id);
+                Bind(
+                    wxEVT_TOOL,
+                    [this, state](wxCommandEvent& event) { //
+                        onBoolStateChange(event, state);
+                    },
+                    el->id);
+                break;
+
+            case UIStateType::ENUM: {
+                const std::vector<int> enumValues = state->getEnumValues();
+                for (int v : enumValues) {
+                    int itemId = state->id * 1000 + v;
+                    Bind(
+                        wxEVT_MENU,
+                        [this, state](wxCommandEvent& event) { //
+                            onEnumStateChange(event, state);
+                        },
+                        itemId);
+                    Bind(
+                        wxEVT_TOOL,
+                        [this, state](wxCommandEvent& event) { //
+                            onEnumStateChange(event, state);
+                        },
+                        itemId);
+                }
+                break;
+            }
+
+            default:
+                // not supported yet.
+                break;
+            }
         }
     }
 }
 
-uiFrame::~uiFrame() {}
+void uiFrame::createFragmentView(CreateViewContext* ctx) {
+    m_menubar = new wxMenuBar();
+    SetMenuBar(m_menubar);
+
+    m_toolbar = CreateToolBar(wxTB_FLAT);
+}
+
+void uiFrame::addFragmentView(UIFragment* fragment, CreateViewContext* ctx) {
+    addFragment(fragment);
+
+    fragment->createFragmentView(ctx);
+
+    std::vector<UIElement*> elements = fragment->elements();
+    m_root.addToTree(elements);
+
+    std::unordered_set<UIElement*> white_set{elements.begin(), elements.end()};
+    m_root.buildView(&m_buildViewContext, &m_buildViewLogs, //
+                     white_set);
+}
+
+void uiFrame::removeFragmentView(UIFragment* fragment, CreateViewContext* ctx) {
+    std::vector<UIElement*> elements = fragment->elements();
+
+    std::unordered_set<UIElement*> white_set{elements.begin(), elements.end()};
+    m_root.removeBuild(&m_buildViewContext, white_set);
+
+    m_root.removeFromTree(elements);
+
+    fragment->destroyFragmentView(ctx);
+
+    removeFragment(fragment);
+}
 
 void uiFrame::exitOnShow(bool exit) {
     m_exitOnShow = exit;
@@ -148,9 +223,14 @@ void uiFrame::onCommand(wxCommandEvent& event, UIAction* action) {
 
 void uiFrame::onExit(PerformContext* ctx) { Close(); }
 
-void uiFrame::onStateChange(wxCommandEvent& event, UIState* state) {
+void uiFrame::onBoolStateChange(wxCommandEvent& event, UIState* state) {
     bool checked = event.IsChecked();
     state->value.set(checked);
+}
+
+void uiFrame::onEnumStateChange(wxCommandEvent& event, UIState* state) {
+    int value = event.GetId() % 1000; // radio id = state->id*1000 + v
+    state->value.set(value);
 }
 
 void uiFrame::onToolbarSize(int size) {

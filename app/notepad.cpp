@@ -101,7 +101,7 @@ class NotepadCore : public UIFragment {
             .install();
     }
 
-    void createView(CreateViewContext* ctx) override {
+    void createFragmentView(CreateViewContext* ctx) override {
         wxWindow* parent = ctx->getParent();
         const wxPoint& pos = ctx->getPos();
         const wxSize& size = ctx->getSize();
@@ -206,7 +206,9 @@ class Notepad : public uiApp {
     Notepad() : uiApp() {}
 
     bool OnUserInit() override {
-        uiFrame* frame = new uiFrame("Notepad", {&m_core});
+        uiFrame* frame = new uiFrame("Notepad");
+        frame->addFragment(&m_core);
+        frame->createView();
         frame->CenterOnScreen();
         frame->Show();
         return true;

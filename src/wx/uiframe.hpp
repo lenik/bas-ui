@@ -21,16 +21,25 @@ class uiFrame : public wxFrame, public UIFragment {
         ID_APP_HIGHEST = ID_TOOLBAR_SHOW_LABEL,
     };
 
-    uiFrame(const wxString& title,                  //
-             std::vector<UIFragment*> fragments,     //
-             wxWindow* parent = nullptr,             //
-             wxWindowID id = wxID_ANY,               //
-             const wxPoint& pos = wxDefaultPosition, //
-             const wxSize& size = wxSize(800, 600),  //
-             long style = wxDEFAULT_FRAME_STYLE,     //
-             const wxString& name = wxFrameNameStr   //
+    uiFrame(const wxString& title,                                            //
+            std::optional<std::vector<UIFragment*>> fragments = std::nullopt, //
+            wxWindow* parent = nullptr,                                       //
+            wxWindowID id = wxID_ANY,                                         //
+            const wxPoint& pos = wxDefaultPosition,                           //
+            const wxSize& size = wxSize(800, 600),                     //
+            long style = wxDEFAULT_FRAME_STYLE,                               //
+            const wxString& name = wxFrameNameStr                             //
     );
     virtual ~uiFrame();
+
+    void addFragment(UIFragment* fragment);
+    void removeFragment(UIFragment* fragment);
+
+    void createView();
+    void createFragmentView(CreateViewContext* ctx) override;
+    
+    void addFragmentView(UIFragment* fragment, CreateViewContext* ctx);
+    void removeFragmentView(UIFragment* fragment, CreateViewContext* ctx);
 
     void exitOnShow(bool exit = true);
 
@@ -40,12 +49,17 @@ class uiFrame : public wxFrame, public UIFragment {
     }
 
   private:
+    void create();
+
+  private:
     std::vector<UIFragment*> m_fragments;
     UIGroup m_root;
-    BuildViewLogs m_buildViewLogs;
 
     wxMenuBar* m_menubar{nullptr};
     wxToolBar* m_toolbar{nullptr};
+
+    BuildViewContext m_buildViewContext;
+    BuildViewLogs m_buildViewLogs;
 
     bool m_exitOnShow{false};
     observable<UIStateVariant>* m_showLabel;
@@ -56,7 +70,9 @@ class uiFrame : public wxFrame, public UIFragment {
     void onCommand(wxCommandEvent& event, UIAction* action);
     void onExit(PerformContext* ctx);
 
-    void onStateChange(wxCommandEvent& event, UIState* state);
+    void onBoolStateChange(wxCommandEvent& event, UIState* state);
+    void onEnumStateChange(wxCommandEvent& event, UIState* state);
+    
     void onToolbarSize(int size);
     void onToolbarShowLabel(bool value);
 };
