@@ -25,20 +25,26 @@ int UIGroup::actionCount() const {
 
 int UIGroup::flattenActionCount() const {
     int count = 0;
-    for (const UIElement* el : children) {
-        if (el->isAction())
+    int i = 0;
+    for (const UIElement* child : children) {
+        if (child == nullptr)
+            logerror_fmt("nullptr child in group %s[%d]", str().c_str(), i);
+        else if (child == this)
+            logerror_fmt("self reference in group %s[%d]", str().c_str(), i);
+        else if (child->isAction())
             count++;
-        else if (el->isGroup())
-            count += dynamic_cast<const UIGroup*>(el)->flattenActionCount();
+        else if (child->isGroup())
+            count += dynamic_cast<const UIGroup*>(child)->flattenActionCount();
+        i++;
     }
     return count;
 }
 
-UIGroup* UIGroup::resolveGroup(const Path& path) { return resolveGroup(path.str()); }
+UIGroup* UIGroup::resolveGroup(const Path& path, BuildViewContext* context) {
+    return resolveGroup(path.str(), context);
+}
 
-int UIGroup::s_next_internal_id = 10000;
-
-UIGroup* UIGroup::resolveGroup(std::string_view path) {
+UIGroup* UIGroup::resolveGroup(std::string_view path, BuildViewContext* context) {
     while (!path.empty() && path.front() == '/')
         path.remove_prefix(1);
     if (path.empty())
@@ -50,9 +56,9 @@ UIGroup* UIGroup::resolveGroup(std::string_view path) {
     UIElement* child = getChild(head);
     if (!child) {
         std::string dir = this->path ? this->path->str() : std::string();
-        auto& owned = internals.emplace_back(
-            std::make_unique<UIGroup>(s_next_internal_id++, dir, std::string(head), 0, "<internal>",
-                                      "", "", ImageSet(), true));
+        int internal_id = context->getNextId();
+        auto& owned = internals.emplace_back(std::make_unique<UIGroup>(
+            internal_id, dir, std::string(head), 0, "<internal>", "", "", ImageSet(), true));
         owned->internal = true;
         child = owned.get();
         child->attach(this);
@@ -66,16 +72,16 @@ UIGroup* UIGroup::resolveGroup(std::string_view path) {
         return gchild;
 
     std::string_view tail = path.substr(slash + 1);
-    return gchild->resolveGroup(tail);
+    return gchild->resolveGroup(tail, context);
 }
 
-void UIGroup::addToTree(std::vector<UIElement*>& elements) {
+void UIGroup::addToTree(std::vector<UIElement*>& elements, BuildViewContext* context) {
     for (UIElement* el : elements) {
         std::optional<Path> path = el->path;
         if (!path)
             continue;
         std::string dir = path->dir();
-        UIGroup* parent = resolveGroup(dir);
+        UIGroup* parent = resolveGroup(dir, context);
         if (parent == nullptr) {
             throw std::runtime_error("dir collision: " + dir);
         }
@@ -91,10 +97,10 @@ void UIGroup::removeFromTree(std::vector<UIElement*>& elements) {
         if (!path)
             continue;
         el->detach();
-        
+
         // remove internal parent groups
         std::string dir = path->dir();
-        UIGroup* parent = resolveGroup(dir);
+        UIGroup* parent = resolveGroup(dir, nullptr);
         assert(parent);
         while (parent && parent != this) {
             if (!parent->internal)

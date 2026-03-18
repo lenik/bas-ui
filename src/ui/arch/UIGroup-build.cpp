@@ -6,6 +6,7 @@
 #include "UIState.hpp"
 
 #include "ui/arch/ImageSet.hpp"
+#include "wx/gtk/bitmap.h"
 #include "wx/menus.hpp"
 #include "wx/toolbars.hpp"
 
@@ -179,8 +180,8 @@ void buildStateView(UIState* state, wxMenu* menu, BuildViewContext* context, Bui
             UIStateValueDescriptor d = state->getValueDescriptor(v);
             if (d.label.empty())
                 continue;
-            int itemId = state->id * 1000 + v;
-            submenu->AppendRadioItem(itemId, d.label, d.description);
+            int itemId = d.id(context);
+            wxMenuItem* item = submenu->AppendRadioItem(itemId, d.label, d.description);
             if (v == currentValue) {
                 submenu->Check(itemId, true);
             }
@@ -236,11 +237,12 @@ void buildStateView(UIState* state, wxToolBar* toolbar, BuildViewContext* contex
     case UIStateType::ENUM: {
         const std::vector<int> enumValues = state->getEnumValues();
         for (int v : enumValues) {
-            int toolId = state->id * 1000 + v;
             UIStateValueDescriptor d = state->getValueDescriptor(v);
             if (d.label.empty())
                 break;
-            toolbar->AddTool(toolId, d.label, wxBitmap(), d.description, wxITEM_RADIO);
+            int toolId = d.id(context);
+            wxBitmap bmp = d.icon.toBitmap1(toolIconSize, toolIconSize, wxART_TOOLBAR);
+            toolbar->AddTool(toolId, d.label, bmp, d.description, wxITEM_RADIO);
             auto log = std::make_unique<BuildViewLog>();
             log->kind = BuildViewLog::TOOLBAR_TOOL;
             log->toolbar = toolbar;
@@ -263,7 +265,9 @@ void UIGroup::buildView(BuildViewContext* context, BuildViewLogs* logs, //
 
     int klast = -1;
 
+    int child_index = -1;
     for (UIElement* child : children) {
+        child_index++;
         if (white_set && white_set->find(child) == white_set->end()) {
             // ignore, but recursive into the group
             if (child->isGroup()) {
@@ -309,6 +313,10 @@ void UIGroup::buildView(BuildViewContext* context, BuildViewLogs* logs, //
             klast = kgroup;
         }
 
+        if (child == nullptr) {
+            logerror_fmt("child become nullptr in group %s[%d]", str().c_str(), child_index);
+            continue;
+        }
         if (child->isGroup()) {
             UIGroup* gchild = dynamic_cast<UIGroup*>(child);
             if (!gchild)

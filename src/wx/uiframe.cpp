@@ -58,10 +58,10 @@ void uiFrame::create() {
         .icon(wxART_LIST_VIEW, dir, "text-square.svg")
         .stateType(UIStateType::BOOL)
         .valueDescriptorFn([this](int value) {
-            return UIStateValueDescriptor{
-                .label = value ? "Show Label" : "Hide Label",       //
-                .description = value ? "Show label" : "Hide label", //
-            };
+            UIStateValueDescriptor d;
+            d.label = value ? "Show Label" : "Hide Label";
+            d.description = value ? "Show label" : "Hide label";
+            return d;
         })
         .initValue(false)
         .valueRef(&m_showLabel)
@@ -98,7 +98,7 @@ void uiFrame::createView() {
 
     m_root = UIGroup(0, "", "", 0, "<root>", "", "", //
                      ImageSet(), true, true);
-    m_root.addToTree(all);
+    m_root.addToTree(all, &ctx);
     m_root.buildView(&m_buildViewContext, &m_buildViewLogs);
 
     m_toolbar->Realize();
@@ -142,7 +142,8 @@ void uiFrame::createView() {
             case UIStateType::ENUM: {
                 const std::vector<int> enumValues = state->getEnumValues();
                 for (int v : enumValues) {
-                    int itemId = state->id * 1000 + v;
+                    UIStateValueDescriptor d = state->getValueDescriptor(v);
+                    int itemId = d.id(&m_buildViewContext);
                     Bind(
                         wxEVT_MENU,
                         [this, state](wxCommandEvent& event) { //
@@ -180,7 +181,7 @@ void uiFrame::addFragmentView(UIFragment* fragment, CreateViewContext* ctx) {
     fragment->createFragmentView(ctx);
 
     std::vector<UIElement*> elements = fragment->elements();
-    m_root.addToTree(elements);
+    m_root.addToTree(elements, ctx);
 
     std::unordered_set<UIElement*> white_set{elements.begin(), elements.end()};
     m_root.buildView(&m_buildViewContext, &m_buildViewLogs, //
@@ -229,8 +230,14 @@ void uiFrame::onBoolStateChange(wxCommandEvent& event, UIState* state) {
 }
 
 void uiFrame::onEnumStateChange(wxCommandEvent& event, UIState* state) {
-    int value = event.GetId() % 1000; // radio id = state->id*1000 + v
-    state->value.set(value);
+    int id = event.GetId();
+
+    std::optional<int> value = state->findValueById(id);
+    if (!value) {
+        std::cout << "Enum state change: unknown id " << id << std::endl;
+        return;
+    }
+    state->value.set(*value);
 }
 
 void uiFrame::onToolbarSize(int size) {

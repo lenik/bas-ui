@@ -35,11 +35,14 @@ class BuildViewContext {
     bool toolbarSmallSize() const { return false; }
     bool toolbarShowLabel() const { return false; }
 
-  private:
+    int getNextId() { return next_id++; }
 
+  private:
     std::unordered_map<std::string, std::vector<wxMenuBar*>> m_menubars;
     std::unordered_map<std::string, std::vector<wxMenu*>> m_menus;
     std::unordered_map<std::string, std::vector<wxToolBar*>> m_toolbars;
+
+    int next_id{10000};
 };
 
 #endif // UI_BUILD_VIEW_CONTEXT_H

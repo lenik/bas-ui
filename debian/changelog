@@ -1,3 +1,15 @@
+bas-ui (1.0.1) testing; urgency=medium
+
+  * Refactor image loading: add wx/images module with imageLoadAsset, imageLoadFile,
+    renderSvgToWxImage (nanosvg); ImageSet delegates to it, BitmapMode.include_raw.
+  * UI frame/fragment lifecycle: uiFrame uses addFragment() + createView();
+    UIFragment createFragmentView/destroyFragmentView, elements().
+  * Centralize ID allocation: BuildViewContext.getNextId(); UIStateValueDescriptor
+    id(context) for menu/tool IDs; resolveGroup/addToTree take BuildViewContext*.
+  * ENUM state: toolbar tools use descriptor icons; findValueById for event handling.
+
+ -- Lenik (谢继雷) <lenik@bodz.net>  Wed, 18 Mar 2026 00:00:00 +0000
+
 bas-ui (1.0.0) testing; urgency=medium
 
   * Initial release of bas-ui with Meson-based build system and embedded assets.

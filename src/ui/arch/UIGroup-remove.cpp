@@ -93,7 +93,8 @@ void removeState(UIState* state, wxToolBar* toolbar) {
     else if (state->getType() == UIStateType::ENUM) {
         const std::vector<int> enumValues = state->getEnumValues();
         for (int v : enumValues) {
-            int toolId = state->id * 1000 + v;
+            UIStateValueDescriptor d = state->getValueDescriptor(v);
+            int toolId = d.id(nullptr);
             toolbar->RemoveTool(toolId);
         }
     }

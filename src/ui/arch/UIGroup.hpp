@@ -3,6 +3,7 @@
 
 #include "BuildViewLog.hpp"
 #include "UIElement.hpp"
+#include "ui/arch/BuildViewContext.hpp"
 
 #include <wx/menu.h>
 #include <wx/toolbar.h>
@@ -20,8 +21,6 @@
  * pathFromRoot() skips internal group names.
  */
 class UIGroup : public UIElement {
-    static int s_next_internal_id;
-
   public:
     bool internal{false};
 
@@ -39,14 +38,14 @@ class UIGroup : public UIElement {
     int flattenActionCount() const;
 
     /** path is relative, leading slash is ignored */
-    UIElement* resolve(std::string_view path);
+    UIElement* resolve(std::string_view path, BuildViewContext* context);
     /** path is relative, leading slash is ignored */
-    UIGroup* resolveGroup(std::string_view path);
+    UIGroup* resolveGroup(std::string_view path, BuildViewContext* context);
     /** path is relative, leading slash is ignored */
-    UIGroup* resolveGroup(const Path& path);
+    UIGroup* resolveGroup(const Path& path, BuildViewContext* context);
 
     /** Add to tree from flat list: set parent/children so paths form hierarchy; this is root. */
-    void addToTree(std::vector<UIElement*>& elements);
+    void addToTree(std::vector<UIElement*>& elements, BuildViewContext* context);
 
     /** Remove from tree:unset parent/children so paths form hierarchy; this is root. */
     void removeFromTree(std::vector<UIElement*>& elements);
