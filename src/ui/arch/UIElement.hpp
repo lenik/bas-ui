@@ -44,7 +44,9 @@ public:
             , enabled(enabled_)
             {}
 
-    virtual ~UIElement() = default;
+    virtual ~UIElement() {
+        detach();
+    }
 
     UIElement(const UIElement&) = delete;
     UIElement& operator=(const UIElement&) = delete;
