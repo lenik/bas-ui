@@ -57,10 +57,17 @@ UIGroup* UIGroup::resolveGroup(std::string_view path, BuildViewContext* context)
     if (!child) {
         std::string dir = this->path ? this->path->str() : std::string();
         int internal_id = context->getNextId();
-        auto& owned = internals.emplace_back(std::make_unique<UIGroup>(
-            internal_id, dir, std::string(head), 0, "<internal>", "", "", ImageSet(), true));
-        owned->internal = true;
-        child = owned.get();
+        std::string name = std::string(head);
+        std::string label = name;
+        if (!label.empty())
+            label[0] = std::toupper(label[0]);
+        std::string description = "<internal: " + std::string(path) + ">";
+        UIGroup* node = new UIGroup(internal_id, dir, name, 0, //
+                                    label, description, "",    //
+                                    ImageSet(), true);
+        internals.emplace_back(std::unique_ptr<UIGroup>(node));
+        node->internal = true;
+        child = node;
         child->attach(this);
     }
 

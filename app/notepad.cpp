@@ -27,9 +27,9 @@ enum {
     ID_ZOOM_RESET,
 };
 
-class NotepadCore : public UIFragment {
+class NotepadBody : public UIFragment {
   public:
-    explicit NotepadCore() {
+    explicit NotepadBody() {
         std::string dir = "streamline-vectors/core/pop/interface-essential";
         std::string dir2 = "streamline-vectors/core/pop/artificial-intelligence";
 
@@ -201,21 +201,28 @@ class NotepadCore : public UIFragment {
     }
 };
 
+class NodepadFrame : public uiFrame {
+
+  public:
+    NodepadFrame(std::string title) : uiFrame(title) {
+        addFragment(&m_body);
+        createView();
+    }
+
+  private:
+    NotepadBody m_body;
+};
+
 class Notepad : public uiApp {
   public:
     Notepad() : uiApp() {}
 
     bool OnUserInit() override {
-        uiFrame* frame = new uiFrame("Notepad");
-        frame->addFragment(&m_core);
-        frame->createView();
+        NodepadFrame* frame = new NodepadFrame("Notepad");
         frame->CenterOnScreen();
         frame->Show();
         return true;
     }
-
-  private:
-    NotepadCore m_core;
 };
 
 int main(int argc, char** argv) {

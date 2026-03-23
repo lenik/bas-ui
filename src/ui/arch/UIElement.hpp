@@ -173,9 +173,9 @@ public:
                 { m_icon = v; return self(); }
             builder_t& icon(wxArtID id, Path path)
                 { m_icon = ImageSet(id, path); return self(); }
-            builder_t& icon(wxArtID id, std::string path)
+            builder_t& icon(wxArtID id, std::string_view path)
                 { m_icon = ImageSet(id, Path(path)); return self(); }
-            builder_t& icon(wxArtID id, std::string dir, std::string tail)
+            builder_t& icon(wxArtID id, std::string_view dir, std::string_view tail)
                 { m_icon = ImageSet(id, Path(dir, tail)); return self(); }
         
             builder_t& no_menu()
