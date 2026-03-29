@@ -4,7 +4,7 @@
 #include "../../wx/images.hpp"
 
 #include <bas/log/uselog.h>
-#include <bas/proc/Assets.hpp>
+#include <bas/proc/UseAssets.hpp>
 #include <bas/util/Path.hpp>
 
 #include <wx/artprov.h>
@@ -72,7 +72,7 @@ ImageSet::ImageSet(wxArtID artId, std::optional<Path> asset, std::string text)
 
 void ImageSet::init() {
     if (m_asset) {
-        Volume* memzip = assets.get();
+        Volume* memzip = g_assets;
         if (!memzip) {
             logerror("assets memzip is not ready");
         } else {

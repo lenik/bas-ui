@@ -1,7 +1,7 @@
 #include "images.hpp"
 
 #include <bas/log/uselog.h>
-#include <bas/proc/Assets.hpp>
+#include <bas/proc/UseAssets.hpp>
 #include <bas/util/Path.hpp>
 
 #define NANOSVG_IMPLEMENTATION
@@ -21,7 +21,7 @@
 
 std::optional<wxBitmap> imageLoadAsset(const std::string& path, int width, int height) {
     logdebug_fmt("Loading bitmap from asset: %s", path.c_str());
-    std::vector<uint8_t> data = assets_get_data(path);
+    std::vector<uint8_t> data = bas_ui_assets->readFile(path);
     if (data.empty()) {
         logerror_fmt("No asset: %s", path.c_str());
         return std::nullopt;

@@ -1,30 +1,38 @@
-#include "proc/Assets.hpp"
 #include "ui/arch/ImageSet.hpp"
-#include "wx/artprov.h"
+
+#include <bas/proc/UseAssets.hpp>
 
 #include <iostream>
 
 int main(int argc, char** argv) {
+    argc--;
+    argv++;
 
     std::string dir = "streamline-vectors/core/pop/interface-essential";
     ImageSet icon(wxART_NEW, dir, "new-file.svg");
     // icon.detect();
     icon.dump(std::cout);
 
-    if (argc > 1) {
-        for (int i = 1; i < argc; i++) {
-            std::string dir = argv[i];
-            if (i != 1)
-                std::cout << std::endl;
-            std::cout << "Listing directory: " << dir << std::endl;
-            auto files = assets_listdir(dir);
-            for (const auto& file : files) {
-                std::cout << file->name << " " << file->size << std::endl;
-            }
-        }
+    const char* options = NULL;
+    if (argc > 0 && argv[0][0] == '-') {
+        options = argv[0] + 1;
+        argc--;
+        argv++;
+    }
+
+    const char* path = "/";
+    if (argc > 0) {
+        path = argv[0];
+        argc--;
+        argv++;
+    }
+
+    if (options) {
+        std::cout << "Assets list:" << std::endl;
+        bas_ui_assets->ls(options, path);
     } else {
         std::cout << "Assets tree:" << std::endl;
-        assets_dump_tree();
+        bas_ui_assets->tree(path);
     }
     return 0;
 }

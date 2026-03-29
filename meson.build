@@ -105,7 +105,7 @@ assets_zip = custom_target(
 # Compile assembly file that embeds assets.zip using .incbin
 # Use configure_file to copy assets.s to build directory
 assets_s = configure_file(
-    input: 'app/assets.s',
+    input: 'src/assets.s',
     output: 'assets.s',
     copy: true,
 )
@@ -145,9 +145,15 @@ lib_bas_ui = shared_library(
     'bas-ui',
     cpp_sources,
     'src/module.cpp',
+    assets_o,
     dependencies: exe_deps,
     include_directories: exe_inc,
-    cpp_args: cpp_nowarn + ['-DLOGGER_NAME=ui', '-gdwarf-4'],
+    cpp_args: cpp_nowarn
+    + [
+        '-gdwarf-4',
+        '-DLOGGER_NAME=ui',
+        '-DASSETS_NAME=bas_ui',
+    ],
     cpp_pch: wx_pch,
     link_args: ['-rdynamic', '-Wl,-E', '-Wl,--export-dynamic'],
     override_options: ['b_lundef=false'], # Allows undefined symbols at link time
@@ -240,11 +246,14 @@ foreach test_rel_path : all_test_files
     test_exe = executable(
         test_name,
         all_sources,
-        assets_o,
-        'src/module.cpp',
         include_directories: exe_inc,
         dependencies: exe_deps + [bas_ui_dep],
-        cpp_args: cpp_nowarn + ['-DLOGGER_NAME=test'],
+        cpp_args: cpp_nowarn
+        + [
+            # '-gdwarf-4',
+            '-DLOGGER_NAME=test',
+            '-DASSETS_NAME=bas_ui',
+        ],
         cpp_pch: wx_pch,
         link_args: ['-rdynamic', '-no-pie'],
         install: false,
@@ -275,14 +284,18 @@ foreach app_cpp : app_cpp_list
     executable(
         app_name,
         app_cpp,
-        assets_o,
-        'src/module.cpp',
         include_directories: exe_inc,
         dependencies: exe_deps + [bas_ui_dep],
-        cpp_args: cpp_nowarn + ['-DLOGGER_NAME=' + app_name],
+        cpp_args: cpp_nowarn
+        + [
+            # '-gdwarf-4',
+            '-DLOGGER_NAME='
+            + app_name,
+            '-DASSETS_NAME=bas_ui',
+        ],
         cpp_pch: wx_pch,
         link_args: ['-rdynamic', '-no-pie'],
-        install: true,
+        install: false,
         install_dir: install_dir,
     )
 endforeach
