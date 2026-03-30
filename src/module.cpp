@@ -14,6 +14,7 @@ define_logger();
 define_zip_assets(_bas_ui, bas_ui_assets);
 
 std::unique_ptr<OverlapVolume> bas_ui_assets = std::make_unique<OverlapVolume>(
+    "bas-ui",
     std::vector<Volume*>{bas_cpp_assets.get(), _bas_ui_assets.get()});
 
 __attribute__((weak))
