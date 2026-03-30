@@ -1,6 +1,7 @@
 #include "ui/arch/ImageSet.hpp"
 
-#include <bas/proc/UseAssets.hpp>
+#include <bas/proc/AssetsRegistry.hpp>
+#include <bas/volume/Volume.hpp>
 
 #include <iostream>
 
@@ -27,12 +28,17 @@ int main(int argc, char** argv) {
         argv++;
     }
 
+    Volume* vol = AssetsRegistry::instance().get();
+    if (!vol) {
+        std::cerr << "No asset volume (g_assets / bas_ui_assets)\n";
+        return 1;
+    }
     if (options) {
         std::cout << "Assets list:" << std::endl;
-        bas_ui_assets->ls(options, path);
+        vol->ls(options, path);
     } else {
         std::cout << "Assets tree:" << std::endl;
-        bas_ui_assets->tree(path);
+        vol->tree(path);
     }
     return 0;
 }
