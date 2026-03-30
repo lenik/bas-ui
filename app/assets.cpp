@@ -14,9 +14,9 @@ int main(int argc, char** argv) {
     // icon.detect();
     icon.dump(std::cout);
 
-    const char* options = NULL;
+    ListOptions opts;
     if (argc > 0 && argv[0][0] == '-') {
-        options = argv[0] + 1;
+        opts = ListOptions::parse(argv[0] + 1);
         argc--;
         argv++;
     }
@@ -28,17 +28,7 @@ int main(int argc, char** argv) {
         argv++;
     }
 
-    Volume* vol = AssetsRegistry::instance().get();
-    if (!vol) {
-        std::cerr << "No asset volume (g_assets / bas_ui_assets)\n";
-        return 1;
-    }
-    if (options) {
-        std::cout << "Assets list:" << std::endl;
-        vol->ls(options, path);
-    } else {
-        std::cout << "Assets tree:" << std::endl;
-        vol->tree(path);
-    }
+    std::cout << "Assets list:" << std::endl;
+    AssetsRegistry::instance()->ls(path, opts);
     return 0;
 }
