@@ -18,45 +18,14 @@ cpp = meson.get_compiler('cpp')
 bas_c_dep = dependency('bas-c', required: true)
 bas_cpp_dep = dependency('bas-cpp', required: true)
 
-nanosvg_dep = dependency('nanosvg', required: false)
+nanosvg_dep = subproject('nanosvg').get_variable('nanosvg_dep')
 
-# wxWidgets dependencies (must use a single GTK toolkit to avoid "GTK+ 2.x and GTK+ 3 in the same process" error)
-wx_dep = dependency('wxwidgets', method: 'config-tool', required: true)
-# Detect toolkit from default wx-config so we link only gtk2 or only gtk3
-wx_config = find_program('wx-config', required: true)
-wx_libs_out = run_command(wx_config, '--libs', check: true, capture: true).stdout()
-wx_use_gtk3 = wx_libs_out.contains('gtk3')
-if wx_use_gtk3
-    wx_gtk_prefix = 'wx_gtk3u'
-    wx_ver = '3.0'
-else
-    wx_gtk_prefix = 'wx_gtk2u'
-    wx_ver = '3.1'
-endif
-# wxWidgets media (wxMediaCtrl) and extras - use same toolkit as core
-# Media/webview optional on GTK2 (often not built for gtk2)
-wx_media_lib = cpp.find_library(wx_gtk_prefix + '_media-' + wx_ver, required: false)
-wx_richtext_lib = cpp.find_library(wx_gtk_prefix + '_richtext-' + wx_ver, required: true)
-wx_stc_lib = cpp.find_library(wx_gtk_prefix + '_stc-' + wx_ver, required: true)
-wx_webview_lib = cpp.find_library(wx_gtk_prefix + '_webview-' + wx_ver, required: false)
-
-# wx_dep = dependency('wxwidgets', modules : [
-#     'core',
-#     'media',
-#     'richtext',
-#     'stc',
-#     'webview',
-#     ], required : true)
-
-if wx_dep.version() < '3.1'
-    # wx 3.0: media and webview are in separate libs; core setup has wxUSE_*=0, so enable for our build
-    wx_defines = ['-DwxUSE_MEDIACTRL=1', '-DwxUSE_WEBVIEW=1']
-    add_project_arguments(wx_defines, language: 'cpp')
-endif
+wx_sub = subproject('wx_logic')
+wx_dep = wx_sub.get_variable('wx_dep')
 
 # Disable all warnings (wx 3.0 and deps are noisy)
 cpp_nowarn = cpp.get_supported_arguments(['-w', '/w'])
-cpp_nowarn = cpp_nowarn + wx_defines
+cpp_nowarn = cpp_nowarn
 
 # Precompiled header for wxWidgets
 wx_pch = 'src/wx_pch.h'
@@ -127,15 +96,6 @@ exe_deps = [
     nanosvg_dep,
     wx_dep,
 ]
-
-# if wx_dep.version() < '3.1'
-#     exe_deps += [
-#         wx_media_lib,
-#         wx_richtext_lib,
-#         wx_stc_lib,
-#         wx_webview_lib,
-#     ]
-# endif
 
 exe_inc = [
     include_directories('src'),
