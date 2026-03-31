@@ -1,8 +1,8 @@
 #ifndef UI_STATE_H
 #define UI_STATE_H
 
+#include "BuildViewContext.hpp"
 #include "UIElement.hpp"
-#include "ui/arch/BuildViewContext.hpp"
 
 #include <bas/script/property_support.hpp>
 

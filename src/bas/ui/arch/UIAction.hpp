@@ -3,7 +3,6 @@
 
 #include "UIElement.hpp"
 
-#include <bas/log/uselog.h>
 #include <bas/script/property_support.hpp>
 
 #include <wx/event.h>
@@ -11,6 +10,8 @@
 #include <functional>
 #include <string>
 #include <vector>
+
+#include <bas/log/uselog.h>
 
 class UIAction;
 class UIState;

@@ -2,10 +2,10 @@
  * Simple notepad application using ui/arch action/group models.
  * Menubar and toolbar are built from a UIFragment and UIWidgetsContext.
  */
-#include "proc/MyStackWalker.hpp"
-#include "ui/arch/UIFragment.hpp"
-#include "wx/app.hpp"
-#include "wx/uiframe.hpp"
+#include "bas/proc/MyStackWalker.hpp"
+#include "bas/ui/arch/UIFragment.hpp"
+#include "bas/wx/app.hpp"
+#include "bas/wx/uiframe.hpp"
 
 #include <wx/app.h>
 #include <wx/filedlg.h>

@@ -1,10 +1,10 @@
 #ifndef WX_UIFRAME_HPP
 #define WX_UIFRAME_HPP
 
-#include "ui/arch/BuildViewContext.hpp"
-#include "ui/arch/UIFragment.hpp"
-#include "ui/arch/UIGroup.hpp"
-#include "ui/arch/UIState.hpp"
+#include "../ui/arch/BuildViewContext.hpp"
+#include "../ui/arch/UIFragment.hpp"
+#include "../ui/arch/UIGroup.hpp"
+#include "../ui/arch/UIState.hpp"
 
 #include <wx/frame.h>
 #include <wx/menu.h>

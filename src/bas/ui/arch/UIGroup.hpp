@@ -1,9 +1,9 @@
 #ifndef UI_GROUP_H
 #define UI_GROUP_H
 
+#include "BuildViewContext.hpp"
 #include "BuildViewLog.hpp"
 #include "UIElement.hpp"
-#include "ui/arch/BuildViewContext.hpp"
 
 #include <wx/menu.h>
 #include <wx/toolbar.h>

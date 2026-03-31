@@ -3,7 +3,6 @@
 #include "../../wx/artprovs.hpp"
 #include "../../wx/images.hpp"
 
-#include <bas/log/uselog.h>
 #include <bas/proc/AssetsRegistry.hpp>
 #include <bas/util/Path.hpp>
 
@@ -16,6 +15,8 @@
 #include <algorithm>
 #include <cstdlib>
 #include <optional>
+
+#include <bas/log/uselog.h>
 
 auto ident = [](const std::string& path) { return path; };
 

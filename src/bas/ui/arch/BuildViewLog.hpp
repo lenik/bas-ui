@@ -6,9 +6,9 @@
 #include <wx/menu.h>
 #include <wx/toolbar.h>
 
-#include <vector>
-#include <memory>
 #include <iostream>
+#include <memory>
+#include <vector>
 
 class BuildViewContext;
 class UIGroup;

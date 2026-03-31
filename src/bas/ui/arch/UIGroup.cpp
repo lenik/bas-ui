@@ -2,8 +2,6 @@
 
 #include "BuildViewLog.hpp"
 
-#include <bas/log/uselog.h>
-
 #include <wx/bitmap.h>
 #include <wx/menu.h>
 #include <wx/string.h>
@@ -13,6 +11,8 @@
 #include <memory>
 #include <string>
 #include <vector>
+
+#include <bas/log/uselog.h>
 
 int UIGroup::actionCount() const {
     int count = 0;

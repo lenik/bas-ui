@@ -14,9 +14,14 @@ pkgdatadir = get_option('datadir') / meson.project_name()
 fs = import('fs')
 cpp = meson.get_compiler('cpp')
 
-# libbas
+subproject('bas-c')
+subproject('bas-cpp')
+
 bas_c_dep = dependency('bas-c', required: true)
 bas_cpp_dep = dependency('bas-cpp', required: true)
+
+bas_c_static_dep = dependency('bas-c-static', required: true)
+bas_cpp_static_dep = dependency('bas-cpp-static', required: true)
 
 nanosvg_dep = subproject('nanosvg').get_variable('nanosvg_dep')
 
@@ -27,29 +32,34 @@ wx_dep = wx_sub.get_variable('wx_dep')
 cpp_nowarn = cpp.get_supported_arguments(['-w', '/w'])
 cpp_nowarn = cpp_nowarn
 
-# Precompiled header for wxWidgets
-wx_pch = 'src/wx_pch.h'
+cpp_args = cpp_nowarn + [
+    '-gdwarf-4',
+    '-DLOGGER_NAME=ui',
+    '-DASSETS_NAME=bas_ui',
+    ]
+
+cpp_pch = 'src/wx_pch.h'
 
 cpp_sources = files(
-    './src/ui/arch/BuildViewContext.cpp',
-    './src/ui/arch/BuildViewLog.cpp',
-    './src/ui/arch/CreateViewContext.cpp',
-    './src/ui/arch/EditHistory.cpp',
-    './src/ui/arch/ImageSet.cpp',
-    './src/ui/arch/UIAction.cpp',
-    './src/ui/arch/UIElement.cpp',
-    './src/ui/arch/UIFragment.cpp',
-    './src/ui/arch/UIGroup-build.cpp',
-    './src/ui/arch/UIGroup-remove.cpp',
-    './src/ui/arch/UIGroup.cpp',
-    './src/ui/arch/UIState.cpp',
-    './src/util/mem.cpp',
-    './src/wx/app.cpp',
-    './src/wx/artprovs.cpp',
-    './src/wx/images.cpp',
-    './src/wx/menus.cpp',
-    './src/wx/toolbars.cpp',
-    './src/wx/uiframe.cpp',
+    './src/bas/ui/arch/BuildViewContext.cpp',
+    './src/bas/ui/arch/BuildViewLog.cpp',
+    './src/bas/ui/arch/CreateViewContext.cpp',
+    './src/bas/ui/arch/EditHistory.cpp',
+    './src/bas/ui/arch/ImageSet.cpp',
+    './src/bas/ui/arch/UIAction.cpp',
+    './src/bas/ui/arch/UIElement.cpp',
+    './src/bas/ui/arch/UIFragment.cpp',
+    './src/bas/ui/arch/UIGroup-build.cpp',
+    './src/bas/ui/arch/UIGroup-remove.cpp',
+    './src/bas/ui/arch/UIGroup.cpp',
+    './src/bas/ui/arch/UIState.cpp',
+    './src/bas/util/mem.cpp',
+    './src/bas/wx/app.cpp',
+    './src/bas/wx/artprovs.cpp',
+    './src/bas/wx/images.cpp',
+    './src/bas/wx/menus.cpp',
+    './src/bas/wx/toolbars.cpp',
+    './src/bas/wx/uiframe.cpp',
 )
 
 # Assets will be zipped and linked as a section in the executable
@@ -97,9 +107,18 @@ exe_deps = [
     wx_dep,
 ]
 
+exe_static_deps = [
+    bas_c_static_dep,
+    bas_cpp_static_dep,
+    nanosvg_dep,
+    wx_dep,
+]
+
 exe_inc = [
     include_directories('src'),
 ]
+
+override_options = ['b_lundef=false']  # Allows undefined symbols at link time
 
 lib_bas_ui = shared_library(
     'bas-ui',
@@ -108,27 +127,56 @@ lib_bas_ui = shared_library(
     assets_o,
     dependencies: exe_deps,
     include_directories: exe_inc,
-    cpp_args: cpp_nowarn
-    + [
-        '-gdwarf-4',
-        '-DLOGGER_NAME=ui',
-        '-DASSETS_NAME=bas_ui',
-    ],
-    cpp_pch: wx_pch,
+    cpp_args: cpp_args,
+    cpp_pch: cpp_pch,
     link_args: ['-rdynamic', '-Wl,-E', '-Wl,--export-dynamic'],
-    override_options: ['b_lundef=false'], # Allows undefined symbols at link time
+    override_options: override_options,
     version: meson.project_version(),
     soversion: meson.project_version().split('.')[0],
     install: true,
 )
 
-bas_ui_dep = declare_dependency(link_with: lib_bas_ui, include_directories: exe_inc)
+lib_bas_ui_static = static_library(
+    'bas-ui',
+    cpp_sources,
+    'src/module.cpp',
+    assets_o,
+    dependencies: exe_static_deps,
+    include_directories: exe_inc,
+    cpp_args: cpp_args,
+    cpp_pch: cpp_pch,
+    override_options: override_options,
+    install: true,
+)
+
+bas_ui_dep = declare_dependency(
+    link_with: lib_bas_ui,
+    include_directories: exe_inc,
+    dependencies: exe_deps
+)
+bas_ui_static_dep = declare_dependency(
+    link_with: lib_bas_ui_static,
+    include_directories: exe_inc,
+    dependencies: exe_static_deps
+)
+
+meson.override_dependency('bas-ui', bas_ui_dep)
+meson.override_dependency('bas-ui-static', bas_ui_static_dep)
 
 # ---- pkg-config ----
 pkgconfig = import('pkgconfig')
 pkgconfig.generate(
     lib_bas_ui,
     name: 'bas-ui',
+    description: 'bas-ui',
+    version: meson.project_version(),
+    subdirs: 'bas',
+    requires: ['bas-c', 'bas-cpp'],
+)
+
+pkgconfig.generate(
+    lib_bas_ui_static,
+    name: 'bas-ui-static',
     description: 'bas-ui',
     version: meson.project_version(),
     subdirs: 'bas',
@@ -157,7 +205,7 @@ endforeach
 
 install_subdir(
     'src',
-    install_dir: get_option('includedir') / 'bas',
+    install_dir: get_option('includedir'),
     exclude_files: other_list,
     strip_directory: true,
 )
@@ -214,7 +262,7 @@ foreach test_rel_path : all_test_files
             '-DLOGGER_NAME=test',
             '-DASSETS_NAME=bas_ui',
         ],
-        cpp_pch: wx_pch,
+        cpp_pch: cpp_pch,
         link_args: ['-rdynamic', '-no-pie'],
         install: false,
     )
@@ -253,7 +301,7 @@ foreach app_cpp : app_cpp_list
             + app_name,
             '-DASSETS_NAME=bas_ui',
         ],
-        cpp_pch: wx_pch,
+        cpp_pch: cpp_pch,
         link_args: ['-rdynamic', '-no-pie'],
         install: false,
         install_dir: install_dir,

@@ -1,16 +1,14 @@
-#include "UIGroup.hpp"
-
 #include "BuildViewContext.hpp"
 #include "BuildViewLog.hpp"
+#include "ImageSet.hpp"
 #include "UIAction.hpp"
+#include "UIGroup.hpp"
 #include "UIState.hpp"
 
-#include "ui/arch/ImageSet.hpp"
 #include "wx/gtk/bitmap.h"
-#include "wx/menus.hpp"
-#include "wx/toolbars.hpp"
 
-#include <bas/log/uselog.h>
+#include "../../wx/menus.hpp"
+#include "../../wx/toolbars.hpp"
 
 #include <wx/bitmap.h>
 #include <wx/menu.h>
@@ -20,6 +18,8 @@
 #include <memory>
 #include <string>
 #include <vector>
+
+#include <bas/log/uselog.h>
 
 void buildGroupView(UIGroup* group, wxMenuBar* menubar, BuildViewContext* context,
                     BuildViewLogs* logs) {

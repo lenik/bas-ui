@@ -3,8 +3,9 @@
  * Menubar and toolbar are built from a UIFragment and BuildViewContext.
  */
 #include "uiframe.hpp"
-#include "ui/arch/BuildViewContext.hpp"
-#include "ui/arch/CreateViewContext.hpp"
+
+#include "../ui/arch/BuildViewContext.hpp"
+#include "../ui/arch/CreateViewContext.hpp"
 
 #include <bas/log/uselog.h>
 

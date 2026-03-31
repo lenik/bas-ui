@@ -2,6 +2,7 @@
 #include <wx/string.h>
 
 #include <array>
+#include <cstdint>
 #include <filesystem>
 #include <iostream>
 #include <memory>
@@ -11,7 +12,6 @@
 #include <string_view>
 #include <vector>
 
-#include <cstdint>
 #include <dlfcn.h>
 
 #define COLOR_RED "\033[31m"

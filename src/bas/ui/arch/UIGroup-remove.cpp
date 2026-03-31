@@ -1,11 +1,8 @@
-#include "UIGroup.hpp"
-
 #include "BuildViewContext.hpp"
 #include "BuildViewLog.hpp"
 #include "UIAction.hpp"
+#include "UIGroup.hpp"
 #include "UIState.hpp"
-
-#include <bas/log/uselog.h>
 
 #include <wx/bitmap.h>
 #include <wx/menu.h>
@@ -15,6 +12,8 @@
 #include <memory>
 #include <string>
 #include <vector>
+
+#include <bas/log/uselog.h>
 
 void removeGroup(UIGroup* group, wxMenuBar* menubar) {
     int menuPos = menubar->FindMenu(group->label.get());

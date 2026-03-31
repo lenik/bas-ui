@@ -5,5 +5,5 @@ SOURCES := $(shell find . -type f \( -name '*.cpp' -o -name '*.c' -o -name '*.hp
 
 .PHONY: format
 format:
-	organize-includes -n -I $(CURDIR) $(SOURCES)
+	organize-includes -n -I $(CURDIR) -I $(CURDIR)/bas $(SOURCES)
 

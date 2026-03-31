@@ -1,6 +1,6 @@
 #include "app.hpp"
 
-#include "proc/MyStackWalker.hpp"
+#include "../proc/MyStackWalker.hpp"
 
 #include <wx/app.h>
 #include <wx/frame.h>
