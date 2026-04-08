@@ -1,0 +1,4 @@
+../src/bas/ui/arch/UIGroup-build.cpp
+../src/bas/ui/arch/UIGroup-remove.cpp
+../src/bas/wx/uiframe.cpp
+../app/notepad.cpp

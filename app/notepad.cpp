@@ -5,6 +5,7 @@
 #include "bas/proc/MyStackWalker.hpp"
 #include "bas/ui/arch/UIFragment.hpp"
 #include "bas/wx/app.hpp"
+#include "bas/wx/i18n.hpp"
 #include "bas/wx/uiframe.hpp"
 
 #include <wx/app.h>
@@ -34,68 +35,70 @@ class NotepadBody : public UIFragment {
         std::string dir2 = "streamline-vectors/core/pop/artificial-intelligence";
 
         int seq = 0;
-        action(wxID_NEW, "file", "new", seq++, "&New", "New document")
+        action(wxID_NEW, "file", "new", seq++, basUiMsg("&New"), basUiMsg("New document"))
             .icon(wxART_NEW, dir, "new-file.svg")
             .performFn([this](PerformContext* ctx) { onNew(ctx); })
             .install();
-        action(wxID_OPEN, "file", "open", seq++, "&Open...", "Open file")
+        action(wxID_OPEN, "file", "open", seq++, basUiMsg("&Open..."), basUiMsg("Open file"))
             .icon(wxART_FILE_OPEN, dir, "open-book.svg")
             .performFn([this](PerformContext* ctx) { onOpen(ctx); })
             .install();
-        action(wxID_SAVE, "file", "save", seq++, "&Save", "Save file")
+        action(wxID_SAVE, "file", "save", seq++, basUiMsg("&Save"), basUiMsg("Save file"))
             .icon(wxART_FILE_SAVE, dir, "file-add-alternate.svg")
             .performFn([this](PerformContext* ctx) { onSave(ctx); })
             .install();
-        action(wxID_SAVEAS, "file", "saveas", seq++, "Save &As...", "Save as")
+        action(wxID_SAVEAS, "file", "saveas", seq++, basUiMsg("Save &As..."), basUiMsg("Save as"))
             .icon(wxART_FILE_SAVE_AS, dir, "multiple-file-2.svg")
             .performFn([this](PerformContext* ctx) { onSaveAs(ctx); })
             .install();
 
         seq = 0;
-        action(wxID_UNDO, "edit", "undo", seq++, "Undo", "Undo")
+        action(wxID_UNDO, "edit", "undo", seq++, basUiMsg("Undo"), basUiMsg("Undo"))
             .icon(wxART_UNDO, dir,
                   "line-arrow-reload-horizontal-1."
                   "svg")
             .performFn([this](PerformContext* ctx) { onUndo(ctx); })
             .install();
-        action(wxID_REDO, "edit", "redo", seq++, "Redo", "Redo")
+        action(wxID_REDO, "edit", "redo", seq++, basUiMsg("Redo"), basUiMsg("Redo"))
             .icon(wxART_REDO, dir2, "ai-redo-spark.svg")
             .performFn([this](PerformContext* ctx) { onRedo(ctx); })
             .install();
 
         seq = 1000;
-        action(wxID_SELECTALL, "edit", "select_all", seq++, "Select &All", "Select all")
+        action(wxID_SELECTALL, "edit", "select_all", seq++, basUiMsg("Select &All"),
+               basUiMsg("Select all"))
             .icon(wxART_REPORT_VIEW, dir, "clipboard-check.svg")
             .performFn([this](PerformContext* ctx) { onSelectAll(ctx); })
             .install();
-        action(wxID_CLEAR, "edit", "clear", seq++, "Clear", "Clear")
+        action(wxID_CLEAR, "edit", "clear", seq++, basUiMsg("Clear"), basUiMsg("Clear"))
             .icon(wxART_DELETE, dir, "clipboard-remove.svg")
             .performFn([this](PerformContext* ctx) { onClear(ctx); })
             .install();
 
-        action(wxID_CUT, "edit", "cut", seq++, "Cu&t", "Cut")
+        action(wxID_CUT, "edit", "cut", seq++, basUiMsg("Cu&t"), basUiMsg("Cut"))
             .icon(wxART_CUT, dir, "cut.svg")
             .performFn([this](PerformContext* ctx) { onCut(ctx); })
             .install();
-        action(wxID_COPY, "edit", "copy", seq++, "&Copy", "Copy")
+        action(wxID_COPY, "edit", "copy", seq++, basUiMsg("&Copy"), basUiMsg("Copy"))
             .icon(wxART_COPY, dir, "clipboard-add.svg")
             .performFn([this](PerformContext* ctx) { onCopy(ctx); })
             .install();
-        action(wxID_PASTE, "edit", "paste", seq++, "&Paste", "Paste")
+        action(wxID_PASTE, "edit", "paste", seq++, basUiMsg("&Paste"), basUiMsg("Paste"))
             .icon(wxART_PASTE, dir, "empty-clipboard.svg")
             .performFn([this](PerformContext* ctx) { onPaste(ctx); })
             .install();
 
         seq = 2000;
-        action(ID_ZOOM_IN, "view", "zoom_in", seq++, "Zoom &In", "Zoom in")
+        action(ID_ZOOM_IN, "view", "zoom_in", seq++, basUiMsg("Zoom &In"), basUiMsg("Zoom in"))
             .icon(wxART_PLUS, dir, "magnifying-glass-circle.svg")
             .performFn([this](PerformContext* ctx) { onZoomIn(ctx); })
             .install();
-        action(ID_ZOOM_OUT, "view", "zoom_out", seq++, "Zoom &Out", "Zoom out")
+        action(ID_ZOOM_OUT, "view", "zoom_out", seq++, basUiMsg("Zoom &Out"), basUiMsg("Zoom out"))
             .icon(wxART_MINUS, dir, "magnifying-glass.svg")
             .performFn([this](PerformContext* ctx) { onZoomOut(ctx); })
             .install();
-        action(ID_ZOOM_RESET, "view", "zoom_reset", seq++, "Zoom &Reset", "Zoom reset")
+        action(ID_ZOOM_RESET, "view", "zoom_reset", seq++, basUiMsg("Zoom &Reset"),
+               basUiMsg("Zoom reset"))
             .icon(wxART_CROSS_MARK, dir, "search-visual.svg")
             .performFn([this](PerformContext* ctx) { onZoomReset(ctx); })
             .install();
@@ -121,14 +124,14 @@ class NotepadBody : public UIFragment {
     }
 
     void onOpen(PerformContext*) {
-        wxString path = wxFileSelector("Open", wxEmptyString, wxEmptyString, //
-                                       wxEmptyString, "All files (*.*)|*.*", //
+        wxString path = wxFileSelector(basUiTr("Open"), wxEmptyString, wxEmptyString, //
+                                       wxEmptyString, basUiTr("All files (*.*)|*.*"), //
                                        wxFD_OPEN);
         if (path.empty())
             return;
         wxFileInputStream is(path);
         if (!is.IsOk()) {
-            wxMessageBox("Cannot open file.", "Error", wxOK | wxICON_ERROR);
+            wxMessageBox(basUiTr("Cannot open file."), basUiTr("Error"), wxOK | wxICON_ERROR);
             return;
         }
         wxString content;
@@ -154,8 +157,8 @@ class NotepadBody : public UIFragment {
     }
 
     void onSaveAs(PerformContext*) {
-        wxString path = wxFileSelector("Save As", wxEmptyString, wxEmptyString, //
-                                       wxEmptyString, "All files (*.*)|*.*",    //
+        wxString path = wxFileSelector(basUiTr("Save As"), wxEmptyString, wxEmptyString, //
+                                       wxEmptyString, basUiTr("All files (*.*)|*.*"),    //
                                        wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
         if (path.empty())
             return;
@@ -166,13 +169,13 @@ class NotepadBody : public UIFragment {
     void saveTo(const wxString& path) {
         wxFileOutputStream os(path);
         if (!os.IsOk()) {
-            wxMessageBox("Cannot save file.", "Error", wxOK | wxICON_ERROR);
+            wxMessageBox(basUiTr("Cannot save file."), basUiTr("Error"), wxOK | wxICON_ERROR);
             return;
         }
         std::string utf8(m_text->GetValue().ToUTF8());
         os.Write(utf8.data(), utf8.size());
         if (!os.IsOk()) {
-            wxMessageBox("Write failed.", "Error", wxOK | wxICON_ERROR);
+            wxMessageBox(basUiTr("Write failed."), basUiTr("Error"), wxOK | wxICON_ERROR);
         }
     }
 
@@ -204,7 +207,7 @@ class NotepadBody : public UIFragment {
 class NodepadFrame : public uiFrame {
 
   public:
-    NodepadFrame(std::string title) : uiFrame(title) {
+    explicit NodepadFrame(const wxString& title) : uiFrame(title) {
         addFragment(&m_body);
         createView();
     }
@@ -218,7 +221,7 @@ class Notepad : public uiApp {
     Notepad() : uiApp() {}
 
     bool OnUserInit() override {
-        NodepadFrame* frame = new NodepadFrame("Notepad");
+        NodepadFrame* frame = new NodepadFrame(basUiTr("Notepad"));
         frame->CenterOnScreen();
         frame->Show();
         return true;

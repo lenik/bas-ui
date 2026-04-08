@@ -4,6 +4,7 @@
  */
 #include "uiframe.hpp"
 
+#include "i18n.hpp"
 #include "../ui/arch/BuildViewContext.hpp"
 #include "../ui/arch/CreateViewContext.hpp"
 
@@ -35,12 +36,12 @@ void uiFrame::create() {
     std::string dir = "streamline-vectors/core/pop/interface-essential";
     std::string dir2 = "streamline-vectors/core/pop/map-travel";
 
-    group(1, "", "file", 10, "&File").install();
-    group(2, "", "edit", 20, "&Edit").install();
-    group(3, "", "view", 30, "&View").install();
+    group(1, "", "file", 10, basUiMsg("&File")).install();
+    group(2, "", "edit", 20, basUiMsg("&Edit")).install();
+    group(3, "", "view", 30, basUiMsg("&View")).install();
 
     int seq = 100000;
-    action(wxID_EXIT, "file", "exit", seq++, "E&xit", "Exit")
+    action(wxID_EXIT, "file", "exit", seq++, basUiMsg("E&xit"), basUiMsg("Exit"))
         .icon(wxART_QUIT, dir2, "emergency-exit.svg")
         .performFn([this](PerformContext* ctx) { onExit(ctx); })
         .no_tool()
@@ -54,14 +55,14 @@ void uiFrame::create() {
     //     .performFn([this](PerformContext* ctx) { onToolbarSmall(ctx); })
     //     .install();
 
-    state(ID_TOOLBAR_SHOW_LABEL, "view", "toolbar_show_label", seq++, "Toolbar &Show Label",
-          "Toolbar show label")
+    state(ID_TOOLBAR_SHOW_LABEL, "view", "toolbar_show_label", seq++, basUiMsg("Toolbar &Show Label"),
+          basUiMsg("Toolbar show label"))
         .icon(wxART_LIST_VIEW, dir, "text-square.svg")
         .stateType(UIStateType::BOOL)
         .valueDescriptorFn([this](int value) {
             UIStateValueDescriptor d;
-            d.label = value ? "Show Label" : "Hide Label";
-            d.description = value ? "Show label" : "Hide label";
+            d.label = value ? basUiMsg("Show Label") : basUiMsg("Hide Label");
+            d.description = value ? basUiMsg("Show label") : basUiMsg("Hide label");
             return d;
         })
         .initValue(false)

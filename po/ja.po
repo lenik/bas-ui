@@ -1,0 +1,188 @@
+# ja translations for bas-ui.
+# Copyright (C) 2026 bas-ui
+# This file is distributed under the same license as the bas-ui package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: bas-ui 1.0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ja\n"
+
+#: ../src/bas/wx/uiframe.cpp:39
+msgid "&File"
+msgstr "ファイル(&F)"
+
+#: ../src/bas/wx/uiframe.cpp:40
+msgid "&Edit"
+msgstr "編集(&E)"
+
+#: ../src/bas/wx/uiframe.cpp:41
+msgid "&View"
+msgstr "表示(&V)"
+
+#: ../src/bas/wx/uiframe.cpp:44
+msgid "E&xit"
+msgstr "終了(&X)"
+
+#: ../src/bas/wx/uiframe.cpp:44
+msgid "Exit"
+msgstr "終了"
+
+#: ../src/bas/wx/uiframe.cpp:58
+msgid "Toolbar &Show Label"
+msgstr "ツールバーにラベルを表示(&S)"
+
+#: ../src/bas/wx/uiframe.cpp:59
+msgid "Toolbar show label"
+msgstr "ツールバーにラベルを表示"
+
+#: ../src/bas/wx/uiframe.cpp:64
+msgid "Show Label"
+msgstr "ラベルを表示"
+
+#: ../src/bas/wx/uiframe.cpp:64
+msgid "Hide Label"
+msgstr "ラベルを隠す"
+
+#: ../src/bas/wx/uiframe.cpp:65
+msgid "Show label"
+msgstr "ラベルを表示"
+
+#: ../src/bas/wx/uiframe.cpp:65
+msgid "Hide label"
+msgstr "ラベルを隠す"
+
+#: ../app/notepad.cpp:38
+msgid "&New"
+msgstr "新規(&N)"
+
+#: ../app/notepad.cpp:38
+msgid "New document"
+msgstr "新しい文書"
+
+#: ../app/notepad.cpp:42
+msgid "&Open..."
+msgstr "開く(&O)..."
+
+#: ../app/notepad.cpp:42
+msgid "Open file"
+msgstr "ファイルを開く"
+
+#: ../app/notepad.cpp:46
+msgid "&Save"
+msgstr "保存(&S)"
+
+#: ../app/notepad.cpp:46
+msgid "Save file"
+msgstr "ファイルを保存"
+
+#: ../app/notepad.cpp:50
+msgid "Save &As..."
+msgstr "名前を付けて保存(&A)..."
+
+#: ../app/notepad.cpp:50
+msgid "Save as"
+msgstr "名前を付けて保存"
+
+#: ../app/notepad.cpp:56
+msgid "Undo"
+msgstr "元に戻す"
+
+#: ../app/notepad.cpp:62
+msgid "Redo"
+msgstr "やり直す"
+
+#: ../app/notepad.cpp:68
+msgid "Select &All"
+msgstr "すべて選択(&A)"
+
+#: ../app/notepad.cpp:69
+msgid "Select all"
+msgstr "すべて選択"
+
+#: ../app/notepad.cpp:73
+msgid "Clear"
+msgstr "クリア"
+
+#: ../app/notepad.cpp:78
+msgid "Cu&t"
+msgstr "切り取り(&T)"
+
+#: ../app/notepad.cpp:78
+msgid "Cut"
+msgstr "切り取り"
+
+#: ../app/notepad.cpp:82
+msgid "&Copy"
+msgstr "コピー(&C)"
+
+#: ../app/notepad.cpp:82
+msgid "Copy"
+msgstr "コピー"
+
+#: ../app/notepad.cpp:86
+msgid "&Paste"
+msgstr "貼り付け(&P)"
+
+#: ../app/notepad.cpp:86
+msgid "Paste"
+msgstr "貼り付け"
+
+#: ../app/notepad.cpp:92
+msgid "Zoom &In"
+msgstr "拡大(&I)"
+
+#: ../app/notepad.cpp:92
+msgid "Zoom in"
+msgstr "拡大"
+
+#: ../app/notepad.cpp:96
+msgid "Zoom &Out"
+msgstr "縮小(&O)"
+
+#: ../app/notepad.cpp:96
+msgid "Zoom out"
+msgstr "縮小"
+
+#: ../app/notepad.cpp:100
+msgid "Zoom &Reset"
+msgstr "ズームをリセット(&R)"
+
+#: ../app/notepad.cpp:101
+msgid "Zoom reset"
+msgstr "ズームをリセット"
+
+#: ../app/notepad.cpp:127
+msgid "Open"
+msgstr "開く"
+
+#: ../app/notepad.cpp:128 ../app/notepad.cpp:161
+msgid "All files (*.*)|*.*"
+msgstr "すべてのファイル (*.*)|*.*"
+
+#: ../app/notepad.cpp:134
+msgid "Cannot open file."
+msgstr "ファイルを開けません。"
+
+#: ../app/notepad.cpp:134 ../app/notepad.cpp:172 ../app/notepad.cpp:178
+msgid "Error"
+msgstr "エラー"
+
+#: ../app/notepad.cpp:160
+msgid "Save As"
+msgstr "名前を付けて保存"
+
+#: ../app/notepad.cpp:172
+msgid "Cannot save file."
+msgstr "ファイルを保存できません。"
+
+#: ../app/notepad.cpp:178
+msgid "Write failed."
+msgstr "書き込みに失敗しました。"
+
+#: ../app/notepad.cpp:224
+msgid "Notepad"
+msgstr "メモ帳"
+

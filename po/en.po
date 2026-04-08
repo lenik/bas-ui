@@ -1,0 +1,194 @@
+# English translations for bas-ui package.
+# Copyright (C) 2026 THE bas-ui'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the bas-ui package.
+# Automatically generated, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: bas-ui 1.0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-04-07 08:04+0800\n"
+"PO-Revision-Date: 2026-04-07 08:04+0800\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: ../src/bas/wx/uiframe.cpp:39
+msgid "&File"
+msgstr "&File"
+
+#: ../src/bas/wx/uiframe.cpp:40
+msgid "&Edit"
+msgstr "&Edit"
+
+#: ../src/bas/wx/uiframe.cpp:41
+msgid "&View"
+msgstr "&View"
+
+#: ../src/bas/wx/uiframe.cpp:44
+msgid "E&xit"
+msgstr "E&xit"
+
+#: ../src/bas/wx/uiframe.cpp:44
+msgid "Exit"
+msgstr "Exit"
+
+#: ../src/bas/wx/uiframe.cpp:58
+msgid "Toolbar &Show Label"
+msgstr "Toolbar &Show Label"
+
+#: ../src/bas/wx/uiframe.cpp:59
+msgid "Toolbar show label"
+msgstr "Toolbar show label"
+
+#: ../src/bas/wx/uiframe.cpp:64
+msgid "Show Label"
+msgstr "Show Label"
+
+#: ../src/bas/wx/uiframe.cpp:64
+msgid "Hide Label"
+msgstr "Hide Label"
+
+#: ../src/bas/wx/uiframe.cpp:65
+msgid "Show label"
+msgstr "Show label"
+
+#: ../src/bas/wx/uiframe.cpp:65
+msgid "Hide label"
+msgstr "Hide label"
+
+#: ../app/notepad.cpp:38
+msgid "&New"
+msgstr "&New"
+
+#: ../app/notepad.cpp:38
+msgid "New document"
+msgstr "New document"
+
+#: ../app/notepad.cpp:42
+msgid "&Open..."
+msgstr "&Open..."
+
+#: ../app/notepad.cpp:42
+msgid "Open file"
+msgstr "Open file"
+
+#: ../app/notepad.cpp:46
+msgid "&Save"
+msgstr "&Save"
+
+#: ../app/notepad.cpp:46
+msgid "Save file"
+msgstr "Save file"
+
+#: ../app/notepad.cpp:50
+msgid "Save &As..."
+msgstr "Save &As..."
+
+#: ../app/notepad.cpp:50
+msgid "Save as"
+msgstr "Save as"
+
+#: ../app/notepad.cpp:56
+msgid "Undo"
+msgstr "Undo"
+
+#: ../app/notepad.cpp:62
+msgid "Redo"
+msgstr "Redo"
+
+#: ../app/notepad.cpp:68
+msgid "Select &All"
+msgstr "Select &All"
+
+#: ../app/notepad.cpp:69
+msgid "Select all"
+msgstr "Select all"
+
+#: ../app/notepad.cpp:73
+msgid "Clear"
+msgstr "Clear"
+
+#: ../app/notepad.cpp:78
+msgid "Cu&t"
+msgstr "Cu&t"
+
+#: ../app/notepad.cpp:78
+msgid "Cut"
+msgstr "Cut"
+
+#: ../app/notepad.cpp:82
+msgid "&Copy"
+msgstr "&Copy"
+
+#: ../app/notepad.cpp:82
+msgid "Copy"
+msgstr "Copy"
+
+#: ../app/notepad.cpp:86
+msgid "&Paste"
+msgstr "&Paste"
+
+#: ../app/notepad.cpp:86
+msgid "Paste"
+msgstr "Paste"
+
+#: ../app/notepad.cpp:92
+msgid "Zoom &In"
+msgstr "Zoom &In"
+
+#: ../app/notepad.cpp:92
+msgid "Zoom in"
+msgstr "Zoom in"
+
+#: ../app/notepad.cpp:96
+msgid "Zoom &Out"
+msgstr "Zoom &Out"
+
+#: ../app/notepad.cpp:96
+msgid "Zoom out"
+msgstr "Zoom out"
+
+#: ../app/notepad.cpp:100
+msgid "Zoom &Reset"
+msgstr "Zoom &Reset"
+
+#: ../app/notepad.cpp:101
+msgid "Zoom reset"
+msgstr "Zoom reset"
+
+#: ../app/notepad.cpp:127
+msgid "Open"
+msgstr "Open"
+
+#: ../app/notepad.cpp:128 ../app/notepad.cpp:161
+msgid "All files (*.*)|*.*"
+msgstr "All files (*.*)|*.*"
+
+#: ../app/notepad.cpp:134
+msgid "Cannot open file."
+msgstr "Cannot open file."
+
+#: ../app/notepad.cpp:134 ../app/notepad.cpp:172 ../app/notepad.cpp:178
+msgid "Error"
+msgstr "Error"
+
+#: ../app/notepad.cpp:160
+msgid "Save As"
+msgstr "Save As"
+
+#: ../app/notepad.cpp:172
+msgid "Cannot save file."
+msgstr "Cannot save file."
+
+#: ../app/notepad.cpp:178
+msgid "Write failed."
+msgstr "Write failed."
+
+#: ../app/notepad.cpp:224
+msgid "Notepad"
+msgstr "Notepad"

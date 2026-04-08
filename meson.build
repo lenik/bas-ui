@@ -11,6 +11,8 @@ project(
 
 pkgdatadir = get_option('datadir') / meson.project_name()
 
+subdir('po')
+
 fs = import('fs')
 cpp = meson.get_compiler('cpp')
 
@@ -30,7 +32,6 @@ wx_dep = wx_sub.get_variable('wx_dep')
 
 # Disable all warnings (wx 3.0 and deps are noisy)
 cpp_nowarn = cpp.get_supported_arguments(['-w', '/w'])
-cpp_nowarn = cpp_nowarn
 
 cpp_args = cpp_nowarn + [
     '-gdwarf-4',
@@ -41,6 +42,7 @@ cpp_args = cpp_nowarn + [
 cpp_pch = 'src/wx_pch.h'
 
 cpp_sources = files(
+    './src/bas/wx/i18n.cpp',
     './src/bas/ui/arch/BuildViewContext.cpp',
     './src/bas/ui/arch/BuildViewLog.cpp',
     './src/bas/ui/arch/CreateViewContext.cpp',

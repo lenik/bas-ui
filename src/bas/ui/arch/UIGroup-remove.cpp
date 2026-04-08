@@ -4,6 +4,8 @@
 #include "UIGroup.hpp"
 #include "UIState.hpp"
 
+#include "../../wx/i18n.hpp"
+
 #include <wx/bitmap.h>
 #include <wx/menu.h>
 #include <wx/string.h>
@@ -16,7 +18,9 @@
 #include <bas/log/uselog.h>
 
 void removeGroup(UIGroup* group, wxMenuBar* menubar) {
-    int menuPos = menubar->FindMenu(group->label.get());
+    wxString menuTitle(
+        basUiTr(group->label.get().empty() ? group->name() : group->label.get()));
+    int menuPos = menubar->FindMenu(menuTitle);
     if (menuPos >= 0) {
         wxMenu* menu = menubar->Remove(menuPos);
         delete menu;

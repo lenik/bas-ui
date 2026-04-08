@@ -1,5 +1,6 @@
 #include "app.hpp"
 
+#include "i18n.hpp"
 #include "../proc/MyStackWalker.hpp"
 
 #include <wx/app.h>
@@ -9,6 +10,7 @@ bool uiApp::OnInit() {
     if (!wxApp::OnInit()) {
         return false;
     }
+    basUiInitI18n();
     wxInitAllImageHandlers();
     return OnUserInit();
 }

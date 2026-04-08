@@ -7,6 +7,7 @@
 
 #include "wx/gtk/bitmap.h"
 
+#include "../../wx/i18n.hpp"
 #include "../../wx/menus.hpp"
 #include "../../wx/toolbars.hpp"
 
@@ -23,8 +24,8 @@
 
 void buildGroupView(UIGroup* group, wxMenuBar* menubar, BuildViewContext* context,
                     BuildViewLogs* logs) {
-    wxString label(group->label.get().empty() ? group->name() : group->label.get());
-    wxString help(group->description.get());
+    wxString label(basUiTr(group->label.get().empty() ? group->name() : group->label.get()));
+    wxString help(basUiTr(group->description.get()));
 
     // ImageSet icon = group->icon.get();
     // int iconSize = context->preferredMenuIconSize();
@@ -49,8 +50,8 @@ void buildGroupView(UIGroup* group, wxMenuBar* menubar, BuildViewContext* contex
 }
 
 void buildGroupView(UIGroup* group, wxMenu* menu, BuildViewContext* context, BuildViewLogs* logs) {
-    wxString label(group->label.get().empty() ? group->name() : group->label.get());
-    wxString help(group->description.get());
+    wxString label(basUiTr(group->label.get().empty() ? group->name() : group->label.get()));
+    wxString help(basUiTr(group->description.get()));
 
     ImageSet icon = group->icon.get();
     int iconSize = context->preferredMenuIconSize();
@@ -78,8 +79,8 @@ void buildGroupView(UIGroup* group, wxMenu* menu, BuildViewContext* context, Bui
 
 void buildGroupView(UIGroup* group, wxToolBar* toolbar, BuildViewContext* context,
                     BuildViewLogs* logs) {
-    wxString label(group->label.get().empty() ? group->name() : group->label.get());
-    wxString help(group->description.get());
+    wxString label(basUiTr(group->label.get().empty() ? group->name() : group->label.get()));
+    wxString help(basUiTr(group->description.get()));
 
     // ImageSet icon = group->icon.get();
     // int iconSize = context->preferredToolIconSize();
@@ -102,8 +103,8 @@ void buildGroupView(UIGroup* group, wxToolBar* toolbar, BuildViewContext* contex
 
 void buildActionView(UIAction* action, wxMenu* menu, BuildViewContext* context,
                      BuildViewLogs* logs) {
-    wxString label(action->label.get().empty() ? action->name() : action->label.get());
-    wxString help(action->description.get());
+    wxString label(basUiTr(action->label.get().empty() ? action->name() : action->label.get()));
+    wxString help(basUiTr(action->description.get()));
 
     ImageSet icon = action->icon.get();
     int iconSize = context->preferredMenuIconSize();
@@ -125,8 +126,8 @@ void buildActionView(UIAction* action, wxMenu* menu, BuildViewContext* context,
 
 void buildActionView(UIAction* action, wxToolBar* toolbar, BuildViewContext* context,
                      BuildViewLogs* logs) {
-    wxString label(action->label.get().empty() ? action->name() : action->label.get());
-    wxString help(action->description.get());
+    wxString label(basUiTr(action->label.get().empty() ? action->name() : action->label.get()));
+    wxString help(basUiTr(action->description.get()));
 
     ImageSet icon = action->icon.get();
     int iconSize = context->preferredToolIconSize();
@@ -147,8 +148,8 @@ void buildActionView(UIAction* action, wxToolBar* toolbar, BuildViewContext* con
 }
 
 void buildStateView(UIState* state, wxMenu* menu, BuildViewContext* context, BuildViewLogs* logs) {
-    wxString label(state->label.get().empty() ? state->name() : state->label.get());
-    wxString help(state->description.get());
+    wxString label(basUiTr(state->label.get().empty() ? state->name() : state->label.get()));
+    wxString help(basUiTr(state->description.get()));
 
     UIStateType type = state->getType();
     switch (type) {
@@ -181,7 +182,8 @@ void buildStateView(UIState* state, wxMenu* menu, BuildViewContext* context, Bui
             if (d.label.empty())
                 continue;
             int itemId = d.id(context);
-            wxMenuItem* item = submenu->AppendRadioItem(itemId, d.label, d.description);
+            wxMenuItem* item =
+                submenu->AppendRadioItem(itemId, basUiTr(d.label), basUiTr(d.description));
             if (v == currentValue) {
                 submenu->Check(itemId, true);
             }
@@ -203,8 +205,8 @@ void buildStateView(UIState* state, wxMenu* menu, BuildViewContext* context, Bui
 
 void buildStateView(UIState* state, wxToolBar* toolbar, BuildViewContext* context,
                     BuildViewLogs* logs) {
-    wxString label(state->label.get().empty() ? state->name() : state->label.get());
-    wxString help(state->description.get());
+    wxString label(basUiTr(state->label.get().empty() ? state->name() : state->label.get()));
+    wxString help(basUiTr(state->description.get()));
 
     ImageSet icon = state->icon.get();
     int toolIconSize = context->preferredToolIconSize();
@@ -242,7 +244,7 @@ void buildStateView(UIState* state, wxToolBar* toolbar, BuildViewContext* contex
                 break;
             int toolId = d.id(context);
             wxBitmap bmp = d.icon.toBitmap1(toolIconSize, toolIconSize, wxART_TOOLBAR);
-            toolbar->AddTool(toolId, d.label, bmp, d.description, wxITEM_RADIO);
+            toolbar->AddTool(toolId, basUiTr(d.label), bmp, basUiTr(d.description), wxITEM_RADIO);
             auto log = std::make_unique<BuildViewLog>();
             log->kind = BuildViewLog::TOOLBAR_TOOL;
             log->toolbar = toolbar;
@@ -283,8 +285,8 @@ void UIGroup::buildView(BuildViewContext* context, BuildViewLogs* logs, //
             continue;
         std::string dir = child->dir();
 
-        wxString label(child->label.get().empty() ? child->name() : child->label.get());
-        wxString help(child->description.get());
+        wxString label(basUiTr(child->label.get().empty() ? child->name() : child->label.get()));
+        wxString help(basUiTr(child->description.get()));
 
         ImageSet icon = child->icon.get();
 
