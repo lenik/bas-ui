@@ -14,8 +14,12 @@ pkgdatadir = get_option('datadir') / meson.project_name()
 fs = import('fs')
 cpp = meson.get_compiler('cpp')
 
-subproject('bas-c')
-subproject('bas-cpp')
+if fs.exists('subprojects/bas-c')
+    subproject('bas-c')
+endif
+if fs.exists('subprojects/bas-cpp')
+    subproject('bas-cpp')
+endif
 
 bas_c_dep = dependency('bas-c', required: true)
 bas_cpp_dep = dependency('bas-cpp', required: true)
@@ -23,7 +27,11 @@ bas_cpp_dep = dependency('bas-cpp', required: true)
 bas_c_static_dep = dependency('bas-c-static', required: true)
 bas_cpp_static_dep = dependency('bas-cpp-static', required: true)
 
-nanosvg_dep = subproject('nanosvg').get_variable('nanosvg_dep')
+if fs.exists('subprojects/nanosvg')
+    nanosvg_dep = subproject('nanosvg').get_variable('nanosvg_dep')
+else
+    nanosvg_dep = dependency('nanosvg', required: true)
+endif
 
 wx_sub = subproject('wx_logic')
 wx_dep = wx_sub.get_variable('wx_dep')
@@ -36,7 +44,7 @@ cpp_args = cpp_nowarn + [
     '-gdwarf-4',
     '-DLOGGER_NAME=ui',
     '-DASSETS_NAME=bas_ui',
-    ]
+]
 
 cpp_pch = 'src/wx_pch.h'
 
@@ -152,12 +160,12 @@ lib_bas_ui_static = static_library(
 bas_ui_dep = declare_dependency(
     link_with: lib_bas_ui,
     include_directories: exe_inc,
-    dependencies: exe_deps
+    dependencies: exe_deps,
 )
 bas_ui_static_dep = declare_dependency(
     link_with: lib_bas_ui_static,
     include_directories: exe_inc,
-    dependencies: exe_static_deps
+    dependencies: exe_static_deps,
 )
 
 meson.override_dependency('bas-ui', bas_ui_dep)
