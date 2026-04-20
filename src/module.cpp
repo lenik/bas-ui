@@ -7,16 +7,13 @@ extern "C" {
 
 define_logger();
 
-define_zip_assets(_bas_ui, bas_ui_assets);
-
+define_zip_assets(bas_ui, bas_ui_assets);
 }
 
 namespace {
 
 struct BasUiAssetsRegistrar {
-    BasUiAssetsRegistrar() {
-        AssetsRegistry::pushLayer(_bas_ui_assets.get());
-    }
+    BasUiAssetsRegistrar() { AssetsRegistry::pushLayer(bas_ui_assets.get()); }
 } bas_ui_assets_registrar;
 
-}
+} // namespace

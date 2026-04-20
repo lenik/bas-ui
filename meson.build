@@ -38,7 +38,6 @@ wx_dep = wx_sub.get_variable('wx_dep')
 
 # Disable all warnings (wx 3.0 and deps are noisy)
 cpp_nowarn = cpp.get_supported_arguments(['-w', '/w'])
-cpp_nowarn = cpp_nowarn
 
 cpp_args = cpp_nowarn + [
     '-gdwarf-4',
@@ -103,7 +102,13 @@ assets_o = custom_target(
     'assets_o',
     output: 'assets.o',
     input: [assets_s, assets_zip],
-    command: [as, '-o', '@OUTPUT@', '@INPUT0@'],
+    command: [
+        'sh',
+        '-c', 'cd "$1" && "$2" -o assets.o assets.s',
+        'sh',
+        build_dir,
+        as,
+    ],
     depends: assets_zip,
 )
 
