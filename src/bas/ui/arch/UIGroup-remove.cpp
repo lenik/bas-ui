@@ -4,6 +4,7 @@
 #include "UIGroup.hpp"
 #include "UIState.hpp"
 
+#include <wx/aui/auibar.h>
 #include <wx/bitmap.h>
 #include <wx/menu.h>
 #include <wx/string.h>
@@ -16,7 +17,8 @@
 #include <bas/log/uselog.h>
 
 void removeGroup(UIGroup* group, wxMenuBar* menubar) {
-    int menuPos = menubar->FindMenu(group->label.get());
+    wxString menuTitle = group->label.get().empty() ? group->name() : group->label.get();
+    int menuPos = menubar->FindMenu(menuTitle);
     if (menuPos >= 0) {
         wxMenu* menu = menubar->Remove(menuPos);
         delete menu;
@@ -31,11 +33,17 @@ void removeGroup(UIGroup* group, wxMenu* menu) {
     }
 }
 
+void removeGroup(UIGroup* group, wxAuiToolBar* toolbar) {
+    wxAuiToolBarItem* tool = toolbar->FindTool(group->id);
+    if (tool) {
+        toolbar->DeleteTool(tool->GetId());
+    }
+}
+
 void removeGroup(UIGroup* group, wxToolBar* toolbar) {
     wxToolBarToolBase* tool = toolbar->FindById(group->id);
     if (tool) {
-        toolbar->RemoveTool(tool->GetId());
-        delete tool;
+        toolbar->DeleteTool(tool->GetId());
     }
 }
 
@@ -47,11 +55,17 @@ void removeAction(UIElement* action, wxMenu* menu) {
     }
 }
 
+void removeAction(UIElement* action, wxAuiToolBar* toolbar) {
+    wxAuiToolBarItem* tool = toolbar->FindTool(action->id);
+    if (tool) {
+        toolbar->DeleteTool(tool->GetId());
+    }
+}
+
 void removeAction(UIElement* action, wxToolBar* toolbar) {
     wxToolBarToolBase* tool = toolbar->FindById(action->id);
     if (tool) {
-        toolbar->RemoveTool(tool->GetId());
-        delete tool;
+        toolbar->DeleteTool(tool->GetId());
     }
 }
 
@@ -80,12 +94,11 @@ void removeState(UIState* state, wxMenu* menu) {
     }
 }
 
-void removeState(UIState* state, wxToolBar* toolbar) {
+void removeState(UIState* state, wxAuiToolBar* toolbar) {
     if (state->getType() == UIStateType::BOOL) {
-        wxToolBarToolBase* tool = toolbar->FindById(state->id);
+        wxAuiToolBarItem* tool = toolbar->FindTool(state->id);
         if (tool) {
-            toolbar->RemoveTool(tool->GetId());
-            delete tool;
+            toolbar->DeleteTool(tool->GetId());
         }
     }
 
@@ -94,7 +107,23 @@ void removeState(UIState* state, wxToolBar* toolbar) {
         for (int v : enumValues) {
             UIStateValueDescriptor d = state->getValueDescriptor(v);
             int toolId = d.id(nullptr);
-            toolbar->RemoveTool(toolId);
+            toolbar->DeleteTool(toolId);
+        }
+    }
+}
+
+void removeState(UIState* state, wxToolBar* toolbar) {
+    if (state->getType() == UIStateType::BOOL) {
+        wxToolBarToolBase* tool = toolbar->FindById(state->id);
+        if (tool) {
+            toolbar->DeleteTool(tool->GetId());
+        }
+    } else if (state->getType() == UIStateType::ENUM) {
+        const std::vector<int> enumValues = state->getEnumValues();
+        for (int v : enumValues) {
+            UIStateValueDescriptor d = state->getValueDescriptor(v);
+            int toolId = d.id(nullptr);
+            toolbar->DeleteTool(toolId);
         }
     }
 }
@@ -118,14 +147,19 @@ void UIGroup::removeBuild(BuildViewContext* context, //
             continue;
         std::string dir = child->dir();
 
-        wxString label(child->label.get().empty() ? child->name() : child->label.get());
-        wxString help(child->description.get());
+        wxString label = child->label.get().empty() ? child->name() : child->label.get();
+        wxString help = child->description.get();
 
         ImageSet icon = child->icon.get();
 
         std::vector<wxMenuBar*> menubars = context->getMenubars(dir);
         std::vector<wxMenu*> menus = context->getMenus(dir);
-        std::vector<wxToolBar*> toolbars = context->getToolbars(dir);
+        std::vector<wxAuiToolBar*> auiToolbars;
+        std::vector<wxToolBar*> toolbars;
+        if (context->isAuiPreferred())
+            auiToolbars = context->getAuiToolbars(dir);
+        else
+            toolbars = context->getToolbars(dir);
 
         if (child->isGroup()) {
             UIGroup* gchild = dynamic_cast<UIGroup*>(child);
@@ -142,8 +176,13 @@ void UIGroup::removeBuild(BuildViewContext* context, //
                     removeGroup(gchild, m);
 
             if (gchild->toolWanted())
-                for (wxToolBar* tb : toolbars)
-                    removeGroup(gchild, tb);
+                if (context->isAuiPreferred()) {
+                    for (wxAuiToolBar* tb : auiToolbars)
+                        removeGroup(gchild, tb);
+                } else {
+                    for (wxToolBar* tb : toolbars)
+                        removeGroup(gchild, tb);
+                }
         }
 
         else if (child->isAction()) {
@@ -156,8 +195,13 @@ void UIGroup::removeBuild(BuildViewContext* context, //
                     removeAction(achild, m);
 
             if (child->toolWanted())
-                for (wxToolBar* tb : toolbars)
-                    removeAction(achild, tb);
+                if (context->isAuiPreferred()) {
+                    for (wxAuiToolBar* tb : auiToolbars)
+                        removeAction(achild, tb);
+                } else {
+                    for (wxToolBar* tb : toolbars)
+                        removeAction(achild, tb);
+                }
         }
 
         else if (child->isState()) {
@@ -170,8 +214,13 @@ void UIGroup::removeBuild(BuildViewContext* context, //
                     removeState(stchild, m);
 
             if (stchild->toolWanted())
-                for (wxToolBar* tb : toolbars)
-                    removeState(stchild, tb);
+                if (context->isAuiPreferred()) {
+                    for (wxAuiToolBar* tb : auiToolbars)
+                        removeState(stchild, tb);
+                } else {
+                    for (wxToolBar* tb : toolbars)
+                        removeState(stchild, tb);
+                }
         }
     }
 }
@@ -208,7 +257,10 @@ void UIGroup::removeBuild(BuildViewLogs* logs) {
             break;
         case BuildViewLog::TOOLBAR_TOOL:
             if (log->toolbar && log->toolId >= 0) {
-                log->toolbar->RemoveTool(log->toolId);
+                log->toolbar->DeleteTool(log->toolId);
+                log->toolId = -1;
+            } else if (log->auiToolbar && log->toolId >= 0) {
+                log->auiToolbar->DeleteTool(log->toolId);
                 log->toolId = -1;
             }
             break;

@@ -3,6 +3,7 @@
 
 #include "BuildViewContext.hpp"
 
+#include <wx/aui/auibar.h>
 #include <wx/menu.h>
 #include <wx/toolbar.h>
 
@@ -26,6 +27,7 @@ struct BuildViewLog {
     wxMenuItem* menuItem{nullptr};
 
     wxToolBar* toolbar{nullptr};
+    wxAuiToolBar* auiToolbar{nullptr};
     int toolId{-1};
     
     UIGroup* group{nullptr};

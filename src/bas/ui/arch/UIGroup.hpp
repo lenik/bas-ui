@@ -5,8 +5,8 @@
 #include "BuildViewLog.hpp"
 #include "UIElement.hpp"
 
+#include <wx/aui/auibar.h>
 #include <wx/menu.h>
-#include <wx/toolbar.h>
 
 #include <iostream>
 #include <memory>

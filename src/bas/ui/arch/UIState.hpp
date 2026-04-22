@@ -58,12 +58,6 @@ class UIState : public UIElement {
   public:
     using ValueDescriptorFn = std::function<UIStateValueDescriptor(int value)>;
 
-    UIStateType stateType{UIStateType::BOOL};
-    std::vector<int> enumValues;
-    ValueDescriptorFn valueDescriptorFn;
-
-    observable<UIStateVariant> value;
-
     UIState() = default;
     UIState(int id, const std::string& dir, const std::string& name,
             UIStateType type = UIStateType::BOOL, ValueDescriptorFn valueDesc = nullptr)
@@ -81,6 +75,19 @@ class UIState : public UIElement {
     std::optional<UIStateValueDescriptor> findValueDescriptorById(int id) const;
     std::optional<int> findValueById(int id) const;
 
+    std::vector<std::string>& getShortcuts() { return m_shortcuts; }
+
+  protected:
+    std::vector<std::string> m_shortcuts;
+
+  public:
+    UIStateType stateType{UIStateType::BOOL};
+    std::vector<int> enumValues;
+    ValueDescriptorFn valueDescriptorFn;
+
+    observable<UIStateVariant> value;
+
+  public:
     template <class builder_t, class T> class _Builder : public UIElement::_Builder<builder_t, T> {
       public:
         _Builder() = default;
@@ -90,6 +97,15 @@ class UIState : public UIElement {
                  bool visible = true, bool enabled = true)
             : UIElement::_Builder<builder_t, T>(id, dir, name, priority, label, description, doc,
                                                 icon, visible, enabled) {}
+
+        builder_t& shortcuts(std::vector<std::string> v) {
+            m_shortcuts = v;
+            return this->self();
+        }
+        builder_t& shortcut(std::string s) {
+            m_shortcuts.push_back(s);
+            return this->self();
+        }
 
         builder_t& stateType(UIStateType t) {
             m_stateType = t;
@@ -118,6 +134,7 @@ class UIState : public UIElement {
 
         void applyTo(UIState* el) const {
             UIElement::_Builder<builder_t, T>::applyTo(el);
+            el->m_shortcuts = m_shortcuts;
             el->stateType = m_stateType;
             el->enumValues = m_enumValues;
             el->valueDescriptorFn = m_valueDescriptorFn;
@@ -139,6 +156,8 @@ class UIState : public UIElement {
         }
 
       private:
+        std::vector<std::string> m_shortcuts;
+
         UIStateType m_stateType{UIStateType::BOOL};
         std::vector<int> m_enumValues;
         UIState::ValueDescriptorFn m_valueDescriptorFn{nullptr};

@@ -1,0 +1,51 @@
+#include <wx/app.h>
+#include <wx/artprov.h>
+#include <wx/aui/auibar.h>
+#include <wx/bitmap.h>
+#include <wx/defs.h>
+#include <wx/event.h>
+#include <wx/file.h>
+#include <wx/frame.h>
+#include <wx/gdicmn.h>
+#include <wx/image.h>
+#include <wx/intl.h>
+#include <wx/log.h>
+#include <wx/menu.h>
+#include <wx/mstream.h>
+#include <wx/sizer.h>
+#include <wx/stackwalk.h>
+#include <wx/stdpaths.h>
+#include <wx/string.h>
+#include <wx/textctrl.h>
+#include <wx/toolbar.h>
+#include <wx/window.h>
+#include <wx/wxprec.h>
+
+#include <boost/signals2.hpp>
+
+#include <algorithm>
+#include <array>
+#include <cstdint>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <filesystem>
+#include <functional>
+#include <initializer_list>
+#include <iostream>
+#include <map>
+#include <memory>
+#include <optional>
+#include <sstream>
+#include <stdexcept>
+#include <string>
+#include <string_view>
+#include <unordered_map>
+#include <unordered_set>
+#include <variant>
+#include <vector>
+
+#include <nanosvg/nanosvg.h>
+#include <nanosvg/nanosvgrast.h>
+
+#include <dlfcn.h>

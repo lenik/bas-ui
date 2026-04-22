@@ -2,10 +2,10 @@
 
 #include "BuildViewLog.hpp"
 
+#include <wx/aui/auibar.h>
 #include <wx/bitmap.h>
 #include <wx/menu.h>
 #include <wx/string.h>
-#include <wx/toolbar.h>
 
 #include <iostream>
 #include <memory>

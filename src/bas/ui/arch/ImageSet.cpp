@@ -92,7 +92,7 @@ ImageSet& ImageSet::detect(Volume* volume) {
     auto name = m_asset->name();
 
     auto files = volume->readDir(dir.str());
-    for (const auto& _file : files) {
+    for (const auto& [k, _file] : files->children) {
         Path _path(dir.str(), _file->name);
         std::string _extension = _path.extension();
         std::string _name = _path.name();

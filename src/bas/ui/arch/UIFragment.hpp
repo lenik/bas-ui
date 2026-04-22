@@ -7,8 +7,14 @@
 #include "UIGroup.hpp"
 #include "UIState.hpp"
 
+#include "wx/gtk/menu.h"
+
 #include <bas/script/scriptable.hpp>
 
+#include <wx/aui/auibar.h>
+#include <wx/toolbar.h>
+
+#include <unordered_set>
 #include <vector>
 
 /**
@@ -32,7 +38,38 @@ class UIFragment : public IScriptSymbols {
     // virtual void create() = 0;
     virtual std::vector<UIElement*> elements() { return m_elements; }
     // virtual void destroy() {}
-    
+
+    // Default menu/toolbars if framework doesn't provide.
+    std::unordered_set<std::string> getDefaultMenubarsSupported() const {
+        std::unordered_set<std::string> set;
+        getDefaultMenubarsSupported(set);
+        return set;
+    }
+    std::unordered_set<std::string> getDefaultMenusSupported() const {
+        std::unordered_set<std::string> set;
+        getDefaultMenusSupported(set);
+        return set;
+    }
+    std::unordered_set<std::string> getDefaultAuiToolbarsSupported() const {
+        std::unordered_set<std::string> set;
+        getDefaultAuiToolbarsSupported(set);
+        return set;
+    }
+    std::unordered_set<std::string> getDefaultToolbarsSupported() const {
+        std::unordered_set<std::string> set;
+        getDefaultToolbarsSupported(set);
+        return set;
+    }
+
+    virtual void getDefaultMenubarsSupported(std::unordered_set<std::string>& set) const {}
+    virtual void getDefaultMenusSupported(std::unordered_set<std::string>& set) const {}
+    virtual void getDefaultToolbarsSupported(std::unordered_set<std::string>& set) const {}
+    virtual void getDefaultAuiToolbarsSupported(std::unordered_set<std::string>& set) const {}
+    virtual wxMenuBar* makeDefaultMenubar(std::string_view path) { return nullptr; }
+    virtual wxMenu* makeDefaultMenu(std::string_view path) { return nullptr; }
+    virtual wxToolBar* makeDefaultToolbar(std::string_view path) { return nullptr; }
+    virtual wxAuiToolBar* makeDefaultAuiToolbar(std::string_view path) { return nullptr; }
+
     virtual void createFragmentView(CreateViewContext* ctx) {}
     virtual void destroyFragmentView(CreateViewContext* ctx) {}
 

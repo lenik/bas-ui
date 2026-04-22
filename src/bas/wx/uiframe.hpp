@@ -6,8 +6,11 @@
 #include "../ui/arch/UIGroup.hpp"
 #include "../ui/arch/UIState.hpp"
 
+#include <wx/aui/auibar.h>
+#include <wx/aui/framemanager.h>
 #include <wx/frame.h>
 #include <wx/menu.h>
+#include <wx/panel.h>
 #include <wx/textctrl.h>
 #include <wx/toolbar.h>
 
@@ -26,7 +29,7 @@ class uiFrame : public wxFrame, public UIFragment {
             wxWindow* parent = nullptr,                                       //
             wxWindowID id = wxID_ANY,                                         //
             const wxPoint& pos = wxDefaultPosition,                           //
-            const wxSize& size = wxSize(800, 600),                     //
+            const wxSize& size = wxSize(800, 600),                            //
             long style = wxDEFAULT_FRAME_STYLE,                               //
             const wxString& name = wxFrameNameStr                             //
     );
@@ -36,8 +39,16 @@ class uiFrame : public wxFrame, public UIFragment {
     void removeFragment(UIFragment* fragment);
 
     void createView();
+
+    void getDefaultMenubarsSupported(std::unordered_set<std::string>& set) const override;
+    void getDefaultToolbarsSupported(std::unordered_set<std::string>& set) const override;
+    void getDefaultAuiToolbarsSupported(std::unordered_set<std::string>& set) const override;
+    wxMenuBar* makeDefaultMenubar(std::string_view path) override;
+    wxToolBar* makeDefaultToolbar(std::string_view path) override;
+    wxAuiToolBar* makeDefaultAuiToolbar(std::string_view path) override;
+
     void createFragmentView(CreateViewContext* ctx) override;
-    
+
     void addFragmentView(UIFragment* fragment, CreateViewContext* ctx);
     void removeFragmentView(UIFragment* fragment, CreateViewContext* ctx);
 
@@ -51,15 +62,20 @@ class uiFrame : public wxFrame, public UIFragment {
   private:
     void create();
 
+  protected:
+    BuildViewContext m_buildViewContext;
+    BuildViewLogs m_buildViewLogs;
+
   private:
     std::vector<UIFragment*> m_fragments;
     UIGroup m_root;
+    wxAuiManager m_auiManager;
+    int m_nextAuiPaneId{0};
 
     wxMenuBar* m_menubar{nullptr};
     wxToolBar* m_toolbar{nullptr};
-
-    BuildViewContext m_buildViewContext;
-    BuildViewLogs m_buildViewLogs;
+    wxAuiToolBar* m_auiToolbar{nullptr};
+    wxPanel* m_contentPanel{nullptr};
 
     bool m_exitOnShow{false};
     observable<UIStateVariant>* m_showLabel;
@@ -72,9 +88,11 @@ class uiFrame : public wxFrame, public UIFragment {
 
     void onBoolStateChange(wxCommandEvent& event, UIState* state);
     void onEnumStateChange(wxCommandEvent& event, UIState* state);
-    
-    void onToolbarSize(int size);
-    void onToolbarShowLabel(bool value);
+
+    void onAuiToolbarSize(int size);
+    void onAuiToolbarShowLabel(bool value);
+
+    void updateAuiPaneInfo();
 };
 
 #endif // WX_UIFRAME_HPP

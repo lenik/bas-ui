@@ -1,7 +1,7 @@
 #include "BuildViewLog.hpp"
 
+#include <wx/aui/auibar.h>
 #include <wx/menu.h>
-#include <wx/toolbar.h>
 
 #include <iostream>
 #include <vector>

@@ -72,9 +72,13 @@ public:
     /** Invoke the action (e.g. from menu command). */
     void perform(PerformContext* ctx);
 
+    std::vector<std::string>& getShortcuts() {
+        return m_shortcuts;
+    }
+
 protected:
-    std::vector<std::string> shortcuts;
-    PerformFn performFn;
+    std::vector<std::string> m_shortcuts;
+    PerformFn m_performFn;
     
 public:
     template<class builder_t, class T>
@@ -105,15 +109,15 @@ public:
 
             builder_t& shortcuts(std::vector<std::string> v)
                 { m_shortcuts = v; return this->self(); }
-            builder_t& addShortcut(std::string s)
+            builder_t& shortcut(std::string s)
                 { m_shortcuts.push_back(s); return this->self(); }
             builder_t& performFn(UIAction::PerformFn&& fn)
                 { m_performFn = std::move(fn); return this->self(); }
         
             void applyTo(UIAction* el) const {
                 UIElement::_Builder<builder_t, T>::applyTo(el);
-                el->shortcuts = m_shortcuts;
-                el->performFn = std::move(m_performFn);
+                el->m_shortcuts = m_shortcuts;
+                el->m_performFn = std::move(m_performFn);
             }
 
             std::unique_ptr<UIAction> build() const {

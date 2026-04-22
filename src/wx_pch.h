@@ -7,6 +7,8 @@
 // 2. Fallback for compilers that do not support PCH
 #ifndef WX_PRECOMP
     #include <wx/wx.h>
+#else
+    #include "bulk.h"
 #endif
 
 #endif // WX_PCH_H
