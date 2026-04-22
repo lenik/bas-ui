@@ -1,0 +1,417 @@
+# ko translations for bas-ui.
+# Copyright (C) 2026 bas-ui
+# This file is distributed under the same license as the bas-ui package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: bas-ui 1.0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-04-22 14:30+0800\n"
+"Language: ko\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: app/notepad.cpp:42
+msgid "streamline-vectors/core/pop/interface-essential"
+msgstr "streamline-vectors/core/pop/interface-essential"
+
+#: app/notepad.cpp:43
+msgid "streamline-vectors/core/pop/artificial-intelligence"
+msgstr "streamline-vectors/core/pop/artificial-intelligence"
+
+#: app/notepad.cpp:46 app/notepad.cpp:51 app/notepad.cpp:56 app/notepad.cpp:61
+#: src/bas/wx/uiframe.cpp:49 src/bas/wx/uiframe.cpp:54
+msgid "file"
+msgstr "파일"
+
+#: app/notepad.cpp:46
+msgid "new"
+msgstr "새로 만들기"
+
+#: app/notepad.cpp:46
+msgid "&New"
+msgstr "새로 만들기(&N)"
+
+#: app/notepad.cpp:46
+msgid "New document"
+msgstr "새 문서"
+
+#: app/notepad.cpp:47
+msgid "new-file.svg"
+msgstr "new-file.svg"
+
+#: app/notepad.cpp:48
+msgid "Ctrl+N"
+msgstr "Ctrl+N"
+
+#: app/notepad.cpp:51
+msgid "open"
+msgstr "열기"
+
+#: app/notepad.cpp:51
+msgid "&Open..."
+msgstr "열기(&O)..."
+
+#: app/notepad.cpp:51
+msgid "Open file"
+msgstr "파일 열기"
+
+#: app/notepad.cpp:52
+msgid "open-book.svg"
+msgstr "open-book.svg"
+
+#: app/notepad.cpp:53
+msgid "Ctrl+O"
+msgstr "Ctrl+O"
+
+#: app/notepad.cpp:56
+msgid "save"
+msgstr "저장"
+
+#: app/notepad.cpp:56
+msgid "&Save"
+msgstr "저장(&S)"
+
+#: app/notepad.cpp:56
+msgid "Save file"
+msgstr "파일 저장"
+
+#: app/notepad.cpp:57
+msgid "file-add-alternate.svg"
+msgstr "file-add-alternate.svg"
+
+#: app/notepad.cpp:58
+msgid "Ctrl+S"
+msgstr "Ctrl+S"
+
+#: app/notepad.cpp:61
+msgid "saveas"
+msgstr "다른 이름으로 저장"
+
+#: app/notepad.cpp:61
+msgid "Save &As..."
+msgstr "다른 이름으로 저장(&A)..."
+
+#: app/notepad.cpp:61
+msgid "Save as"
+msgstr "다른 이름으로 저장"
+
+#: app/notepad.cpp:62
+msgid "multiple-file-2.svg"
+msgstr "multiple-file-2.svg"
+
+#: app/notepad.cpp:63
+msgid "Ctrl+Shift+S"
+msgstr "Ctrl+Shift+S"
+
+#: app/notepad.cpp:68 app/notepad.cpp:73 app/notepad.cpp:80 app/notepad.cpp:86
+#: app/notepad.cpp:92 app/notepad.cpp:97 app/notepad.cpp:102
+#: src/bas/wx/uiframe.cpp:50
+msgid "edit"
+msgstr "편집"
+
+#: app/notepad.cpp:68
+msgid "undo"
+msgstr "실행 취소"
+
+#: app/notepad.cpp:68
+msgid "Undo"
+msgstr "실행 취소"
+
+#: app/notepad.cpp:69
+msgid "line-arrow-reload-horizontal-1.svg"
+msgstr "line-arrow-reload-horizontal-1.svg"
+
+#: app/notepad.cpp:70
+msgid "Ctrl+Z"
+msgstr "Ctrl+Z"
+
+#: app/notepad.cpp:73
+msgid "redo"
+msgstr "다시 실행"
+
+#: app/notepad.cpp:73
+msgid "Redo"
+msgstr "다시 실행"
+
+#: app/notepad.cpp:74
+msgid "ai-redo-spark.svg"
+msgstr "ai-redo-spark.svg"
+
+#: app/notepad.cpp:75
+msgid "Ctrl+Y"
+msgstr "Ctrl+Y"
+
+#: app/notepad.cpp:80
+msgid "select_all"
+msgstr "모두 선택"
+
+#: app/notepad.cpp:80
+msgid "Select &All"
+msgstr "모두 선택(&A)"
+
+#: app/notepad.cpp:81
+msgid "Select all"
+msgstr "모두 선택"
+
+#: app/notepad.cpp:82
+msgid "clipboard-check.svg"
+msgstr "clipboard-check.svg"
+
+#: app/notepad.cpp:83
+msgid "Ctrl+A"
+msgstr "Ctrl+A"
+
+#: app/notepad.cpp:86
+msgid "clear"
+msgstr "지우기"
+
+#: app/notepad.cpp:86
+msgid "Clear"
+msgstr "지우기"
+
+#: app/notepad.cpp:87
+msgid "clipboard-remove.svg"
+msgstr "clipboard-remove.svg"
+
+#: app/notepad.cpp:88
+msgid "Ctrl+K"
+msgstr "Ctrl+K"
+
+#: app/notepad.cpp:92
+msgid "cut"
+msgstr "잘라내기"
+
+#: app/notepad.cpp:92
+msgid "Cu&t"
+msgstr "잘라내기(&T)"
+
+#: app/notepad.cpp:92
+msgid "Cut"
+msgstr "잘라내기"
+
+#: app/notepad.cpp:93
+msgid "cut.svg"
+msgstr "cut.svg"
+
+#: app/notepad.cpp:94
+msgid "Ctrl+X"
+msgstr "Ctrl+X"
+
+#: app/notepad.cpp:97
+msgid "copy"
+msgstr "복사"
+
+#: app/notepad.cpp:97
+msgid "&Copy"
+msgstr "복사(&C)"
+
+#: app/notepad.cpp:97
+msgid "Copy"
+msgstr "복사"
+
+#: app/notepad.cpp:98
+msgid "clipboard-add.svg"
+msgstr "clipboard-add.svg"
+
+#: app/notepad.cpp:99
+msgid "Ctrl+C"
+msgstr "Ctrl+C"
+
+#: app/notepad.cpp:102
+msgid "paste"
+msgstr "붙여넣기"
+
+#: app/notepad.cpp:102
+msgid "&Paste"
+msgstr "붙여넣기(&P)"
+
+#: app/notepad.cpp:102
+msgid "Paste"
+msgstr "붙여넣기"
+
+#: app/notepad.cpp:103
+msgid "empty-clipboard.svg"
+msgstr "empty-clipboard.svg"
+
+#: app/notepad.cpp:104
+msgid "Ctrl+V"
+msgstr "Ctrl+V"
+
+#: app/notepad.cpp:109 app/notepad.cpp:114 app/notepad.cpp:119
+#: src/bas/wx/uiframe.cpp:51 src/bas/wx/uiframe.cpp:69
+msgid "view"
+msgstr "보기"
+
+#: app/notepad.cpp:109
+msgid "zoom_in"
+msgstr "확대"
+
+#: app/notepad.cpp:109
+msgid "Zoom &In"
+msgstr "확대(&I)"
+
+#: app/notepad.cpp:109
+msgid "Zoom in"
+msgstr "확대"
+
+#: app/notepad.cpp:110
+msgid "magnifying-glass-circle.svg"
+msgstr "magnifying-glass-circle.svg"
+
+#: app/notepad.cpp:111
+msgid "Ctrl+="
+msgstr "Ctrl+="
+
+#: app/notepad.cpp:111
+msgid "Ctrl++"
+msgstr "Ctrl++"
+
+#: app/notepad.cpp:114
+msgid "zoom_out"
+msgstr "축소"
+
+#: app/notepad.cpp:114
+msgid "Zoom &Out"
+msgstr "축소(&O)"
+
+#: app/notepad.cpp:114
+msgid "Zoom out"
+msgstr "축소"
+
+#: app/notepad.cpp:115
+msgid "magnifying-glass.svg"
+msgstr "magnifying-glass.svg"
+
+#: app/notepad.cpp:116
+msgid "Ctrl+-"
+msgstr "Ctrl+-"
+
+#: app/notepad.cpp:119
+msgid "zoom_reset"
+msgstr "확대/축소 초기화"
+
+#: app/notepad.cpp:119
+msgid "Zoom &Reset"
+msgstr "확대/축소 초기화(&R)"
+
+#: app/notepad.cpp:120
+msgid "Zoom reset"
+msgstr "확대/축소 초기화"
+
+#: app/notepad.cpp:121
+msgid "search-visual.svg"
+msgstr "search-visual.svg"
+
+#: app/notepad.cpp:122
+msgid "Ctrl+0"
+msgstr "Ctrl+0"
+
+#: app/notepad.cpp:155
+msgid "Open"
+msgstr "열기"
+
+#: app/notepad.cpp:156 app/notepad.cpp:189
+msgid "All files (*.*)|*.*"
+msgstr "모든 파일 (*.*)|*.*"
+
+#: app/notepad.cpp:162
+msgid "Cannot open file."
+msgstr "파일을 열 수 없습니다."
+
+#: app/notepad.cpp:162 app/notepad.cpp:200 app/notepad.cpp:206
+msgid "Error"
+msgstr "오류"
+
+#: app/notepad.cpp:188
+msgid "Save As"
+msgstr "다른 이름으로 저장"
+
+#: app/notepad.cpp:200
+msgid "Cannot save file."
+msgstr "파일을 저장할 수 없습니다."
+
+#: app/notepad.cpp:206
+msgid "Write failed."
+msgstr "쓰기에 실패했습니다."
+
+#: app/notepad.cpp:290
+msgid "Notepad"
+msgstr "메모장"
+
+#: src/bas/wx/app.cpp:28
+#, c-format
+msgid "Assert failed: %ls:%d in %ls: %ls (%ls)\n"
+msgstr "Assert failed: %ls:%d in %ls: %ls (%ls)\n"
+
+#: src/bas/wx/uiframe.cpp:49
+msgid "&File"
+msgstr "파일(&F)"
+
+#: src/bas/wx/uiframe.cpp:50
+msgid "&Edit"
+msgstr "편집(&E)"
+
+#: src/bas/wx/uiframe.cpp:51
+msgid "&View"
+msgstr "보기(&V)"
+
+#: src/bas/wx/uiframe.cpp:54
+msgid "exit"
+msgstr "종료"
+
+#: src/bas/wx/uiframe.cpp:54
+msgid "E&xit"
+msgstr "종료(&X)"
+
+#: src/bas/wx/uiframe.cpp:54
+msgid "Exit"
+msgstr "종료"
+
+#: src/bas/wx/uiframe.cpp:56
+msgid "Ctrl+Q"
+msgstr "Ctrl+Q"
+
+#: src/bas/wx/uiframe.cpp:69
+msgid "toolbar_show_label"
+msgstr "toolbar_show_label"
+
+#: src/bas/wx/uiframe.cpp:70
+msgid "AuiToolbar &Show Label"
+msgstr "AuiToolbar 레이블 표시(&S)"
+
+#: src/bas/wx/uiframe.cpp:70
+msgid "AuiToolbar show label"
+msgstr "AuiToolbar 레이블 표시"
+
+#: src/bas/wx/uiframe.cpp:71
+msgid "text-square.svg"
+msgstr "text-square.svg"
+
+#: src/bas/wx/uiframe.cpp:72
+msgid "Ctrl+L"
+msgstr "Ctrl+L"
+
+#: src/bas/wx/uiframe.cpp:76
+msgid "Show Label"
+msgstr "레이블 표시"
+
+#: src/bas/wx/uiframe.cpp:76
+msgid "Hide Label"
+msgstr "레이블 숨기기"
+
+#: src/bas/wx/uiframe.cpp:77
+msgid "Show label"
+msgstr "레이블 표시"
+
+#: src/bas/wx/uiframe.cpp:77
+msgid "Hide label"
+msgstr "레이블 숨기기"
+
+#: src/bas/wx/uiframe.cpp:104
+msgid "content"
+msgstr "내용"
+
+#: src/bas/wx/uiframe.cpp:170
+msgid "<root>"
+msgstr "<root>"

@@ -4,10 +4,19 @@
  */
 #include "uiframe.hpp"
 
+#include "../../module.def"
+
 #include "../ui/arch/BuildViewContext.hpp"
 #include "../ui/arch/CreateViewContext.hpp"
 
+#include <wx/aui/auibar.h>
+#include <wx/panel.h>
+#include <wx/sizer.h>
+#include <wx/toolbar.h>
+
 #include <bas/log/uselog.h>
+
+#define _(s) dgettext(TEXT_DOMAIN, (s))
 
 uiFrame::uiFrame(const wxString& title,                             //
                  std::optional<std::vector<UIFragment*>> fragments, //
@@ -20,6 +29,7 @@ uiFrame::uiFrame(const wxString& title,                             //
                  )
     : wxFrame(parent, id, title, pos, size, style, name) //
 {
+    m_auiManager.SetManagedWindow(this);
     create();
 
     m_fragments.push_back(this);
@@ -29,46 +39,48 @@ uiFrame::uiFrame(const wxString& title,                             //
     }
 }
 
-uiFrame::~uiFrame() {}
+uiFrame::~uiFrame() { m_auiManager.UnInit(); }
 
 void uiFrame::create() {
     std::string dir = "streamline-vectors/core/pop/interface-essential";
     std::string dir2 = "streamline-vectors/core/pop/map-travel";
 
-    group(1, "", "file", 10, "&File").install();
-    group(2, "", "edit", 20, "&Edit").install();
-    group(3, "", "view", 30, "&View").install();
+    group(1, "", "file", 10, _("&File")).install();
+    group(2, "", "edit", 20, _("&Edit")).install();
+    group(3, "", "view", 30, _("&View")).install();
 
     int seq = 100000;
-    action(wxID_EXIT, "file", "exit", seq++, "E&xit", "Exit")
+    action(wxID_EXIT, "file", "exit", seq++, _("E&xit"), _("Exit"))
         .icon(wxART_QUIT, dir2, "emergency-exit.svg")
+        .shortcut("Ctrl+Q")
         .performFn([this](PerformContext* ctx) { onExit(ctx); })
         .no_tool()
         .install();
 
     seq = 1000;
 
-    // action(ID_TOOLBAR_SMALL, "view", "toolbar_small", seq++, "Toolbar &Small", "Toolbar
+    // action(ID_TOOLBAR_SMALL, "view", "toolbar_small", seq++, "AuiToolbar &Small", "AuiToolbar
     // small")
     //     .icon(wxART_LIST)
-    //     .performFn([this](PerformContext* ctx) { onToolbarSmall(ctx); })
+    //     .performFn([this](PerformContext* ctx) { onAuiToolbarSmall(ctx); })
     //     .install();
 
-    state(ID_TOOLBAR_SHOW_LABEL, "view", "toolbar_show_label", seq++, "Toolbar &Show Label",
-          "Toolbar show label")
+    state(ID_TOOLBAR_SHOW_LABEL, "view", _("toolbar_show_label"), seq++, //
+          _("AuiToolbar &Show Label"), _("AuiToolbar show label"))
         .icon(wxART_LIST_VIEW, dir, "text-square.svg")
+        .shortcut("Ctrl+L")
         .stateType(UIStateType::BOOL)
         .valueDescriptorFn([this](int value) {
             UIStateValueDescriptor d;
-            d.label = value ? "Show Label" : "Hide Label";
-            d.description = value ? "Show label" : "Hide label";
+            d.label = value ? _("Show Label") : _("Hide Label");
+            d.description = value ? _("Show label") : _("Hide label");
             return d;
         })
         .initValue(false)
         .valueRef(&m_showLabel)
         .connect([this](UIStateVariant const value, UIStateVariant const old_value) {
             bool showLabel = std::get<bool>(value);
-            onToolbarShowLabel(showLabel);
+            onAuiToolbarShowLabel(showLabel);
         })
         .install();
 }
@@ -83,13 +95,70 @@ void uiFrame::removeFragment(UIFragment* fragment) {
 }
 
 void uiFrame::createView() {
-    CreateViewContext ctx(wxID_ANY, this, "");
-    for (auto& fragment : m_fragments) {
-        fragment->createFragmentView(&ctx);
+    if (!m_contentPanel) {
+        m_contentPanel = new wxPanel(this, wxID_ANY);
+        m_contentPanel->SetSizer(new wxBoxSizer(wxVERTICAL));
+        if (m_buildViewContext.isAuiPreferred()) {
+            m_auiManager.AddPane(m_contentPanel,
+                                 wxAuiPaneInfo().Name("content").CenterPane().PaneBorder(false));
+        } else {
+            wxSizer* frameSizer = GetSizer();
+            if (frameSizer == nullptr) {
+                frameSizer = new wxBoxSizer(wxVERTICAL);
+                SetSizer(frameSizer);
+            }
+            frameSizer->Add(m_contentPanel, 1, wxEXPAND);
+        }
     }
 
-    m_buildViewContext.registerMenubar("", m_menubar);
-    m_buildViewContext.registerToolbar("", m_toolbar);
+    CreateViewContext ctx(wxID_ANY, m_contentPanel, "");
+
+    wxSizer* rootSizer = m_contentPanel->GetSizer();
+    if (rootSizer == nullptr) {
+        auto* box = new wxBoxSizer(wxVERTICAL);
+        m_contentPanel->SetSizer(box);
+        rootSizer = box;
+    }
+
+    for (auto& fragment : m_fragments) {
+        fragment->createFragmentView(&ctx);
+
+        for (auto path : fragment->getDefaultMenubarsSupported()) {
+            auto menubars = ctx.getMenubars(path);
+            if (menubars.empty()) {
+                auto menubar = fragment->makeDefaultMenubar(path);
+                m_buildViewContext.registerMenubar(path, menubar);
+            }
+        }
+
+        for (auto path : fragment->getDefaultMenusSupported()) {
+            auto menubars = ctx.getMenus(path);
+            if (menubars.empty()) {
+                auto menu = fragment->makeDefaultMenu(path);
+                m_buildViewContext.registerMenu(path, menu);
+            }
+        }
+
+        if (m_buildViewContext.isAuiPreferred()) {
+            for (auto path : fragment->getDefaultAuiToolbarsSupported()) {
+                auto toolbars = ctx.getAuiToolbars(path);
+                if (toolbars.empty()) {
+                    auto toolbar = fragment->makeDefaultAuiToolbar(path);
+                    if (!toolbar)
+                        continue;
+                    m_buildViewContext.registerAuiToolbar(path, toolbar);
+                }
+            }
+        } else {
+            for (auto path : fragment->getDefaultToolbarsSupported()) {
+                auto toolbars = ctx.getToolbars(path);
+                if (toolbars.empty()) {
+                    auto toolbar = fragment->makeDefaultToolbar(path);
+                    m_buildViewContext.registerToolbar(path, toolbar);
+                }
+            }
+        }
+    }
 
     std::vector<UIElement*> all;
     for (auto& fragment : m_fragments) {
@@ -97,12 +166,36 @@ void uiFrame::createView() {
         all.insert(all.end(), part.begin(), part.end());
     }
 
-    m_root = UIGroup(0, "", "", 0, "<root>", "", "", //
+    m_root = UIGroup(0, "", "", 0, "<root>", //
+                     "", "",                     //
                      ImageSet(), true, true);
     m_root.addToTree(all, &ctx);
     m_root.buildView(&m_buildViewContext, &m_buildViewLogs);
 
-    m_toolbar->Realize();
+    if (m_buildViewContext.isAuiPreferred()) {
+        m_buildViewContext.forAuiToolbars([this](wxAuiToolBar* toolbar) {
+            int position = m_nextAuiPaneId++;
+            wxString paneName = wxString::Format("aui-toolbar-%d", position);
+            wxAuiPaneInfo paneInfo;
+            paneInfo.Name(paneName)
+                .ToolbarPane()
+                .Layer(10)
+                .Top()
+                .Row(0)
+                .Position(position)
+                .Dockable(true)
+                // .Fixed()
+                .Movable(true)
+                .Floatable(true)
+                .Gripper(true)
+                .PaneBorder(false)
+                .CaptionVisible(false);
+            m_auiManager.AddPane(toolbar, paneInfo);
+        });
+        m_auiManager.Update();
+    } else if (m_toolbar) {
+        m_buildViewContext.forToolbars([](wxToolBar* toolbar) { toolbar->Realize(); });
+    }
 
     // Connect menu and toolbar events for each action/state ID where supported
     for (auto& el : all) {
@@ -169,12 +262,45 @@ void uiFrame::createView() {
     }
 }
 
-void uiFrame::createFragmentView(CreateViewContext* ctx) {
-    m_menubar = new wxMenuBar();
-    SetMenuBar(m_menubar);
-
-    m_toolbar = CreateToolBar(wxTB_FLAT);
+void uiFrame::getDefaultMenubarsSupported(std::unordered_set<std::string>& set) const {
+    set.insert("");
 }
+void uiFrame::getDefaultToolbarsSupported(std::unordered_set<std::string>& set) const {
+    set.insert("");
+}
+void uiFrame::getDefaultAuiToolbarsSupported(std::unordered_set<std::string>& set) const {
+    set.insert("");
+}
+wxMenuBar* uiFrame::makeDefaultMenubar(std::string_view path) {
+    if (path == "") {
+        if (m_menubar == nullptr) {
+            m_menubar = new wxMenuBar();
+            SetMenuBar(m_menubar);
+        }
+        return m_menubar;
+    }
+    return nullptr;
+}
+wxToolBar* uiFrame::makeDefaultToolbar(std::string_view path) {
+    if (path == "") {
+        if (m_toolbar == nullptr) {
+            m_toolbar = CreateToolBar(wxTB_FLAT);
+        }
+        return m_toolbar;
+    }
+    return nullptr;
+}
+wxAuiToolBar* uiFrame::makeDefaultAuiToolbar(std::string_view path) {
+    if (path == "") {
+        if (m_auiToolbar == nullptr) {
+            m_auiToolbar = m_buildViewContext.createAuiToolbar(this, wxID_ANY);
+        }
+        return m_auiToolbar;
+    }
+    return nullptr;
+}
+
+void uiFrame::createFragmentView(CreateViewContext* ctx) {}
 
 void uiFrame::addFragmentView(UIFragment* fragment, CreateViewContext* ctx) {
     addFragment(fragment);
@@ -241,18 +367,52 @@ void uiFrame::onEnumStateChange(wxCommandEvent& event, UIState* state) {
     state->value.set(*value);
 }
 
-void uiFrame::onToolbarSize(int size) {
+void uiFrame::onAuiToolbarSize(int size) {
     // m_toolbar->SetToolBarStyle(wxTB_TEXT | wxTB_HORIZONTAL);
 }
 
-void uiFrame::onToolbarShowLabel(bool value) {
-    long style = m_toolbar->GetWindowStyle();
-    if (value) {
-        style |= wxTB_TEXT;     // Add text
-        style &= ~wxTB_NOICONS; // Ensure icons are NOT hidden
-    } else {
-        style &= ~wxTB_TEXT; // Remove text
+void uiFrame::onAuiToolbarShowLabel(bool value) {
+    if (m_buildViewContext.isAuiPreferred()) {
+        m_buildViewContext.forAuiToolbars([this, value](wxAuiToolBar* toolbar) {
+            long style = toolbar->GetWindowStyle();
+            long oldStyle = style;
+            if (value) {
+                style |= wxAUI_TB_TEXT;
+            } else {
+                style &= ~wxAUI_TB_TEXT;
+            }
+            if (style == oldStyle)
+                return;
+            toolbar->SetWindowStyle(style);
+        });
+        updateAuiPaneInfo();
+    } else if (m_toolbar) {
+        long style = m_toolbar->GetWindowStyle();
+        if (value) {
+            style |= wxTB_TEXT;
+            style &= ~wxTB_NOICONS;
+        } else {
+            style &= ~wxTB_TEXT;
+        }
+        m_toolbar->SetWindowStyle(style);
+        m_toolbar->Realize();
     }
-    m_toolbar->SetWindowStyle(style);
-    m_toolbar->Realize();
+}
+
+void uiFrame::updateAuiPaneInfo() {
+    wxAuiPaneInfoArray& allPanes = m_auiManager.GetAllPanes();
+
+    for (size_t i = 0; i < allPanes.GetCount(); ++i) {
+        wxAuiPaneInfo& pane = allPanes.Item(i);
+
+        if (pane.IsToolbar() && pane.window) {
+            wxAuiToolBar* tb = wxDynamicCast(pane.window, wxAuiToolBar);
+            if (tb) {
+                tb->Realize();
+                wxSize size = tb->GetBestSize();
+                pane.BestSize(size);
+            }
+        }
+    }
+    m_auiManager.Update();
 }

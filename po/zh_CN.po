@@ -1,0 +1,417 @@
+# zh_CN translations for bas-ui.
+# Copyright (C) 2026 bas-ui
+# This file is distributed under the same license as the bas-ui package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: bas-ui 1.0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-04-22 14:30+0800\n"
+"Language: zh_CN\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: app/notepad.cpp:42
+msgid "streamline-vectors/core/pop/interface-essential"
+msgstr "streamline-vectors/core/pop/interface-essential"
+
+#: app/notepad.cpp:43
+msgid "streamline-vectors/core/pop/artificial-intelligence"
+msgstr "streamline-vectors/core/pop/artificial-intelligence"
+
+#: app/notepad.cpp:46 app/notepad.cpp:51 app/notepad.cpp:56 app/notepad.cpp:61
+#: src/bas/wx/uiframe.cpp:49 src/bas/wx/uiframe.cpp:54
+msgid "file"
+msgstr "文件"
+
+#: app/notepad.cpp:46
+msgid "new"
+msgstr "新建"
+
+#: app/notepad.cpp:46
+msgid "&New"
+msgstr "新建(&N)"
+
+#: app/notepad.cpp:46
+msgid "New document"
+msgstr "新建文档"
+
+#: app/notepad.cpp:47
+msgid "new-file.svg"
+msgstr "new-file.svg"
+
+#: app/notepad.cpp:48
+msgid "Ctrl+N"
+msgstr "Ctrl+N"
+
+#: app/notepad.cpp:51
+msgid "open"
+msgstr "打开"
+
+#: app/notepad.cpp:51
+msgid "&Open..."
+msgstr "打开(&O)..."
+
+#: app/notepad.cpp:51
+msgid "Open file"
+msgstr "打开文件"
+
+#: app/notepad.cpp:52
+msgid "open-book.svg"
+msgstr "open-book.svg"
+
+#: app/notepad.cpp:53
+msgid "Ctrl+O"
+msgstr "Ctrl+O"
+
+#: app/notepad.cpp:56
+msgid "save"
+msgstr "保存"
+
+#: app/notepad.cpp:56
+msgid "&Save"
+msgstr "保存(&S)"
+
+#: app/notepad.cpp:56
+msgid "Save file"
+msgstr "保存文件"
+
+#: app/notepad.cpp:57
+msgid "file-add-alternate.svg"
+msgstr "file-add-alternate.svg"
+
+#: app/notepad.cpp:58
+msgid "Ctrl+S"
+msgstr "Ctrl+S"
+
+#: app/notepad.cpp:61
+msgid "saveas"
+msgstr "另存为"
+
+#: app/notepad.cpp:61
+msgid "Save &As..."
+msgstr "另存为(&A)..."
+
+#: app/notepad.cpp:61
+msgid "Save as"
+msgstr "另存为"
+
+#: app/notepad.cpp:62
+msgid "multiple-file-2.svg"
+msgstr "multiple-file-2.svg"
+
+#: app/notepad.cpp:63
+msgid "Ctrl+Shift+S"
+msgstr "Ctrl+Shift+S"
+
+#: app/notepad.cpp:68 app/notepad.cpp:73 app/notepad.cpp:80 app/notepad.cpp:86
+#: app/notepad.cpp:92 app/notepad.cpp:97 app/notepad.cpp:102
+#: src/bas/wx/uiframe.cpp:50
+msgid "edit"
+msgstr "编辑"
+
+#: app/notepad.cpp:68
+msgid "undo"
+msgstr "撤销"
+
+#: app/notepad.cpp:68
+msgid "Undo"
+msgstr "撤销"
+
+#: app/notepad.cpp:69
+msgid "line-arrow-reload-horizontal-1.svg"
+msgstr "line-arrow-reload-horizontal-1.svg"
+
+#: app/notepad.cpp:70
+msgid "Ctrl+Z"
+msgstr "Ctrl+Z"
+
+#: app/notepad.cpp:73
+msgid "redo"
+msgstr "重做"
+
+#: app/notepad.cpp:73
+msgid "Redo"
+msgstr "重做"
+
+#: app/notepad.cpp:74
+msgid "ai-redo-spark.svg"
+msgstr "ai-redo-spark.svg"
+
+#: app/notepad.cpp:75
+msgid "Ctrl+Y"
+msgstr "Ctrl+Y"
+
+#: app/notepad.cpp:80
+msgid "select_all"
+msgstr "全选"
+
+#: app/notepad.cpp:80
+msgid "Select &All"
+msgstr "全选(&A)"
+
+#: app/notepad.cpp:81
+msgid "Select all"
+msgstr "全选"
+
+#: app/notepad.cpp:82
+msgid "clipboard-check.svg"
+msgstr "clipboard-check.svg"
+
+#: app/notepad.cpp:83
+msgid "Ctrl+A"
+msgstr "Ctrl+A"
+
+#: app/notepad.cpp:86
+msgid "clear"
+msgstr "清空"
+
+#: app/notepad.cpp:86
+msgid "Clear"
+msgstr "清除"
+
+#: app/notepad.cpp:87
+msgid "clipboard-remove.svg"
+msgstr "clipboard-remove.svg"
+
+#: app/notepad.cpp:88
+msgid "Ctrl+K"
+msgstr "Ctrl+K"
+
+#: app/notepad.cpp:92
+msgid "cut"
+msgstr "剪切"
+
+#: app/notepad.cpp:92
+msgid "Cu&t"
+msgstr "剪切(&T)"
+
+#: app/notepad.cpp:92
+msgid "Cut"
+msgstr "剪切"
+
+#: app/notepad.cpp:93
+msgid "cut.svg"
+msgstr "cut.svg"
+
+#: app/notepad.cpp:94
+msgid "Ctrl+X"
+msgstr "Ctrl+X"
+
+#: app/notepad.cpp:97
+msgid "copy"
+msgstr "复制"
+
+#: app/notepad.cpp:97
+msgid "&Copy"
+msgstr "复制(&C)"
+
+#: app/notepad.cpp:97
+msgid "Copy"
+msgstr "复制"
+
+#: app/notepad.cpp:98
+msgid "clipboard-add.svg"
+msgstr "clipboard-add.svg"
+
+#: app/notepad.cpp:99
+msgid "Ctrl+C"
+msgstr "Ctrl+C"
+
+#: app/notepad.cpp:102
+msgid "paste"
+msgstr "粘贴"
+
+#: app/notepad.cpp:102
+msgid "&Paste"
+msgstr "粘贴(&P)"
+
+#: app/notepad.cpp:102
+msgid "Paste"
+msgstr "粘贴"
+
+#: app/notepad.cpp:103
+msgid "empty-clipboard.svg"
+msgstr "empty-clipboard.svg"
+
+#: app/notepad.cpp:104
+msgid "Ctrl+V"
+msgstr "Ctrl+V"
+
+#: app/notepad.cpp:109 app/notepad.cpp:114 app/notepad.cpp:119
+#: src/bas/wx/uiframe.cpp:51 src/bas/wx/uiframe.cpp:69
+msgid "view"
+msgstr "视图"
+
+#: app/notepad.cpp:109
+msgid "zoom_in"
+msgstr "放大"
+
+#: app/notepad.cpp:109
+msgid "Zoom &In"
+msgstr "放大(&I)"
+
+#: app/notepad.cpp:109
+msgid "Zoom in"
+msgstr "放大"
+
+#: app/notepad.cpp:110
+msgid "magnifying-glass-circle.svg"
+msgstr "magnifying-glass-circle.svg"
+
+#: app/notepad.cpp:111
+msgid "Ctrl+="
+msgstr "Ctrl+="
+
+#: app/notepad.cpp:111
+msgid "Ctrl++"
+msgstr "Ctrl++"
+
+#: app/notepad.cpp:114
+msgid "zoom_out"
+msgstr "缩小"
+
+#: app/notepad.cpp:114
+msgid "Zoom &Out"
+msgstr "缩小(&O)"
+
+#: app/notepad.cpp:114
+msgid "Zoom out"
+msgstr "缩小"
+
+#: app/notepad.cpp:115
+msgid "magnifying-glass.svg"
+msgstr "magnifying-glass.svg"
+
+#: app/notepad.cpp:116
+msgid "Ctrl+-"
+msgstr "Ctrl+-"
+
+#: app/notepad.cpp:119
+msgid "zoom_reset"
+msgstr "重置缩放"
+
+#: app/notepad.cpp:119
+msgid "Zoom &Reset"
+msgstr "重置缩放(&R)"
+
+#: app/notepad.cpp:120
+msgid "Zoom reset"
+msgstr "重置缩放"
+
+#: app/notepad.cpp:121
+msgid "search-visual.svg"
+msgstr "search-visual.svg"
+
+#: app/notepad.cpp:122
+msgid "Ctrl+0"
+msgstr "Ctrl+0"
+
+#: app/notepad.cpp:155
+msgid "Open"
+msgstr "打开"
+
+#: app/notepad.cpp:156 app/notepad.cpp:189
+msgid "All files (*.*)|*.*"
+msgstr "所有文件 (*.*)|*.*"
+
+#: app/notepad.cpp:162
+msgid "Cannot open file."
+msgstr "无法打开文件。"
+
+#: app/notepad.cpp:162 app/notepad.cpp:200 app/notepad.cpp:206
+msgid "Error"
+msgstr "错误"
+
+#: app/notepad.cpp:188
+msgid "Save As"
+msgstr "另存为"
+
+#: app/notepad.cpp:200
+msgid "Cannot save file."
+msgstr "无法保存文件。"
+
+#: app/notepad.cpp:206
+msgid "Write failed."
+msgstr "写入失败。"
+
+#: app/notepad.cpp:290
+msgid "Notepad"
+msgstr "记事本"
+
+#: src/bas/wx/app.cpp:28
+#, c-format
+msgid "Assert failed: %ls:%d in %ls: %ls (%ls)\n"
+msgstr "Assert failed: %ls:%d in %ls: %ls (%ls)\n"
+
+#: src/bas/wx/uiframe.cpp:49
+msgid "&File"
+msgstr "文件(&F)"
+
+#: src/bas/wx/uiframe.cpp:50
+msgid "&Edit"
+msgstr "编辑(&E)"
+
+#: src/bas/wx/uiframe.cpp:51
+msgid "&View"
+msgstr "视图(&V)"
+
+#: src/bas/wx/uiframe.cpp:54
+msgid "exit"
+msgstr "退出"
+
+#: src/bas/wx/uiframe.cpp:54
+msgid "E&xit"
+msgstr "退出(&X)"
+
+#: src/bas/wx/uiframe.cpp:54
+msgid "Exit"
+msgstr "退出"
+
+#: src/bas/wx/uiframe.cpp:56
+msgid "Ctrl+Q"
+msgstr "Ctrl+Q"
+
+#: src/bas/wx/uiframe.cpp:69
+msgid "toolbar_show_label"
+msgstr "toolbar_show_label"
+
+#: src/bas/wx/uiframe.cpp:70
+msgid "AuiToolbar &Show Label"
+msgstr "AuiToolbar 显示标签(&S)"
+
+#: src/bas/wx/uiframe.cpp:70
+msgid "AuiToolbar show label"
+msgstr "AuiToolbar 显示标签"
+
+#: src/bas/wx/uiframe.cpp:71
+msgid "text-square.svg"
+msgstr "text-square.svg"
+
+#: src/bas/wx/uiframe.cpp:72
+msgid "Ctrl+L"
+msgstr "Ctrl+L"
+
+#: src/bas/wx/uiframe.cpp:76
+msgid "Show Label"
+msgstr "显示标签"
+
+#: src/bas/wx/uiframe.cpp:76
+msgid "Hide Label"
+msgstr "隐藏标签"
+
+#: src/bas/wx/uiframe.cpp:77
+msgid "Show label"
+msgstr "显示标签"
+
+#: src/bas/wx/uiframe.cpp:77
+msgid "Hide label"
+msgstr "隐藏标签"
+
+#: src/bas/wx/uiframe.cpp:104
+msgid "content"
+msgstr "内容"
+
+#: src/bas/wx/uiframe.cpp:170
+msgid "<root>"
+msgstr "<root>"

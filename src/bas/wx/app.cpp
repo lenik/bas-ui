@@ -1,9 +1,17 @@
 #include "app.hpp"
 
+#include "../../module.def"
+
 #include "../proc/MyStackWalker.hpp"
 
 #include <wx/app.h>
 #include <wx/frame.h>
+
+#include <clocale>
+
+#include <libintl.h>
+
+#define _(s) dgettext(TEXT_DOMAIN, (s))
 
 bool uiApp::OnInit() {
     if (!wxApp::OnInit()) {
@@ -16,7 +24,7 @@ bool uiApp::OnInit() {
 void uiApp::OnAssertFailure(const wxChar* file, int line, const wxChar* func, const wxChar* cond,
                             const wxChar* msg) {
     // Print basic assert info to stdout
-    printf("Assert failed: %ls:%d in %ls: %ls (%ls)\n", file, line, func, cond, msg);
+    printf(_("Assert failed: %ls:%d in %ls: %ls (%ls)\n"), file, line, func, cond, msg);
 
     // Use wxStackWalker to print the stack trace here if supported
     MyStackWalker walker;

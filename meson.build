@@ -1,7 +1,11 @@
 project(
     'bas-ui',
     ['c', 'cpp'],
-    version: '1.0.1',
+    version: run_command(
+        'sh',
+        '-c', 'v=$(git describe --tags --always --dirty 2>/dev/null || true); v=${v#v}; [ -n "$v" ] && printf "%s" "$v" || printf "0.0.0"',
+        check: false,
+    ).stdout().strip(),
     default_options: [
         #'warning_level=0',
         'cpp_std=c++17',
@@ -14,10 +18,10 @@ pkgdatadir = get_option('datadir') / meson.project_name()
 fs = import('fs')
 cpp = meson.get_compiler('cpp')
 
-if fs.exists('subprojects/bas-c')
+if fs.is_dir('subprojects/bas-c')
     subproject('bas-c')
 endif
-if fs.exists('subprojects/bas-cpp')
+if fs.is_dir('subprojects/bas-cpp')
     subproject('bas-cpp')
 endif
 
@@ -27,7 +31,7 @@ bas_cpp_dep = dependency('bas-cpp', required: true)
 bas_c_static_dep = dependency('bas-c-static', required: true)
 bas_cpp_static_dep = dependency('bas-cpp-static', required: true)
 
-if fs.exists('subprojects/nanosvg')
+if fs.is_dir('subprojects/nanosvg')
     nanosvg_dep = subproject('nanosvg').get_variable('nanosvg_dep')
 else
     nanosvg_dep = dependency('nanosvg', required: true)
@@ -35,6 +39,11 @@ endif
 
 wx_sub = subproject('wx_logic')
 wx_dep = wx_sub.get_variable('wx_dep')
+wx_aui_dep = cpp.find_library('wx_gtk3u_aui-3.0', required: true)
+intl_dep = dependency('intl', required: false)
+if not intl_dep.found()
+    intl_dep = cpp.find_library('intl', required: true)
+endif
 
 # Disable all warnings (wx 3.0 and deps are noisy)
 cpp_nowarn = cpp.get_supported_arguments(['-w', '/w'])
@@ -116,22 +125,28 @@ assets_o = custom_target(
 exe_deps = [
     bas_c_dep,
     bas_cpp_dep,
+    intl_dep,
     nanosvg_dep,
     wx_dep,
+    wx_aui_dep,
 ]
 
 exe_static_deps = [
     bas_c_static_dep,
     bas_cpp_static_dep,
+    intl_dep,
     nanosvg_dep,
     wx_dep,
+    wx_aui_dep,
 ]
 
 exe_inc = [
     include_directories('src'),
 ]
 
-override_options = ['b_lundef=false']  # Allows undefined symbols at link time
+override_options = ['b_lundef=false'] # Allows undefined symbols at link time
+
+subdir('po')
 
 lib_bas_ui = shared_library(
     'bas-ui',
@@ -144,7 +159,7 @@ lib_bas_ui = shared_library(
     cpp_pch: cpp_pch,
     link_args: ['-rdynamic', '-Wl,-E', '-Wl,--export-dynamic'],
     override_options: override_options,
-    version: meson.project_version(),
+    version: meson.project_version().split('-')[0],
     soversion: meson.project_version().split('.')[0],
     install: true,
 )
