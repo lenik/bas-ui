@@ -1,3 +1,4 @@
+#include <bas/locale/i18n.h>
 #include <bas/proc/AssetsRegistry.hpp>
 #include <bas/ui/arch/ImageSet.hpp>
 #include <bas/volume/overlay_ls.hpp>
@@ -28,6 +29,9 @@ void testLoadBitmap() {
 }
 
 int main(int argc, char** argv) {
+    init_i18n(argv[0],
+        "assets"
+    );
     OverlayVolume* vol = AssetsRegistry::instance().get();
     overlay_ls(vol, argc, argv);
     return 0;

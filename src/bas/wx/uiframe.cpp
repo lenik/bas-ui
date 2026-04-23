@@ -80,7 +80,7 @@ void uiFrame::create() {
         .valueRef(&m_showLabel)
         .connect([this](UIStateVariant const value, UIStateVariant const old_value) {
             bool showLabel = std::get<bool>(value);
-            onAuiToolbarShowLabel(showLabel);
+            setToolbarLabel(showLabel);
         })
         .install();
 }
@@ -167,7 +167,7 @@ void uiFrame::createView() {
     }
 
     m_root = UIGroup(0, "", "", 0, "<root>", //
-                     "", "",                     //
+                     "", "",                 //
                      ImageSet(), true, true);
     m_root.addToTree(all, &ctx);
     m_root.buildView(&m_buildViewContext, &m_buildViewLogs);
@@ -234,6 +234,11 @@ void uiFrame::createView() {
                 break;
 
             case UIStateType::ENUM: {
+                bool cycled = state->behavior & static_cast<int>(UIStateBehavior::CYCLED);
+                int currentValue = 0;
+                if (auto* p = std::get_if<int>(&state->value.get()))
+                    currentValue = *p;
+
                 const std::vector<int> enumValues = state->getEnumValues();
                 for (int v : enumValues) {
                     UIStateValueDescriptor d = state->getValueDescriptor(v);
@@ -244,6 +249,9 @@ void uiFrame::createView() {
                             onEnumStateChange(event, state);
                         },
                         itemId);
+
+                    if (cycled && v != currentValue)
+                        continue;
                     Bind(
                         wxEVT_TOOL,
                         [this, state](wxCommandEvent& event) { //
@@ -357,21 +365,47 @@ void uiFrame::onBoolStateChange(wxCommandEvent& event, UIState* state) {
 }
 
 void uiFrame::onEnumStateChange(wxCommandEvent& event, UIState* state) {
-    int id = event.GetId();
+    bool cycled = state->behavior & static_cast<int>(UIStateBehavior::CYCLED);
 
-    std::optional<int> value = state->findValueById(id);
-    if (!value) {
-        std::cout << "Enum state change: unknown id " << id << std::endl;
-        return;
+    if (cycled) {
+        int currentValue = 0;
+        if (auto* p = std::get_if<int>(&state->value.get()))
+            currentValue = *p;
+        // find the next value in the enum values
+        const std::vector<int> enumValues = state->getEnumValues();
+        int matched_index = -1;
+        int i = 0;
+        for (int v : enumValues) {
+            if (v == currentValue) {
+                matched_index = i;
+                break;
+            }
+            i++;
+        }
+        if (matched_index == -1) {
+            std::cout << "Enum state change: current value not found in enum values" << std::endl;
+            return;
+        }
+        int next_index = (matched_index + 1) % enumValues.size();
+        int next_value = enumValues[next_index];
+        state->value.set(next_value);
+    } else {
+        int id = event.GetId();
+
+        std::optional<int> value = state->findValueById(id);
+        if (!value) {
+            std::cout << "Enum state change: unknown id " << id << std::endl;
+            return;
+        }
+        state->value.set(*value);
     }
-    state->value.set(*value);
 }
 
-void uiFrame::onAuiToolbarSize(int size) {
+void uiFrame::setToolbarSize(int size) {
     // m_toolbar->SetToolBarStyle(wxTB_TEXT | wxTB_HORIZONTAL);
 }
 
-void uiFrame::onAuiToolbarShowLabel(bool value) {
+void uiFrame::setToolbarLabel(bool value) {
     if (m_buildViewContext.isAuiPreferred()) {
         m_buildViewContext.forAuiToolbars([this, value](wxAuiToolBar* toolbar) {
             long style = toolbar->GetWindowStyle();

@@ -27,6 +27,11 @@ enum class UIStateType {
     IMAGE,  // image asset
 };
 
+enum class UIStateBehavior {
+    LISTING = 1,
+    CYCLED = 2,
+};
+
 /** Value held by UIState. */
 using UIStateVariant = std::variant<bool, int, double, std::string, ImageSet>;
 
@@ -82,6 +87,7 @@ class UIState : public UIElement {
 
   public:
     UIStateType stateType{UIStateType::BOOL};
+    int behavior{0};
     std::vector<int> enumValues;
     ValueDescriptorFn valueDescriptorFn;
 
@@ -111,6 +117,18 @@ class UIState : public UIElement {
             m_stateType = t;
             return this->self();
         }
+        builder_t& behavior(int b) {
+            m_behavior = b;
+            return this->self();
+        }
+        builder_t& listing() {
+            m_behavior |= static_cast<int>(UIStateBehavior::LISTING);
+            return this->self();
+        }
+        builder_t& cycled() {
+            m_behavior |= static_cast<int>(UIStateBehavior::CYCLED);
+            return this->self();
+        }
         builder_t& enumValues(std::initializer_list<int> values) {
             m_enumValues = values;
             return this->self();
@@ -136,6 +154,7 @@ class UIState : public UIElement {
             UIElement::_Builder<builder_t, T>::applyTo(el);
             el->m_shortcuts = m_shortcuts;
             el->stateType = m_stateType;
+            el->behavior = m_behavior;
             el->enumValues = m_enumValues;
             el->valueDescriptorFn = m_valueDescriptorFn;
             if (m_initValue) {
@@ -159,9 +178,10 @@ class UIState : public UIElement {
         std::vector<std::string> m_shortcuts;
 
         UIStateType m_stateType{UIStateType::BOOL};
+        int m_behavior{0};
         std::vector<int> m_enumValues;
         UIState::ValueDescriptorFn m_valueDescriptorFn{nullptr};
-        observable<UIStateVariant>** m_valueRef;
+        observable<UIStateVariant>** m_valueRef{nullptr};
         std::optional<UIStateVariant> m_initValue;
         std::optional<observable<UIStateVariant>::slot_type> m_slot;
     };

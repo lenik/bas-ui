@@ -1,352 +1,20 @@
+
 #include "BuildViewContext.hpp"
-#include "BuildViewLog.hpp"
-#include "ImageSet.hpp"
 #include "UIAction.hpp"
+#include "UIElement.hpp"
 #include "UIGroup.hpp"
 #include "UIState.hpp"
 
-#include "wx/gtk/bitmap.h"
+#include "b-action.hpp"
+#include "b-group.hpp"
+#include "b-state.hpp"
 
 #include "../../wx/menus.hpp"
 #include "../../wx/toolbars.hpp"
 
 #include <wx/aui/auibar.h>
-#include <wx/bitmap.h>
 #include <wx/menu.h>
-#include <wx/string.h>
 #include <wx/toolbar.h>
-
-#include <memory>
-#include <string>
-#include <vector>
-
-#include <bas/log/uselog.h>
-
-void buildGroupView(UIGroup* group, wxMenuBar* menubar, BuildViewContext* context,
-                    BuildViewLogs* logs) {
-    wxString label = group->label.get().empty() ? group->name() : group->label.get();
-    wxString help = group->description.get();
-
-    // ImageSet icon = group->icon.get();
-    // int iconSize = context->preferredMenuIconSize();
-
-    int menuPos = menubar->GetMenuCount();
-    wxMenu* menu = new wxMenu();
-    menubar->Append(menu, label);
-
-    // menu icon not useful
-    // if (icon.isSet())
-    //     menu->SetBitmap(icon.loadBitmap(24, 24, wxART_MENU));
-
-    std::string menuPath = group->path ? group->path->str() : group->dir();
-    context->registerMenu(menuPath, menu);
-
-    auto log = std::make_unique<BuildViewLog>();
-    log->kind = BuildViewLog::MENU;
-    log->menuBar = menubar;
-    log->menuPos = menuPos;
-    log->group = group;
-    logs->push_back(std::move(log));
-}
-
-void buildGroupView(UIGroup* group, wxMenu* menu, BuildViewContext* context, BuildViewLogs* logs) {
-    wxString label = group->label.get().empty() ? group->name() : group->label.get();
-    wxString help = group->description.get();
-
-    ImageSet icon = group->icon.get();
-    int iconSize = context->preferredMenuIconSize();
-
-    wxMenu* submenu = new wxMenu();
-    wxMenuItem* item = menu->AppendSubMenu(submenu, label, help);
-
-    if (icon.isSet()) {
-        auto bmp = icon.toBitmap(iconSize, iconSize, wxART_MENU);
-        if (bmp && bmp->IsOk())
-            item->SetBitmap(*bmp);
-    }
-
-    std::string menuPath = group->path ? group->path->str() : group->dir();
-    context->registerMenu(menuPath, submenu);
-
-    auto log = std::make_unique<BuildViewLog>();
-    log->kind = BuildViewLog::SUBMENU;
-    log->menu = menu;
-    log->subMenuId = item->GetId();
-    log->menuItem = item;
-    log->group = group;
-    logs->push_back(std::move(log));
-}
-
-void buildGroupView(UIGroup* group, wxAuiToolBar* toolbar, BuildViewContext* context,
-                    BuildViewLogs* logs) {
-    wxString label = (group->label.get().empty() ? group->name() : group->label.get());
-    wxString help = group->description.get();
-
-    // ImageSet icon = group->icon.get();
-    // int iconSize = context->preferredToolIconSize();
-
-    // add necessary separators
-
-    if (group->flattenActionCount() == 0)
-        return;
-
-    wxAuiToolBarItem* sep = wx::addNecessarySeparator(toolbar);
-    if (!sep)
-        return;
-
-    auto log = std::make_unique<BuildViewLog>();
-    log->kind = BuildViewLog::TOOLBAR_TOOL;
-    log->auiToolbar = toolbar;
-    log->toolId = sep->GetId();
-    logs->push_back(std::move(log));
-}
-
-void buildGroupView(UIGroup* group, wxToolBar* toolbar, BuildViewContext* context,
-                    BuildViewLogs* logs) {
-    if (group->flattenActionCount() == 0)
-        return;
-    wxToolBarToolBase* sep = wx::addNecessarySeparator(toolbar);
-    if (!sep)
-        return;
-    auto log = std::make_unique<BuildViewLog>();
-    log->kind = BuildViewLog::TOOLBAR_TOOL;
-    log->toolbar = toolbar;
-    log->toolId = sep->GetId();
-    logs->push_back(std::move(log));
-}
-
-void buildActionView(UIAction* action, wxMenu* menu, BuildViewContext* context,
-                     BuildViewLogs* logs) {
-    wxString label = action->label.get().empty() ? action->name() : action->label.get();
-    wxString help = action->description.get();
-
-    ImageSet icon = action->icon.get();
-    int iconSize = context->preferredMenuIconSize();
-
-    auto& shortcuts = action->getShortcuts();
-    if (!shortcuts.empty()) {
-        label += "\t";
-        label += wxString(shortcuts[0].c_str());
-    }
-
-    wxMenuItem* item = new wxMenuItem(menu, action->id, label, help);
-    if (icon.isSet()) {
-        auto bmp = icon.toBitmap(iconSize, iconSize, wxART_MENU);
-        if (bmp && bmp->IsOk())
-            item->SetBitmap(*bmp);
-    }
-    menu->Append(item);
-
-    auto log = std::make_unique<BuildViewLog>();
-    log->kind = BuildViewLog::MENU_ITEM;
-    log->menu = menu;
-    log->menuItem = item;
-    logs->push_back(std::move(log));
-}
-
-void buildActionView(UIAction* action, wxAuiToolBar* toolbar, BuildViewContext* context,
-                     BuildViewLogs* logs) {
-    wxString label = action->label.get().empty() ? action->name() : action->label.get();
-    wxString help = action->description.get();
-
-    ImageSet icon = action->icon.get();
-    int iconSize = context->preferredToolIconSize();
-
-    wxBitmap bmp = *icon.toBitmap(iconSize, iconSize, wxART_TOOLBAR);
-    wxString toolLabel = label;
-    toolLabel.Replace("&", "");
-
-    // auto tool =
-    toolbar->AddTool(action->id, toolLabel, bmp, help, //
-                     wxITEM_NORMAL);
-
-    auto log = std::make_unique<BuildViewLog>();
-    log->kind = BuildViewLog::TOOLBAR_TOOL;
-    log->auiToolbar = toolbar;
-    log->toolId = action->id;
-    logs->push_back(std::move(log));
-}
-
-void buildActionView(UIAction* action, wxToolBar* toolbar, BuildViewContext* context,
-                     BuildViewLogs* logs) {
-    wxString label = action->label.get().empty() ? action->name() : action->label.get();
-    wxString help = action->description.get();
-    ImageSet icon = action->icon.get();
-    int iconSize = context->preferredToolIconSize();
-    wxBitmap bmp = *icon.toBitmap(iconSize, iconSize, wxART_TOOLBAR);
-    wxString toolLabel = label;
-    toolLabel.Replace("&", "");
-    toolbar->AddTool(action->id, toolLabel, bmp, help, wxITEM_NORMAL);
-    auto log = std::make_unique<BuildViewLog>();
-    log->kind = BuildViewLog::TOOLBAR_TOOL;
-    log->toolbar = toolbar;
-    log->toolId = action->id;
-    logs->push_back(std::move(log));
-}
-
-void buildStateView(UIState* state, wxMenu* menu, BuildViewContext* context, BuildViewLogs* logs) {
-    wxString label = state->label.get().empty() ? state->name() : state->label.get();
-    wxString help = state->description.get();
-
-    auto& shortcuts = state->getShortcuts();
-    if (!shortcuts.empty()) {
-        label += "\t";
-        label += shortcuts[0];
-    }
-
-    UIStateType type = state->getType();
-    switch (type) {
-    case UIStateType::BOOL: {
-        bool checked = false;
-        if (auto* p = std::get_if<bool>(&state->value.get()))
-            checked = *p;
-
-        wxMenuItem* item = menu->AppendCheckItem(state->id, label, help);
-        // check item can't have bitmap
-        menu->Check(state->id, checked);
-        auto log = std::make_unique<BuildViewLog>();
-        log->kind = BuildViewLog::MENU_ITEM;
-        log->menu = menu;
-        log->menuItem = item;
-        logs->push_back(std::move(log));
-        break;
-    }
-
-    case UIStateType::ENUM: {
-        const std::vector<int> enumValues = state->getEnumValues();
-
-        int currentValue = 0;
-        if (auto* p = std::get_if<int>(&state->value.get()))
-            currentValue = *p;
-
-        wxMenu* submenu = new wxMenu();
-        for (int v : enumValues) {
-            UIStateValueDescriptor d = state->getValueDescriptor(v);
-            if (d.label.empty())
-                continue;
-            int itemId = d.id(context);
-            wxMenuItem* item = submenu->AppendRadioItem(itemId, d.label, d.description);
-            if (v == currentValue) {
-                submenu->Check(itemId, true);
-            }
-        }
-        wxMenuItem* item = menu->Append(state->id, label, submenu, help);
-        auto log = std::make_unique<BuildViewLog>();
-        log->kind = BuildViewLog::SUBMENU;
-        log->menu = menu;
-        log->menuItem = item;
-        logs->push_back(std::move(log));
-        break;
-    }
-
-    default:
-        // not supported yet.
-        break;
-    }
-}
-
-void buildStateView(UIState* state, wxAuiToolBar* toolbar, BuildViewContext* context,
-                    BuildViewLogs* logs) {
-    wxString label = (state->label.get().empty() ? state->name() : state->label.get());
-    wxString help = state->description.get();
-
-    ImageSet icon = state->icon.get();
-    int toolIconSize = context->preferredToolIconSize();
-
-    UIStateType type = state->getType();
-    switch (type) {
-    case UIStateType::BOOL: {
-        bool checked = false;
-        if (auto* p = std::get_if<bool>(&state->value.get()))
-            checked = *p;
-
-        wxBitmap bmp;
-        if (icon.isSet()) {
-            bmp = *icon.toBitmap(toolIconSize, toolIconSize, wxART_TOOLBAR);
-        } else {
-            wxSize size(toolIconSize, toolIconSize);
-            bmp = wxArtProvider::GetBitmap(wxART_MISSING_IMAGE, //
-                                           wxART_TOOLBAR, size);
-        }
-
-        toolbar->AddTool(state->id, label, bmp, help, wxITEM_CHECK);
-        auto log = std::make_unique<BuildViewLog>();
-        log->kind = BuildViewLog::TOOLBAR_TOOL;
-        log->auiToolbar = toolbar;
-        log->toolId = state->id;
-        logs->push_back(std::move(log));
-        break;
-    }
-
-    case UIStateType::ENUM: {
-        const std::vector<int> enumValues = state->getEnumValues();
-        for (int v : enumValues) {
-            UIStateValueDescriptor d = state->getValueDescriptor(v);
-            if (d.label.empty())
-                break;
-            int toolId = d.id(context);
-            wxBitmap bmp = d.icon.toBitmap1(toolIconSize, toolIconSize, wxART_TOOLBAR);
-            toolbar->AddTool(toolId, d.label, bmp, wxString(d.description.c_str()), wxITEM_RADIO);
-            auto log = std::make_unique<BuildViewLog>();
-            log->kind = BuildViewLog::TOOLBAR_TOOL;
-            log->auiToolbar = toolbar;
-            log->toolId = toolId;
-            logs->push_back(std::move(log));
-        }
-        break;
-    }
-
-    default:
-        // not supported yet.
-        break;
-    }
-}
-
-void buildStateView(UIState* state, wxToolBar* toolbar, BuildViewContext* context,
-                    BuildViewLogs* logs) {
-    wxString label = state->label.get().empty() ? state->name() : state->label.get();
-    wxString help = state->description.get();
-    ImageSet icon = state->icon.get();
-    int toolIconSize = context->preferredToolIconSize();
-    UIStateType type = state->getType();
-    switch (type) {
-    case UIStateType::BOOL: {
-        wxBitmap bmp;
-        if (icon.isSet()) {
-            bmp = *icon.toBitmap(toolIconSize, toolIconSize, wxART_TOOLBAR);
-        } else {
-            wxSize size(toolIconSize, toolIconSize);
-            bmp = wxArtProvider::GetBitmap(wxART_MISSING_IMAGE, wxART_TOOLBAR, size);
-        }
-        toolbar->AddTool(state->id, label, bmp, help, wxITEM_CHECK);
-        auto log = std::make_unique<BuildViewLog>();
-        log->kind = BuildViewLog::TOOLBAR_TOOL;
-        log->toolbar = toolbar;
-        log->toolId = state->id;
-        logs->push_back(std::move(log));
-        break;
-    }
-    case UIStateType::ENUM: {
-        const std::vector<int> enumValues = state->getEnumValues();
-        for (int v : enumValues) {
-            UIStateValueDescriptor d = state->getValueDescriptor(v);
-            if (d.label.empty())
-                break;
-            int toolId = d.id(context);
-            wxBitmap bmp = d.icon.toBitmap1(toolIconSize, toolIconSize, wxART_TOOLBAR);
-            toolbar->AddTool(toolId, d.label, bmp, d.description, wxITEM_RADIO);
-            auto log = std::make_unique<BuildViewLog>();
-            log->kind = BuildViewLog::TOOLBAR_TOOL;
-            log->toolbar = toolbar;
-            log->toolId = toolId;
-            logs->push_back(std::move(log));
-        }
-        break;
-    }
-    default:
-        break;
-    }
-}
 
 void UIGroup::buildView(BuildViewContext* context, BuildViewLogs* logs, //
                         std::optional<std::unordered_set<UIElement*>> white_set) {
@@ -423,19 +91,19 @@ void UIGroup::buildView(BuildViewContext* context, BuildViewLogs* logs, //
 
             if (gchild->menuWanted())
                 for (wxMenuBar* parentMenubar : parentMenubars)
-                    buildGroupView(gchild, parentMenubar, context, logs);
+                    GroupVB(gchild, context, logs).build(parentMenubar);
 
             if (gchild->menuWanted())
                 for (wxMenu* parentMenu : parentMenus)
-                    buildGroupView(gchild, parentMenu, context, logs);
+                    GroupVB(gchild, context, logs).build(parentMenu);
 
             if (gchild->toolWanted() && gchild->flattenActionCount() > 0) {
                 if (context->isAuiPreferred()) {
                     for (wxAuiToolBar* parentAuiToolbar : parentAuiToolbars)
-                        buildGroupView(gchild, parentAuiToolbar, context, logs);
+                        GroupVB(gchild, context, logs).build(parentAuiToolbar);
                 } else {
                     for (wxToolBar* parentToolbar : parentToolbars)
-                        buildGroupView(gchild, parentToolbar, context, logs);
+                        GroupVB(gchild, context, logs).build(parentToolbar);
                 }
             }
 
@@ -450,15 +118,15 @@ void UIGroup::buildView(BuildViewContext* context, BuildViewLogs* logs, //
 
             if (achild->menuWanted())
                 for (wxMenu* m : parentMenus)
-                    buildActionView(achild, m, context, logs);
+                    ActionVB(achild, context, logs).build(m);
 
             if (achild->toolWanted()) {
                 if (context->isAuiPreferred()) {
                     for (wxAuiToolBar* tb : parentAuiToolbars)
-                        buildActionView(achild, tb, context, logs);
+                        ActionVB(achild, context, logs).build(tb);
                 } else {
                     for (wxToolBar* tb : parentToolbars)
-                        buildActionView(achild, tb, context, logs);
+                        ActionVB(achild, context, logs).build(tb);
                 }
             }
         }
@@ -470,15 +138,15 @@ void UIGroup::buildView(BuildViewContext* context, BuildViewLogs* logs, //
 
             if (stchild->menuWanted())
                 for (wxMenu* m : parentMenus)
-                    buildStateView(stchild, m, context, logs);
+                    StateVB(stchild, context, logs).build(m);
 
             if (stchild->toolWanted()) {
                 if (context->isAuiPreferred()) {
                     for (wxAuiToolBar* tb : parentAuiToolbars)
-                        buildStateView(stchild, tb, context, logs);
+                        StateVB(stchild, context, logs).build(tb);
                 } else {
                     for (wxToolBar* tb : parentToolbars)
-                        buildStateView(stchild, tb, context, logs);
+                        StateVB(stchild, context, logs).build(tb);
                 }
             }
         }

@@ -69,6 +69,9 @@ cpp_sources = files(
     './src/bas/ui/arch/UIGroup-remove.cpp',
     './src/bas/ui/arch/UIGroup.cpp',
     './src/bas/ui/arch/UIState.cpp',
+    './src/bas/ui/arch/b-action.cpp',
+    './src/bas/ui/arch/b-group.cpp',
+    './src/bas/ui/arch/b-state.cpp',
     './src/bas/util/mem.cpp',
     './src/bas/wx/app.cpp',
     './src/bas/wx/artprovs.cpp',
@@ -299,68 +302,4 @@ foreach test_rel_path : all_test_files
     test(test_name, test_exe)
 endforeach
 
-# --- Applications in app/ (one .cpp = one program), install to bindir + manpages to mandir ---
-find_app = run_command('find', 'app', '-maxdepth', '1', '-name', '*.cpp', check: false)
-app_cpp_list = []
-if find_app.returncode() == 0
-    foreach line : find_app.stdout().strip().split('\n')
-        if line != ''
-            app_cpp_list += line
-        endif
-    endforeach
-endif
-
-foreach app_cpp : app_cpp_list
-    app_name = app_cpp.split('/')[-1].replace('.cpp', '')
-    if app_name == 'notepad'
-        install_dir = get_option('bindir')
-    else
-        install_dir = pkgdatadir / 'app'
-    endif
-    executable(
-        app_name,
-        app_cpp,
-        include_directories: exe_inc,
-        dependencies: exe_deps + [bas_ui_dep],
-        cpp_args: cpp_nowarn
-        + [
-            # '-gdwarf-4',
-            '-DLOGGER_NAME='
-            + app_name,
-            '-DASSETS_NAME=bas_ui',
-        ],
-        cpp_pch: cpp_pch,
-        link_args: ['-rdynamic', '-no-pie'],
-        install: false,
-        install_dir: install_dir,
-    )
-endforeach
-
-# Manpages: app/*.1 -> install to mandir
-find_man = run_command('find', 'app', '-maxdepth', '1', '-name', '*.1', check: false)
-if find_man.returncode() == 0
-    foreach line : find_man.stdout().strip().split('\n')
-        if line == ''
-            continue
-        endif
-        install_man(line)
-    endforeach
-endif
-
-# ---- Bash completion (install to datadir/bash-completion/completions) ----
-find_bash = run_command('find', 'app', '-maxdepth', '1', '-name', '*.bash', check: false)
-if find_bash.returncode() == 0
-    foreach line : find_bash.stdout().strip().split('\n')
-        if line == ''
-            continue
-        endif
-        completion_name = fs.replace_suffix(line.split('/')[-1], '')
-        message(completion_name)
-        install_data(
-            line,
-            rename: completion_name,
-            install_dir: get_option('datadir') / 'bash-completion' / 'completions',
-            install_mode: 'rw-r--r--',
-        )
-    endforeach
-endif
+subdir('app')

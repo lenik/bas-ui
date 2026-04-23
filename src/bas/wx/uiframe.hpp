@@ -89,8 +89,8 @@ class uiFrame : public wxFrame, public UIFragment {
     void onBoolStateChange(wxCommandEvent& event, UIState* state);
     void onEnumStateChange(wxCommandEvent& event, UIState* state);
 
-    void onAuiToolbarSize(int size);
-    void onAuiToolbarShowLabel(bool value);
+    void setToolbarSize(int size);
+    void setToolbarLabel(bool value);
 
     void updateAuiPaneInfo();
 };

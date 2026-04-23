@@ -17,7 +17,7 @@ class UIGroup;
 struct BuildViewLog {
     virtual ~BuildViewLog();
 
-    enum Kind { MENU, SUBMENU, MENU_ITEM, TOOLBAR_TOOL };
+    enum Kind { MENU, SUBMENU, MENU_ITEM, TOOLBAR_TOOL, AUI_TOOLBAR_TOOL };
     Kind kind{MENU_ITEM};
     wxMenuBar* menuBar{nullptr};
     int menuPos{-1};
