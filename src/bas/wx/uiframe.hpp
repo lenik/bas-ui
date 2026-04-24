@@ -86,9 +86,6 @@ class uiFrame : public wxFrame, public UIFragment {
     void onCommand(wxCommandEvent& event, UIAction* action);
     void onExit(PerformContext* ctx);
 
-    void onBoolStateChange(wxCommandEvent& event, UIState* state);
-    void onEnumStateChange(wxCommandEvent& event, UIState* state);
-
     void setToolbarSize(int size);
     void setToolbarLabel(bool value);
 

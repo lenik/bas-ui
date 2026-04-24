@@ -77,7 +77,7 @@ cpp_sources = files(
     './src/bas/wx/artprovs.cpp',
     './src/bas/wx/images.cpp',
     './src/bas/wx/menus.cpp',
-    './src/bas/wx/toolbars.cpp',
+    './src/bas/wx/toolbar.cpp',
     './src/bas/wx/uiframe.cpp',
 )
 

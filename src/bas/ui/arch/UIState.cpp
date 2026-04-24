@@ -1,18 +1,19 @@
 #include "UIState.hpp"
 
-UIStateValueDescriptor UIState::getValueDescriptor(int value) const {
+std::optional<UIStateValueDescriptor> UIState::getValueDescriptor(int value) const {
     if (valueDescriptorFn) {
         return valueDescriptorFn(value);
     }
-    UIStateValueDescriptor d;
-    d.label = "Value " + std::to_string(value);
-    return d;
+    return std::nullopt;
 }
 
 std::optional<UIStateValueDescriptor> UIState::findValueDescriptorById(int id) const {
     for (int value : enumValues) {
-        UIStateValueDescriptor d = getValueDescriptor(value);
-        if (d.m_id == id) {
+        auto d = getValueDescriptor(value);
+        if (!d) {
+            continue;
+        }
+        if (d->m_id == id) {
             return d;
         }
     }
@@ -21,8 +22,11 @@ std::optional<UIStateValueDescriptor> UIState::findValueDescriptorById(int id) c
 
 std::optional<int> UIState::findValueById(int id) const {
     for (int value : enumValues) {
-        UIStateValueDescriptor d = getValueDescriptor(value);
-        if (d.m_id == id) {
+        auto d = getValueDescriptor(value);
+        if (!d) {
+            continue;
+        }
+        if (d->m_id == id) {
             return value;
         }
     }

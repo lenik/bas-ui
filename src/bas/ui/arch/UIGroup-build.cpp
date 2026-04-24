@@ -10,7 +10,7 @@
 #include "b-state.hpp"
 
 #include "../../wx/menus.hpp"
-#include "../../wx/toolbars.hpp"
+#include "../../wx/toolbar.hpp"
 
 #include <wx/aui/auibar.h>
 #include <wx/menu.h>
@@ -68,14 +68,15 @@ void UIGroup::buildView(BuildViewContext* context, BuildViewLogs* logs, //
                     for (wxMenu* parentMenu : parentMenus) {
                         wx::addNecessarySeparator(parentMenu);
                     }
-                if (child->toolWanted() && context->isAuiPreferred())
-                    for (wxAuiToolBar* parentAuiToolbar : parentAuiToolbars) {
-                        wx::addNecessarySeparator(parentAuiToolbar);
-                    }
-                if (child->toolWanted() && !context->isAuiPreferred())
-                    for (wxToolBar* parentToolbar : parentToolbars) {
-                        wx::addNecessarySeparator(parentToolbar);
-                    }
+                if (child->toolWanted())
+                    if (context->isAuiPreferred())
+                        for (wxAuiToolBar* parentAuiToolbar : parentAuiToolbars) {
+                            wx::ToolBar(parentAuiToolbar).addNecessarySeparator();
+                        }
+                    else
+                        for (wxToolBar* parentToolbar : parentToolbars) {
+                            wx::ToolBar(parentToolbar).addNecessarySeparator();
+                        }
             }
             klast = kgroup;
         }

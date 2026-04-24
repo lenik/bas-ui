@@ -103,11 +103,19 @@ void removeState(UIState* state, wxAuiToolBar* toolbar) {
     }
 
     else if (state->getType() == UIStateType::ENUM) {
-        const std::vector<int> enumValues = state->getEnumValues();
-        for (int v : enumValues) {
-            UIStateValueDescriptor d = state->getValueDescriptor(v);
-            int toolId = d.id(nullptr);
-            toolbar->DeleteTool(toolId);
+        bool cycled = state->behavior & static_cast<int>(UIStateBehavior::CYCLED);
+        if (cycled) {
+            toolbar->DeleteTool(state->id);
+        } else {
+            const std::vector<int> enumValues = state->getEnumValues();
+            for (int v : enumValues) {
+                auto d = state->getValueDescriptor(v);
+                if (!d) {
+                    continue;
+                }
+                int toolId = d->id(nullptr);
+                toolbar->DeleteTool(toolId);
+            }
         }
     }
 }
@@ -119,11 +127,19 @@ void removeState(UIState* state, wxToolBar* toolbar) {
             toolbar->DeleteTool(tool->GetId());
         }
     } else if (state->getType() == UIStateType::ENUM) {
-        const std::vector<int> enumValues = state->getEnumValues();
-        for (int v : enumValues) {
-            UIStateValueDescriptor d = state->getValueDescriptor(v);
-            int toolId = d.id(nullptr);
-            toolbar->DeleteTool(toolId);
+        bool cycled = state->behavior & static_cast<int>(UIStateBehavior::CYCLED);
+        if (cycled) {
+            toolbar->DeleteTool(state->id);
+        } else {
+            const std::vector<int> enumValues = state->getEnumValues();
+            for (int v : enumValues) {
+                auto d = state->getValueDescriptor(v);
+                if (!d) {
+                    continue;
+                }
+                int toolId = d->id(nullptr);
+                toolbar->DeleteTool(toolId);
+            }
         }
     }
 }

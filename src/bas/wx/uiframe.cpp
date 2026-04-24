@@ -196,78 +196,6 @@ void uiFrame::createView() {
     } else if (m_toolbar) {
         m_buildViewContext.forToolbars([](wxToolBar* toolbar) { toolbar->Realize(); });
     }
-
-    // Connect menu and toolbar events for each action/state ID where supported
-    for (auto& el : all) {
-        if (el->isAction()) {
-            UIAction* action = dynamic_cast<UIAction*>(el);
-            Bind(
-                wxEVT_MENU,
-                [this, action](wxCommandEvent& event) { //
-                    onCommand(event, action);
-                },
-                el->id);
-            Bind(
-                wxEVT_TOOL,
-                [this, action](wxCommandEvent& event) { //
-                    onCommand(event, action);
-                },
-                el->id);
-        }
-        if (el->isState()) {
-            UIState* state = dynamic_cast<UIState*>(el);
-            UIStateType type = state->getType();
-            switch (type) {
-            case UIStateType::BOOL:
-                Bind(
-                    wxEVT_MENU,
-                    [this, state](wxCommandEvent& event) { //
-                        onBoolStateChange(event, state);
-                    },
-                    el->id);
-                Bind(
-                    wxEVT_TOOL,
-                    [this, state](wxCommandEvent& event) { //
-                        onBoolStateChange(event, state);
-                    },
-                    el->id);
-                break;
-
-            case UIStateType::ENUM: {
-                bool cycled = state->behavior & static_cast<int>(UIStateBehavior::CYCLED);
-                int currentValue = 0;
-                if (auto* p = std::get_if<int>(&state->value.get()))
-                    currentValue = *p;
-
-                const std::vector<int> enumValues = state->getEnumValues();
-                for (int v : enumValues) {
-                    UIStateValueDescriptor d = state->getValueDescriptor(v);
-                    int itemId = d.id(&m_buildViewContext);
-                    Bind(
-                        wxEVT_MENU,
-                        [this, state](wxCommandEvent& event) { //
-                            onEnumStateChange(event, state);
-                        },
-                        itemId);
-
-                    if (cycled && v != currentValue)
-                        continue;
-                    Bind(
-                        wxEVT_TOOL,
-                        [this, state](wxCommandEvent& event) { //
-                            onEnumStateChange(event, state);
-                        },
-                        itemId);
-                }
-                break;
-            }
-
-            default:
-                // not supported yet.
-                break;
-            }
-        }
-    }
 }
 
 void uiFrame::getDefaultMenubarsSupported(std::unordered_set<std::string>& set) const {
@@ -353,53 +281,11 @@ void uiFrame::onShowExit(wxShowEvent& event) {
 }
 
 void uiFrame::onCommand(wxCommandEvent& event, UIAction* action) {
-    PerformContext ctx(action, 0, nullptr, &event, getEventHandler());
+    PerformContext ctx(action, 0, nullptr, &event);
     action->perform(&ctx);
 }
 
 void uiFrame::onExit(PerformContext* ctx) { Close(); }
-
-void uiFrame::onBoolStateChange(wxCommandEvent& event, UIState* state) {
-    bool checked = event.IsChecked();
-    state->value.set(checked);
-}
-
-void uiFrame::onEnumStateChange(wxCommandEvent& event, UIState* state) {
-    bool cycled = state->behavior & static_cast<int>(UIStateBehavior::CYCLED);
-
-    if (cycled) {
-        int currentValue = 0;
-        if (auto* p = std::get_if<int>(&state->value.get()))
-            currentValue = *p;
-        // find the next value in the enum values
-        const std::vector<int> enumValues = state->getEnumValues();
-        int matched_index = -1;
-        int i = 0;
-        for (int v : enumValues) {
-            if (v == currentValue) {
-                matched_index = i;
-                break;
-            }
-            i++;
-        }
-        if (matched_index == -1) {
-            std::cout << "Enum state change: current value not found in enum values" << std::endl;
-            return;
-        }
-        int next_index = (matched_index + 1) % enumValues.size();
-        int next_value = enumValues[next_index];
-        state->value.set(next_value);
-    } else {
-        int id = event.GetId();
-
-        std::optional<int> value = state->findValueById(id);
-        if (!value) {
-            std::cout << "Enum state change: unknown id " << id << std::endl;
-            return;
-        }
-        state->value.set(*value);
-    }
-}
 
 void uiFrame::setToolbarSize(int size) {
     // m_toolbar->SetToolBarStyle(wxTB_TEXT | wxTB_HORIZONTAL);

@@ -75,7 +75,7 @@ class UIState : public UIElement {
     int getEnumCount() const { return enumValues.size(); }
 
     /** For ENUM: return label, icon, helpDoc for the given value. */
-    UIStateValueDescriptor getValueDescriptor(int value) const;
+    std::optional<UIStateValueDescriptor> getValueDescriptor(int value) const;
 
     std::optional<UIStateValueDescriptor> findValueDescriptorById(int id) const;
     std::optional<int> findValueById(int id) const;

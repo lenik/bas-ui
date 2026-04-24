@@ -1,5 +1,11 @@
 #include "b-state.hpp"
 
+#include "../../wx/toolbar.hpp"
+
+#include <wx/tbarbase.h>
+
+#include <vector>
+
 void StateVB::build(wxMenu* menu) {
     auto& shortcuts = state->getShortcuts();
     if (!shortcuts.empty()) {
@@ -21,20 +27,12 @@ void StateVB::build(wxMenu* menu) {
 }
 
 void StateVB::build(wxToolBar* toolbar) {
-    int toolIconSize = context->preferredToolIconSize();
-    if (icon.isSet()) {
-        bitmap = *icon.toBitmap(toolIconSize, toolIconSize, wxART_TOOLBAR);
-    } else {
-        wxSize size(toolIconSize, toolIconSize);
-        bitmap = wxArtProvider::GetBitmap(wxART_MISSING_IMAGE, wxART_TOOLBAR, size);
-    }
-
     switch (type) {
     case UIStateType::BOOL:
-        bool2Tool(toolbar, val<bool>(false));
+        bool2Tool(wx::ToolBar(toolbar), val<bool>(false));
         break;
     case UIStateType::ENUM:
-        enum2Tool(toolbar, val<int>(0));
+        enum2ToolCycled(wx::ToolBar(toolbar), val<int>(0));
         break;
     default:
         std::cout << "StateVB::build: not supported type: " << static_cast<int>(type) << std::endl;
@@ -43,20 +41,12 @@ void StateVB::build(wxToolBar* toolbar) {
 }
 
 void StateVB::build(wxAuiToolBar* toolbar) {
-    int toolIconSize = context->preferredToolIconSize();
-    if (icon.isSet()) {
-        bitmap = *icon.toBitmap(toolIconSize, toolIconSize, wxART_TOOLBAR);
-    } else {
-        wxSize size(toolIconSize, toolIconSize);
-        bitmap = wxArtProvider::GetBitmap(wxART_MISSING_IMAGE, wxART_TOOLBAR, size);
-    }
-
     switch (type) {
     case UIStateType::BOOL:
-        bool2Tool2(toolbar, val<bool>(false));
+        bool2Tool(wx::ToolBar(toolbar), val<bool>(false));
         break;
     case UIStateType::ENUM:
-        enum2Tool2(toolbar, val<int>(0));
+        enum2ToolCycled(wx::ToolBar(toolbar), val<int>(0));
         break;
     default:
         std::cout << "StateVB::build: not supported type: " << static_cast<int>(type) << std::endl;
@@ -65,35 +55,44 @@ void StateVB::build(wxAuiToolBar* toolbar) {
 }
 
 void StateVB::bool2Menu(wxMenu* menu, bool val) {
+    auto id = state->id;
     wxMenuItem* item = menu->AppendCheckItem(state->id, label, shortHelp);
     menu->Check(state->id, val);
+
+    menu->Bind(
+        wxEVT_MENU,
+        [state = this->state](wxCommandEvent& event) {
+            bool checked = event.IsChecked();
+            state->value.set(checked);
+        },
+        id);
+
     log(menu, item);
 }
 
-void StateVB::bool2Tool(wxToolBar* toolbar, bool val) {
-    int toolid = state->id;
+void StateVB::bool2Tool(wx::ToolBar toolbar, bool val) {
+    int id = state->id;
     wxItemKind kind = wxITEM_CHECK;
-    auto tool = toolbar->AddTool(toolid, label, bitmap, shortHelp, kind);
+    wxBitmap bitmap = state->icon->toBitmap1(toolIconSize, toolIconSize, wxART_TOOLBAR);
+    toolbar.AddTool(id, label, bitmap, shortHelp, kind);
 
-    state->value.connect([this, toolbar](UIStateVariant const value, UIStateVariant const) {
-        auto b = std::get<bool>(value);
-        // toolbar->ToggleTool(toolid, b);
-    });
+    toolbar.Bind(
+        wxEVT_TOOL,
+        [state = this->state](wxCommandEvent& event) { //
+            bool checked = event.IsChecked();
+            state->value.set(checked);
+        },
+        id);
 
-    log(toolbar, toolid);
-}
+    state->value.connect(
+        [tb = toolbar, id](UIStateVariant const value, UIStateVariant const) mutable {
+            auto b = std::get<bool>(value);
+            bool state = tb.GetToolToggled(id);
+            if (state != b)
+                tb.ToggleTool(id, b);
+        });
 
-void StateVB::bool2Tool2(wxAuiToolBar* toolbar, bool val) {
-    int toolId = state->id;
-    wxItemKind kind = wxITEM_CHECK;
-    auto tool = toolbar->AddTool(toolId, label, bitmap, shortHelp, kind);
-
-    state->value.connect([this, toolbar, toolId](UIStateVariant const value, UIStateVariant const) {
-        auto b = std::get<bool>(value);
-        // toolbar->ToggleTool(toolId, b);
-    });
-
-    log(toolbar, toolId);
+    log(toolbar, id);
 }
 
 void StateVB::enum2Menu(wxMenu* menu, int val) {
@@ -101,80 +100,137 @@ void StateVB::enum2Menu(wxMenu* menu, int val) {
 
     wxMenu* submenu = new wxMenu();
     for (int v : enumValues) {
-        UIStateValueDescriptor d = state->getValueDescriptor(v);
-        if (d.label.empty())
+        auto d = state->getValueDescriptor(v);
+        if (!d) {
+            printf("val/menu: no descriptor for value %d\n", v);
             continue;
-        int itemId = d.id(context);
-        wxMenuItem* item = submenu->AppendRadioItem(itemId, d.label, d.description);
+        }
+        int itemId = d->id(context);
+        wxMenuItem* item = submenu->AppendRadioItem(itemId, d->label, d->description);
         if (v == val) {
             submenu->Check(itemId, true);
         }
     }
+
+    // Add as submenu
     wxMenuItem* item = menu->Append(state->id, label, submenu, shortHelp);
 
     log(menu, item);
 }
 
-void StateVB::enum2Tool(wxToolBar* toolbar, int val) {
+void StateVB::enum2RadioTools(wx::ToolBar toolbar, int val) {
     const std::vector<int> enumValues = state->getEnumValues();
+    std::vector<int> tools;
+
+    toolbar.addNecessarySeparator();
+
     for (int v : enumValues) {
-        UIStateValueDescriptor d = state->getValueDescriptor(v);
-        if (d.label.empty())
-            break;
-        if (cycled && v != val)
+        auto d = state->getValueDescriptor(v);
+        if (!d) {
+            printf("val/radio: no descriptor for value %d\n", v);
             continue;
-
-        wxBitmap bmp = d.icon.toBitmap1(toolIconSize, toolIconSize, wxART_TOOLBAR);
-
-        int toolId = d.id(context);
-        auto kind = cycled ? wxITEM_NORMAL : wxITEM_RADIO;
-        auto tool = toolbar->AddTool(toolId, d.label, bmp, d.description, kind);
-
-        if (cycled) {
-            state->value.connect([this, tool](UIStateVariant const value, UIStateVariant const) {
-                int n = std::get<int>(value);
-                auto d = state->getValueDescriptor(n);
-                wxBitmap bmp = d.icon.toBitmap1(toolIconSize, toolIconSize, wxART_TOOLBAR);
-
-                printf("cycle\n");
-                tool->SetLabel(d.label);
-                tool->SetNormalBitmap(bmp);
-            });
         }
 
-        log(toolbar, toolId);
+        int id = d->id(context);
+        auto kind = wxITEM_RADIO;
+        wxBitmap bmp = d->icon.toBitmap1(toolIconSize, toolIconSize, wxART_TOOLBAR);
+        toolbar.AddTool //
+            (id, d->label, bmp, d->description, kind);
+
+        auto st = this->state;
+        toolbar.Bind(
+            wxEVT_TOOL,
+            [st](wxCommandEvent& event) {
+                int id = event.GetId();
+
+                std::optional<int> value = st->findValueById(id);
+                if (!value) {
+                    std::cout << "Enum state change: unknown id " << id << std::endl;
+                    return;
+                }
+                st->value.set(*value);
+            },
+            id);
+
+        tools.push_back(id);
+
+        log(toolbar, id);
     }
+
+    toolbar.addNecessarySeparator();
+
+    // toggle radio
+    state->value.connect(
+        [toolbar, tools](UIStateVariant const value, UIStateVariant const) mutable {
+            int n = std::get<int>(value);
+            int id = tools[n];
+            printf("val/radio\n");
+            toolbar.ToggleTool(id, true);
+        });
 }
 
-void StateVB::enum2Tool2(wxAuiToolBar* toolbar, int val) {
-    const std::vector<int> enumValues = state->getEnumValues();
-    for (int v : enumValues) {
-        UIStateValueDescriptor d = state->getValueDescriptor(v);
-        if (d.label.empty())
-            break;
-        if (cycled && v != val)
-            continue;
-        wxBitmap bmp = d.icon.toBitmap1(toolIconSize, toolIconSize, wxART_TOOLBAR);
+void StateVB::enum2ToolCycled(wx::ToolBar toolbar, int val) {
+    auto d = state->getValueDescriptor(val);
+    if (!d) {
+        printf("val/cycle: no descriptor for value %d\n", val);
+        return;
+    }
 
-        int toolId = d.id(context);
-        auto kind = cycled ? wxITEM_RADIO : wxITEM_NORMAL;
-        auto tool = toolbar->AddTool(toolId, d.label, bmp, wxString(d.description.c_str()), kind);
+    int id = state->id;
 
-        if (cycled) {
-            state->value.connect(
-                [this, toolbar, toolId](UIStateVariant const value, UIStateVariant const) {
-                    int n = std::get<int>(value);
-                    auto d = state->getValueDescriptor(n);
-                    wxBitmap bmp = d.icon.toBitmap1(toolIconSize, toolIconSize, wxART_TOOLBAR);
+    auto kind = wxITEM_NORMAL;
+    wxBitmap bmp = d->icon.toBitmap1(toolIconSize, toolIconSize, wxART_TOOLBAR);
+    toolbar.AddTool //
+        (id, d->label, bmp, d->description, kind);
 
-                    printf("onchange cycle\n");
-                    toolbar->SetToolLabel(toolId, d.label);
-                    toolbar->SetToolBitmap(toolId, bmp);
-                });
+    auto st = this->state;
+    toolbar.Bind(
+        wxEVT_TOOL,
+        [st](wxCommandEvent& event) {
+            int currentValue = 0;
+            if (auto* p = std::get_if<int>(&st->value.get()))
+                currentValue = *p;
+
+            // find the next value in the enum values
+            const std::vector<int> enumValues = st->getEnumValues();
+            int matched_index = -1;
+            int i = 0;
+            for (int v : enumValues) {
+                if (v == currentValue) {
+                    matched_index = i;
+                    break;
+                }
+                i++;
+            }
+            if (matched_index == -1) {
+                std::cout << "Enum state change: current value not found in enum values"
+                          << std::endl;
+                return;
+            }
+            int next_index = (matched_index + 1) % enumValues.size();
+            int next_value = enumValues[next_index];
+            st->value.set(next_value);
+        },
+        id);
+
+    // change tool bitmap & label
+    state->value.connect([st, toolbar, id, size = toolIconSize](UIStateVariant const value,
+                                                                UIStateVariant const) mutable {
+        int n = std::get<int>(value);
+        auto d = st->getValueDescriptor(n);
+        if (!d) {
+            printf("val/cycle: no descriptor for value %d\n", n);
+            return;
         }
 
-        log(toolbar, toolId);
-    }
+        wxBitmap bmp = d->icon.toBitmap1(size, size, wxART_TOOLBAR);
+
+        printf("val/cycle\n");
+        toolbar.SetToolLabel(id, d->label);
+        toolbar.SetToolBitmap(id, bmp);
+    });
+
+    log(toolbar, id);
 }
 
 void StateVB::log(wxMenu* menu, wxMenuItem* item) {
@@ -185,18 +241,14 @@ void StateVB::log(wxMenu* menu, wxMenuItem* item) {
     logs->push_back(std::move(log));
 }
 
-void StateVB::log(wxToolBar* toolbar, int toolId) {
+void StateVB::log(wx::ToolBar toolbar, int toolId) {
     auto log = std::make_unique<BuildViewLog>();
     log->kind = BuildViewLog::TOOLBAR_TOOL;
-    log->toolbar = toolbar;
-    log->toolId = toolId;
-    logs->push_back(std::move(log));
-}
-
-void StateVB::log(wxAuiToolBar* toolbar, int toolId) {
-    auto log = std::make_unique<BuildViewLog>();
-    log->kind = BuildViewLog::AUI_TOOLBAR_TOOL;
-    log->auiToolbar = toolbar;
+    if (toolbar.isWx()) {
+        log->toolbar = toolbar.getWx();
+    } else {
+        log->auiToolbar = toolbar.getAui();
+    }
     log->toolId = toolId;
     logs->push_back(std::move(log));
 }

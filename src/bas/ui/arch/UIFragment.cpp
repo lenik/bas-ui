@@ -23,7 +23,8 @@ std::vector<std::string> UIFragment::findVars(std::string_view prefix) {
 }
 
 static bool ends_with(std::string_view str, std::string_view suffix) {
-    return str.size() >= suffix.size() && str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
+    return str.size() >= suffix.size() &&
+           str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
 }
 
 bool UIFragment::hasVar(std::string_view name) {
@@ -127,7 +128,7 @@ int UIFragment::invokeMethod(std::string_view name, const char* const* argv, int
                 UIAction* action = dynamic_cast<UIAction*>(el);
                 if (action) {
                     wxMenuEvent event(wxEVT_MENU, action->id);
-                    PerformContext ctx(action, argc, argv, &event, getEventHandler());
+                    PerformContext ctx(action, argc, argv, &event);
                     action->perform(&ctx);
                     return ctx.status;
                 }
@@ -148,6 +149,5 @@ PerformContext UIFragment::toPerformContext(wxEvent& event) {
             }
         }
     }
-    return PerformContext(action, 0, nullptr,
-        &event, getEventHandler());
+    return PerformContext(action, 0, nullptr, &event);
 }

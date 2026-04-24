@@ -6,9 +6,13 @@
 #include "ImageSet.hpp"
 #include "UIState.hpp"
 
-#include "wx/aui/auibar.h"
-#include "wx/bitmap.h"
-#include "wx/menu.h"
+#include "../../wx/toolbar.hpp"
+
+#include <wx/aui/auibar.h>
+#include <wx/bitmap.h>
+#include <wx/gtk/toolbar.h>
+#include <wx/menu.h>
+#include <wx/toolbar.h>
 
 class StateVB {
   public:
@@ -35,16 +39,14 @@ class StateVB {
     void build(wxAuiToolBar* toolbar);
 
     void bool2Menu(wxMenu* menu, bool val);
-    void bool2Tool(wxToolBar* toolbar, bool val);
-    void bool2Tool2(wxAuiToolBar* toolbar, bool val);
+    void bool2Tool(wx::ToolBar toolbar, bool val);
 
     void enum2Menu(wxMenu* menu, int val);
-    void enum2Tool(wxToolBar* toolbar, int val);
-    void enum2Tool2(wxAuiToolBar* toolbar, int val);
+    void enum2ToolCycled(wx::ToolBar toolbar, int val);
+    void enum2RadioTools(wx::ToolBar toolbar, int val);
 
     void log(wxMenu* menu, wxMenuItem* item);
-    void log(wxToolBar* toolbar, int toolId);
-    void log(wxAuiToolBar* toolbar, int toolId);
+    void log(wx::ToolBar toolbar, int toolId);
 
   private:
     UIState* state{nullptr};
@@ -55,7 +57,6 @@ class StateVB {
     wxString label;
     wxString shortHelp;
     ImageSet icon;
-    wxBitmap bitmap;
 
     bool cycled{false};
     int toolIconSize{0};

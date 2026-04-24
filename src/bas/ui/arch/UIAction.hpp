@@ -30,7 +30,7 @@ public:
     int status{0}; // exit status
 
     const wxEvent* event{nullptr};
-    const wxEvtHandler* event_handler{nullptr};
+    // const wxEvtHandler* event_handler{nullptr};
 
     // PerformContext() = default;
 
@@ -39,7 +39,7 @@ public:
         , int argc
         , const char* const* argv
         , const wxEvent* event_
-        , const wxEvtHandler* handler
+        // , const wxEvtHandler* handler
         )
         : action(action_)
         , argc(argc)
@@ -47,7 +47,7 @@ public:
         , args(argv, argv + argc)
         , status(0)
         , event(event_)
-        , event_handler(handler)
+        // , event_handler(handler)
     {}
 
     PerformContext(PerformContext&&) = default;

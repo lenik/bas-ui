@@ -1,6 +1,6 @@
 #include "b-group.hpp"
 
-#include "../../wx/toolbars.hpp"
+#include "../../wx/toolbar.hpp"
 
 #include <wx/aui/auibar.h>
 #include <wx/toolbar.h>
@@ -43,7 +43,7 @@ void GroupVB::build(wxMenu* menu) {
 void GroupVB::build(wxToolBar* toolbar) {
     if (group->flattenActionCount() == 0)
         return;
-    wxToolBarToolBase* sep = wx::addNecessarySeparator(toolbar);
+    wxToolBarToolBase* sep = wx::ToolBar(toolbar).addNecessarySeparator_wx();
     if (!sep)
         return;
     log(toolbar, sep->GetId());
@@ -57,7 +57,7 @@ void GroupVB::build(wxAuiToolBar* toolbar) {
     if (group->flattenActionCount() == 0)
         return;
 
-    wxAuiToolBarItem* sep = wx::addNecessarySeparator(toolbar);
+    wxAuiToolBarItem* sep = wx::ToolBar(toolbar).addNecessarySeparator_aui();
     if (!sep)
         return;
 

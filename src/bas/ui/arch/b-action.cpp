@@ -1,4 +1,5 @@
 #include "b-action.hpp"
+#include "bas/ui/arch/UIAction.hpp"
 
 void ActionVB::build(wxMenu* menu) {
     auto& shortcuts = action->getShortcuts();
@@ -7,6 +8,7 @@ void ActionVB::build(wxMenu* menu) {
         label += wxString(shortcuts[0].c_str());
     }
 
+    auto id = action->id;
     wxMenuItem* item = new wxMenuItem(menu, action->id, label, shortHelp);
     if (icon.isSet()) {
         int iconSize = context->preferredMenuIconSize();
@@ -15,6 +17,14 @@ void ActionVB::build(wxMenu* menu) {
             item->SetBitmap(*bmp);
     }
     menu->Append(item);
+
+    menu->Bind(
+        wxEVT_MENU,
+        [act = this->action](wxCommandEvent& event) {
+            PerformContext ctx(act, 0, nullptr, &event);
+            act->perform(&ctx);
+        },
+        id);
 
     log(menu, item);
 }
@@ -32,11 +42,19 @@ void ActionVB::build(wxToolBar* toolbar) {
     wxString toolLabel = label;
     toolLabel.Replace("&", "");
 
-    // auto tool =
-    toolbar->AddTool(action->id, toolLabel, bitmap, shortHelp, //
+    auto id = action->id;
+    toolbar->AddTool(id, toolLabel, bitmap, shortHelp, //
                      wxITEM_NORMAL);
 
-    log(toolbar, action->id);
+    toolbar->Bind(
+        wxEVT_TOOL,
+        [act = this->action](wxCommandEvent& event) {
+            PerformContext ctx(act, 0, nullptr, &event);
+            act->perform(&ctx);
+        },
+        id);
+
+    log(toolbar, id);
 }
 
 void ActionVB::build(wxAuiToolBar* toolbar) {
@@ -51,9 +69,19 @@ void ActionVB::build(wxAuiToolBar* toolbar) {
 
     wxString toolLabel = label;
     toolLabel.Replace("&", "");
-    auto tool = toolbar->AddTool(action->id, toolLabel, bitmap, shortHelp, wxITEM_NORMAL);
 
-    log(toolbar, action->id);
+    auto id = action->id;
+    toolbar->AddTool(id, toolLabel, bitmap, shortHelp, wxITEM_NORMAL);
+
+    toolbar->Bind(
+        wxEVT_TOOL,
+        [act = this->action](wxCommandEvent& event) {
+            PerformContext ctx(act, 0, nullptr, &event);
+            act->perform(&ctx);
+        },
+        id);
+
+    log(toolbar, id);
 }
 
 void ActionVB::log(wxMenu* menu, wxMenuItem* item) {
