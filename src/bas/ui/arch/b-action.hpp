@@ -6,12 +6,12 @@
 #include "ImageSet.hpp"
 #include "UIAction.hpp"
 
+#include <wx/aui/auibar.h>
+#include <wx/bitmap.h>
 #include <wx/menu.h>
 #include <wx/menuitem.h>
 #include <wx/string.h>
 #include <wx/toolbar.h>
-#include <wx/aui/auibar.h>
-#include <wx/bitmap.h>
 
 class ActionVB {
   public:

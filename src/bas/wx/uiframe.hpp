@@ -52,12 +52,15 @@ class uiFrame : public wxFrame, public UIFragment {
     void addFragmentView(UIFragment* fragment, CreateViewContext* ctx);
     void removeFragmentView(UIFragment* fragment, CreateViewContext* ctx);
 
+    // wxSizer* sizer(wxOrientation defaultOrient = wxVERTICAL);
+    // void addContent(wxWindow* content, bool layout = true, wxOrientation orient = wxVERTICAL);
+
     void exitOnShow(bool exit = true);
 
-    wxEvtHandler* getEventHandler() override {
-        wxFrame* frame = dynamic_cast<wxFrame*>(this);
-        return frame->GetEventHandler();
-    }
+    // wxEvtHandler* getEventHandler() override {
+    //     wxFrame* frame = dynamic_cast<wxFrame*>(this);
+    //     return frame->GetEventHandler();
+    // }
 
   private:
     void create();

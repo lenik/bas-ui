@@ -1,5 +1,6 @@
 #include "b-action.hpp"
-#include "bas/ui/arch/UIAction.hpp"
+
+#include "UIAction.hpp"
 
 void ActionVB::build(wxMenu* menu) {
     auto& shortcuts = action->getShortcuts();

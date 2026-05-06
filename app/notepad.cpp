@@ -237,14 +237,7 @@ void NotepadBody::createFragmentView(CreateViewContext* ctx) {
                             wxTE_MULTILINE | wxTE_WORDWRAP | wxTE_PROCESS_TAB);
     m_text->Bind(wxEVT_CHAR, &NotepadBody::onTextChar, this);
 
-    wxSizer* rootSizer = parent->GetSizer();
-    if (rootSizer == nullptr) {
-        auto* box = new wxBoxSizer(wxVERTICAL);
-        parent->SetSizer(box);
-        rootSizer = box;
-    }
-    rootSizer->Add(m_text, 1, wxEXPAND);
-    parent->Layout();
+    ctx->addContent(m_text);
 }
 
 void NotepadBody::doNew(PerformContext*) {

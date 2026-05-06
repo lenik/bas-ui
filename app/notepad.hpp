@@ -23,8 +23,6 @@ class NotepadBody : public UIFragment {
 
     void createFragmentView(CreateViewContext* ctx) override;
 
-    wxEvtHandler* getEventHandler() override { return m_text->GetEventHandler(); }
-
   private:
     wxTextCtrl* m_text;
     wxString m_filePath;

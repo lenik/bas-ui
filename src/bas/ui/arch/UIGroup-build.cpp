@@ -1,10 +1,8 @@
-
 #include "BuildViewContext.hpp"
 #include "UIAction.hpp"
 #include "UIElement.hpp"
 #include "UIGroup.hpp"
 #include "UIState.hpp"
-
 #include "b-action.hpp"
 #include "b-group.hpp"
 #include "b-state.hpp"

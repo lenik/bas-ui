@@ -29,8 +29,6 @@ class UIFragment : public IScriptSymbols {
     // override this to load elements delayed after object construction
     // virtual std::vector<UIElement*> loadElements() { return m_elements; }
 
-    virtual wxEvtHandler* getEventHandler() = 0;
-
     PerformContext toPerformContext(wxEvent& event);
 
     // UI lifecycle

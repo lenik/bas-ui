@@ -3,7 +3,12 @@
 
 #include "BuildViewContext.hpp"
 
+#include "wx/defs.h"
+#include "wx/gtk/window.h"
+
 #include <wx/frame.h>
+
+class uiFrame;
 
 class CreateViewContext : public BuildViewContext {
   public:
@@ -56,6 +61,11 @@ class CreateViewContext : public BuildViewContext {
         m_name = name;
         return *this;
     }
+
+    uiFrame* findParentFrame(bool error = true) const;
+
+    wxSizer* sizer(wxOrientation defaultOrient = wxVERTICAL);
+    void addContent(wxWindow* content, bool layout = true, wxOrientation orient = wxVERTICAL);
 
   private:
     wxWindowID m_id{wxID_ANY};
