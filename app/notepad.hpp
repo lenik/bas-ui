@@ -21,7 +21,7 @@ class NotepadBody : public UIFragment {
     void defineActions();
     void defineStates();
 
-    void createFragmentView(CreateViewContext* ctx) override;
+    wxWindow* createFragmentView(CreateViewContext* ctx) override;
 
   private:
     wxTextCtrl* m_text;

@@ -8,10 +8,23 @@
 #include <wx/frame.h>
 
 #include <clocale>
+#include <cstring>
 
+#include <glib.h>
 #include <libintl.h>
 
+
 #define _(s) dgettext(TEXT_DOMAIN, (s))
+
+// Suppress IBus "no capability of surrounding-text" warning.
+static void ibus_log_filter(const gchar* log_domain, GLogLevelFlags log_level, const gchar* message,
+    gpointer user_data) {
+    (void)user_data;
+    if (message && std::strstr(message, "surrounding-text") != nullptr) {
+        return;
+    }
+    g_log_default_handler(log_domain, log_level, message, nullptr);
+}
 
 bool uiApp::OnInit() {
     if (!wxApp::OnInit()) {
@@ -32,6 +45,8 @@ void uiApp::OnAssertFailure(const wxChar* file, int line, const wxChar* func, co
 }
 
 int uiApp::main(int argc, char** argv) {
+    g_log_set_handler("IBUS", G_LOG_LEVEL_WARNING, ibus_log_filter, nullptr);
+
     wxApp::SetInstance(this);
     if (!wxEntryStart(argc, argv)) {
         return 1;

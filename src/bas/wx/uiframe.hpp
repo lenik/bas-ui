@@ -47,7 +47,7 @@ class uiFrame : public wxFrame, public UIFragment {
     wxToolBar* makeDefaultToolbar(std::string_view path) override;
     wxAuiToolBar* makeDefaultAuiToolbar(std::string_view path) override;
 
-    void createFragmentView(CreateViewContext* ctx) override;
+    wxWindow* createFragmentView(CreateViewContext* ctx) override;
 
     void addFragmentView(UIFragment* fragment, CreateViewContext* ctx);
     void removeFragmentView(UIFragment* fragment, CreateViewContext* ctx);

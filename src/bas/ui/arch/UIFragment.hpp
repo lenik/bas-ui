@@ -68,7 +68,7 @@ class UIFragment : public IScriptSymbols {
     virtual wxToolBar* makeDefaultToolbar(std::string_view path) { return nullptr; }
     virtual wxAuiToolBar* makeDefaultAuiToolbar(std::string_view path) { return nullptr; }
 
-    virtual void createFragmentView(CreateViewContext* ctx) {}
+    virtual wxWindow* createFragmentView(CreateViewContext* ctx) { return nullptr; }
     virtual void destroyFragmentView(CreateViewContext* ctx) {}
 
     // scripting

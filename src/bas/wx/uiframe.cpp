@@ -121,7 +121,10 @@ void uiFrame::createView() {
     }
 
     for (auto& fragment : m_fragments) {
-        fragment->createFragmentView(&ctx);
+        auto content = fragment->createFragmentView(&ctx);
+        if (content) {
+            rootSizer->Add(content, 1, wxEXPAND);
+        }
 
         for (auto path : fragment->getDefaultMenubarsSupported()) {
             auto menubars = ctx.getMenubars(path);
@@ -236,7 +239,7 @@ wxAuiToolBar* uiFrame::makeDefaultAuiToolbar(std::string_view path) {
     return nullptr;
 }
 
-void uiFrame::createFragmentView(CreateViewContext* ctx) {}
+wxWindow* uiFrame::createFragmentView(CreateViewContext* ctx) { return nullptr; }
 
 void uiFrame::addFragmentView(UIFragment* fragment, CreateViewContext* ctx) {
     addFragment(fragment);

@@ -231,13 +231,13 @@ void NotepadBody::defineStates() {
         .install();
 }
 
-void NotepadBody::createFragmentView(CreateViewContext* ctx) {
-    wxWindow* parent = ctx->getParent();
-    m_text = new wxTextCtrl(parent, wxID_ANY, "", wxDefaultPosition, wxDefaultSize,
+wxWindow* NotepadBody::createFragmentView(CreateViewContext* ctx) {
+    m_text = new wxTextCtrl(ctx->getParent(), wxID_ANY, "", wxDefaultPosition, wxDefaultSize,
                             wxTE_MULTILINE | wxTE_WORDWRAP | wxTE_PROCESS_TAB);
+                            
     m_text->Bind(wxEVT_CHAR, &NotepadBody::onTextChar, this);
 
-    ctx->addContent(m_text);
+    return m_text;
 }
 
 void NotepadBody::doNew(PerformContext*) {
