@@ -30,7 +30,7 @@ void testLoadBitmap() {
 
 int main(int argc, char** argv) {
     init_i18n(argv[0],
-        "assets"
+        "bas-ui"
     );
     OverlayVolume* vol = AssetsRegistry::instance().get();
     overlay_ls(vol, argc, argv);

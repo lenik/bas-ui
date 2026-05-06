@@ -45,7 +45,6 @@ foreach app_cpp : app_cpp_list
             # '-gdwarf-4',
             '-DLOGGER_NAME='
             + app_name,
-            '-DASSETS_NAME=bas_ui',
         ],
         cpp_pch: cpp_pch,
         link_args: ['-rdynamic', '-no-pie'],
