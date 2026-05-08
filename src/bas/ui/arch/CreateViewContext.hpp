@@ -20,9 +20,7 @@ class CreateViewContext : public BuildViewContext {
                       const wxSize& size = wxDefaultSize,     //
                       long style = wxDEFAULT,                 //
                       const wxString& name = wxFrameNameStr   //
-                      )
-        : m_id(id), m_parent(parent), m_title(title), m_pos(pos), m_size(size), m_style(style),
-          m_name(name) {}
+                      );
     virtual ~CreateViewContext() = default;
 
     wxWindow* getParent() const { return m_parent; }

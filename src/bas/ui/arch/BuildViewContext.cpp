@@ -4,6 +4,12 @@
 
 #include <stdexcept>
 
+BuildViewContext::BuildViewContext()
+    : IdManager<int>(10000)
+    , m_auiPreferred(true)
+{
+}
+
 std::vector<wxMenuBar*> BuildViewContext::getMenubars(std::string_view path) {
     std::vector<wxMenuBar*> matches;
 

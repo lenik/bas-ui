@@ -1,6 +1,8 @@
 #ifndef UI_BUILD_VIEW_CONTEXT_H
 #define UI_BUILD_VIEW_CONTEXT_H
 
+#include "IdManager.hpp"
+
 #include <bas/util/Path.hpp>
 
 #include <wx/aui/auibar.h>
@@ -29,8 +31,9 @@ class LegacyToolBarArt : public wxAuiDefaultToolBarArt {
  * Context that provides wx menus and toolbars by path (element.dir()).
  * Used by UIGroup::setUp() to install group/action/state into the right menus/toolbars.
  */
-class BuildViewContext {
+class BuildViewContext : public IdManager<int> {
   public:
+    BuildViewContext();
     virtual ~BuildViewContext() = default;
 
     std::vector<wxMenuBar*> getMenubars(std::string_view path);
@@ -66,7 +69,13 @@ class BuildViewContext {
                                    const wxSize& size = wxDefaultSize,
                                    long style = wxAUI_TB_DEFAULT_STYLE);
 
-    int getNextId() { return next_id++; }
+    int getNextId(std::string_view name = "", std::string_view description = "") {
+        return alloc(name, description).id;
+    }
+
+    int getNextId(int parent, int index, std::string_view name = "", std::string_view description = "") {
+        return alloc(parent, index, name, description).id;
+    }
 
   private:
     std::unordered_map<std::string, std::vector<wxMenuBar*>> m_menubars;
@@ -74,10 +83,8 @@ class BuildViewContext {
     std::unordered_map<std::string, std::vector<wxToolBar*>> m_toolbars;
     std::unordered_map<std::string, std::vector<wxAuiToolBar*>> m_auiToolbars;
 
-    bool m_auiPreferred{true};
+    bool m_auiPreferred;
     LegacyToolBarArt m_auiToolBarArt;
-
-    int next_id{10000};
 };
 
 #endif // UI_BUILD_VIEW_CONTEXT_H

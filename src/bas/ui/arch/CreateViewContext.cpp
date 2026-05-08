@@ -1,8 +1,18 @@
 #include "CreateViewContext.hpp"
 
-#include "wx/uiframe.hpp"
+#include "../../wx/uiframe.hpp"
 
 #include <wx/sizer.h>
+
+CreateViewContext::CreateViewContext(wxWindowID id, wxWindow* parent, const wxString& title, const wxPoint& pos, const wxSize& size, long style, const wxString& name)
+    : BuildViewContext()
+    , m_id(id)
+    , m_parent(parent)
+    , m_title(title)
+    , m_pos(pos)
+    , m_size(size)
+    , m_style(style)
+    , m_name(name) {}
 
 uiFrame* CreateViewContext::findParentFrame(bool error) const {
     wxWindow* parent = m_parent;
