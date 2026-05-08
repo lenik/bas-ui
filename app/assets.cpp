@@ -21,10 +21,10 @@ void testLoadBitmap() {
     std::cout << "best match 32 path: " << *path << std::endl;
 
     auto bmp = icon.toBitmap(32, 32);
-    if (bmp && bmp->IsOk()) {
+    if (bmp.isOk()) {
         std::cout << "Bitmap loaded from Path: " << *path << std::endl;
     } else {
-        std::cout << "Failed to convert to bitmap" << std::endl;
+        std::cout << "Failed to convert to bitmap: " << bmp.getReason() << std::endl;
     }
 }
 
