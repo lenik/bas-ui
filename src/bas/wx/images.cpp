@@ -28,7 +28,7 @@ std::optional<wxBitmap> imageLoadAsset(const std::string& path, int width, int h
         return std::nullopt;
     }
     if (!vol->isFile(path)) {
-        logerror_fmt("No asset: %s", path.c_str());
+        logerror_fmt("Not an asset file: %s", path.c_str());
         return std::nullopt;
     }
 
@@ -40,7 +40,7 @@ std::optional<wxBitmap> imageLoadAsset(const std::string& path, int width, int h
 
     std::vector<uint8_t> data = vol->readFile(path);
     if (data.empty()) {
-        logerror_fmt("No asset: %s", path.c_str());
+        logerror_fmt("Asset file is empty: %s", path.c_str());
         return std::nullopt;
     }
     return imageLoad(data.data(), data.size(), extension, width, height, path);
