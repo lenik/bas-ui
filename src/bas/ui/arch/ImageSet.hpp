@@ -1,6 +1,8 @@
 #ifndef UI_IMAGESET_H
 #define UI_IMAGESET_H
 
+#include "BitmapResult.hpp"
+
 #include <bas/util/Path.hpp>
 #include <bas/volume/Volume.hpp>
 
@@ -35,19 +37,11 @@ class ScaledAsset {
     bool operator!=(const ScaledAsset& other) const { return !(*this == other); }
 };
 
-enum ReasonCode {
-    BMP_NO_ART_ID = 1,
-    BMP_BAD_ART = 2,
-    BMP_BAD_ALT = 3,
-    BMP_BAD_ART_ALT = 4,
-    BMP_BAD_ASSET = 5,
-};
-
 struct BitmapMode {
     using translate_fn = std::function<std::string(const std::string& path)>;
 
     using fallback_fn =
-        std::function<wxBitmap(int width, int height, const wxArtClient& client, int reason_code)>;
+        std::function<wxBitmap(int width, int height, const wxArtClient& client, ReasonCode reason_code)>;
 
     // BitmapMode() = default;
     // BitmapMode(bool no_stockart, bool no_asset, bool assets_preferred, bool exactly,
@@ -99,7 +93,7 @@ struct BitmapMode {
 };
 
 wxBitmap bitmapWithReason(int width, int height, const wxArtClient& client = wxART_OTHER,
-                          const BitmapMode& mode = BitmapMode::DEFAULT, int reason_code = 0);
+                          const BitmapMode& mode = BitmapMode::DEFAULT, ReasonCode reason_code = BMP_OK);
 
 /**
  * Icon/image set: optional wx art id, optional default asset path,
@@ -112,7 +106,7 @@ class ImageSet {
     ImageSet(wxArtID artId = wxString(), std::optional<Path> asset = std::nullopt,
              std::string text = "");
     ImageSet(wxArtID artId, std::string dir, std::string tail, std::string text = "");
-    explicit ImageSet(std::optional<Path> asset, std::string text = "");
+    explicit ImageSet(const Path& asset, std::string text = "");
 
     ImageSet& detect(Volume* volume = nullptr);
 
@@ -143,19 +137,17 @@ class ImageSet {
     std::optional<std::string> findExactlyAssetPath(int width, int height,
                                                     const wxArtClient& client = wxART_OTHER) const;
 
-    std::optional<wxBitmap> toBitmap(int width, int height, const wxArtClient& client = wxART_OTHER,
-                                     const BitmapMode& mode = BitmapMode::DEFAULT,
-                                     int* reason_var = nullptr) const;
+    BitmapResult toBitmap(int width, int height, const wxArtClient& client = wxART_OTHER,
+                                     const BitmapMode& mode = BitmapMode::DEFAULT) const;
 
-    std::optional<wxBitmap> _bitmapFromArt(int width, int height,
+    BitmapResult _bitmapFromArt(int width, int height,
                                            const wxArtClient& client = wxART_OTHER,
-                                           const BitmapMode& mode = BitmapMode::DEFAULT,
-                                           int* reason_var = nullptr) const;
+                                           const BitmapMode& mode = BitmapMode::DEFAULT) const;
 
-    wxBitmap toBitmap1(int width, int height, const wxArtClient& client = wxART_OTHER,
+    BitmapResult toBitmap1(int width, int height, const wxArtClient& client = wxART_OTHER,
                        const BitmapMode& mode = BitmapMode::DEFAULT) const;
 
-    wxBitmap _bitmapFromArt1(int width, int height, const wxArtClient& client = wxART_OTHER,
+    BitmapResult _bitmapFromArt1(int width, int height, const wxArtClient& client = wxART_OTHER,
                              const BitmapMode& mode = BitmapMode::DEFAULT) const;
 
     void dump(std::ostream& os) const;

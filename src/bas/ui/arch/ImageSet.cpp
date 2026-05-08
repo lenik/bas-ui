@@ -20,7 +20,7 @@
 
 auto ident = [](const std::string& path) { return path; };
 
-auto blank_bitmap = [](int width, int height, const wxArtClient& client, int reason_code) {
+auto blank_bitmap = [](int width, int height, const wxArtClient& client, ReasonCode reason_code) {
     return bitmapWithReason(width, height, client, BitmapMode::DEFAULT, reason_code);
 };
 
@@ -47,16 +47,6 @@ ImageSet::ImageSet(wxArtID artId, std::string dir, std::string tail, std::string
     init();
 }
 
-ImageSet::ImageSet(std::optional<Path> asset, std::string text) : m_artId(), m_asset(asset) {
-    if (text.empty())
-        if (asset)
-            text = asset->name();
-        else
-            text = "(blank)";
-    m_text = text;
-    init();
-}
-
 ImageSet::ImageSet(wxArtID artId, std::optional<Path> asset, std::string text)
     : m_artId(artId), m_asset(asset) {
     if (text.empty()) {
@@ -67,6 +57,13 @@ ImageSet::ImageSet(wxArtID artId, std::optional<Path> asset, std::string text)
         else
             text = "(blank)";
     }
+    m_text = text;
+    init();
+}
+
+ImageSet::ImageSet(const Path& asset, std::string text) : m_artId(), m_asset(asset) {
+    if (text.empty())
+        text = asset.name();
     m_text = text;
     init();
 }
@@ -90,6 +87,11 @@ ImageSet& ImageSet::detect(Volume* volume) {
 
     auto dir = m_asset->getParent();
     auto name = m_asset->name();
+
+    if (!volume->isDirectory(dir.str())) {
+        logerror_fmt("ImageSet: directory %s is not a directory", dir.str().c_str());
+        return *this;
+    }
 
     auto files = volume->readDir(dir.str());
     for (const auto& [k, _file] : files->children) {
@@ -222,27 +224,40 @@ std::optional<std::string> ImageSet::findExactlyAssetPath(int width, int height,
     return std::nullopt;
 }
 
-std::optional<wxBitmap> ImageSet::toBitmap(int width, int height, const wxArtClient& client,
-                                           const BitmapMode& mode, int* reason_var) const {
+BitmapResult ImageSet::toBitmap(int width, int height, const wxArtClient& client,
+                                           const BitmapMode& mode) const {
     bool use_stockart = !mode.no_stockart && !m_artId.empty();
-    bool use_asset = !mode.no_asset && m_asset;
     bool match_exactly = mode.exactly;
     bool match_best = !match_exactly;
     bool assets_preferred = mode.assets_preferred;
     bool stockart_preferred = !assets_preferred;
 
-    int reason_code = 0;
+    ReasonCode reason_code = ReasonCode::BMP_OK;
 
     if (use_stockart && stockart_preferred) {
-        std::optional<wxBitmap> bmp = _bitmapFromArt(width, height, client, mode);
-        if (bmp && bmp->IsOk())
-            return bmp;
+        BitmapResult result = _bitmapFromArt(width, height, client, mode);
+        if (result.hasBitmap()) {
+            if (m_asset) {
+                logdebug_fmt("Bitmap from stockart: %s, asset: %s", m_artId.ToStdString().c_str(), m_asset->str().c_str());
+            }
+            return result;
+        }
+        logdebug_fmt("Failed to create bitmap from stockart: %s", m_artId.ToStdString().c_str());
         reason_code = ReasonCode::BMP_BAD_ART_ALT;
     }
 
     do {
-        if (!use_asset)
+        if (mode.no_asset) {
+            logdebug_fmt("Asset is disabled");
+            reason_code = ReasonCode::BMP_DISABLED;
             break;
+        }
+
+        if (!m_asset) {
+            logdebug_fmt("Asset is not set");
+            reason_code = ReasonCode::BMP_NONE;
+            break;
+        }
 
         std::optional<std::string> _path =
             match_best ? findBestMatchAssetPath(width, height, client, mode.include_raw)
@@ -266,13 +281,13 @@ std::optional<wxBitmap> ImageSet::toBitmap(int width, int height, const wxArtCli
                         path.c_str());
             break;
         }
-        return bmp;
+        return BitmapResult(bmp);
     } while (false);
 
     if (use_stockart && !stockart_preferred) {
-        std::optional<wxBitmap> bmp = _bitmapFromArt(width, height, client, mode, &reason_code);
-        if (bmp && bmp->IsOk())
-            return bmp;
+        BitmapResult result = _bitmapFromArt(width, height, client, mode);
+        if (result.isOk())
+            return result;
     }
 
     if (mode.fallback) {
@@ -280,12 +295,12 @@ std::optional<wxBitmap> ImageSet::toBitmap(int width, int height, const wxArtCli
         assert(bmp.IsOk());
         return bmp;
     }
-    return std::nullopt;
+    return reason_code;
 }
 
-std::optional<wxBitmap> ImageSet::_bitmapFromArt(int width, int height, const wxArtClient& client,
-                                                 const BitmapMode& mode, int* reason_var) const {
-    int reason_code = 0;
+BitmapResult ImageSet::_bitmapFromArt(int width, int height, const wxArtClient& client,
+                                                 const BitmapMode& mode) const {
+    ReasonCode reason_code = ReasonCode::BMP_OK;
 
     if (m_artId.empty()) {
         if (mode.fallback) {
@@ -294,9 +309,7 @@ std::optional<wxBitmap> ImageSet::_bitmapFromArt(int width, int height, const wx
             assert(bmp.IsOk());
             return bmp;
         }
-        if (reason_var)
-            *reason_var = ReasonCode::BMP_NO_ART_ID;
-        return std::nullopt;
+        return ReasonCode::BMP_NO_ART_ID;
     }
 
     bool match_exactly = mode.exactly;
@@ -318,6 +331,7 @@ std::optional<wxBitmap> ImageSet::_bitmapFromArt(int width, int height, const wx
             return bmp;
     }
 
+    // no alt-path or alt-bmp is bad.
     ImageSet alt(path);
     BitmapMode alt_mode{
         .no_stockart = true,
@@ -328,44 +342,42 @@ std::optional<wxBitmap> ImageSet::_bitmapFromArt(int width, int height, const wx
         .translate = mode.translate,
         .fallback = mode.fallback,
     };
-    std::optional<wxBitmap> bmp = alt.toBitmap(width, height, client, alt_mode);
-    if (bmp && bmp->IsOk())
-        return bmp;
-    if (reason_code == 0)
+    BitmapResult result = alt.toBitmap(width, height, client, alt_mode);
+    if (result.isOk())
+        return result;
+    if (reason_code == BMP_OK)
         reason_code = ReasonCode::BMP_BAD_ALT;
     else
         reason_code = ReasonCode::BMP_BAD_ART_ALT;
-    if (reason_var)
-        *reason_var = reason_code;
 
     if (mode.fallback) {
         wxBitmap bmp = mode.fallback(width, height, client, reason_code);
         assert(bmp.IsOk());
         return bmp;
     }
-    return std::nullopt;
+    return reason_code;
 }
 
-wxBitmap ImageSet::toBitmap1(int width, int height, const wxArtClient& client,
+BitmapResult ImageSet::toBitmap1(int width, int height, const wxArtClient& client,
                              const BitmapMode& mode) const {
-    int reason_code = 0;
-    std::optional<wxBitmap> bmp = toBitmap(width, height, client, mode, &reason_code);
-    if (bmp && bmp->IsOk())
-        return *bmp;
+    ReasonCode reason_code = ReasonCode::BMP_OK;
+    BitmapResult result = toBitmap(width, height, client, mode);
+    if (result.isOk())
+        return result;
     return bitmapWithReason(width, height, client, mode, reason_code);
 }
 
-wxBitmap ImageSet::_bitmapFromArt1(int width, int height, const wxArtClient& client,
+BitmapResult ImageSet::_bitmapFromArt1(int width, int height, const wxArtClient& client,
                                    const BitmapMode& mode) const {
-    int reason_code = 0;
-    std::optional<wxBitmap> bmp = _bitmapFromArt(width, height, client, mode, &reason_code);
-    if (bmp && bmp->IsOk())
-        return *bmp;
-    return bitmapWithReason(width, height, client, mode, reason_code);
+    ReasonCode reason_code = ReasonCode::BMP_OK;
+    BitmapResult result = _bitmapFromArt(width, height, client, mode);
+    if (result.isOk())
+        return result;
+    return bitmapWithReason(width, height, client, mode, result.getReason());
 }
 
 wxBitmap bitmapWithReason(int width, int height, const wxArtClient& client, const BitmapMode& mode,
-                          int reason_code) {
+                          ReasonCode reason_code) {
 
     wxBitmap bmp(width, height, 24);
     wxMemoryDC dc(bmp);
@@ -374,46 +386,50 @@ wxBitmap bitmapWithReason(int width, int height, const wxArtClient& client, cons
     dc.SetPen(wxPen(mode.m_border));
     dc.DrawRectangle(0, 0, width, height);
 
-    char drawChar = 0;
+    std::string drawCode = "?";
     switch (reason_code) {
-    case 0:
-        drawChar = '-';
+    case ReasonCode::BMP_OK:
+        drawCode = "OK";
         break;
     case ReasonCode::BMP_NO_ART_ID:
-        drawChar = 'I';
+        drawCode = "NA";
+        break;
+    case ReasonCode::BMP_DISABLED:
+        drawCode = "DE";
+        break;
+    case ReasonCode::BMP_NONE:
+        drawCode = "NN";
         break;
     case ReasonCode::BMP_BAD_ART:
-        drawChar = 'A';
+        drawCode = "BA";
         break;
     case ReasonCode::BMP_BAD_ALT:
-        drawChar = 'B';
+        drawCode = "BT";
         break;
     case ReasonCode::BMP_BAD_ART_ALT:
-        drawChar = 'C';
+        drawCode = "AT";
         break;
     case ReasonCode::BMP_BAD_ASSET:
-        drawChar = 'Z';
+        drawCode = "EF";
         break;
     default:
         // if reason_code is printable char
         if (reason_code >= 32 && reason_code <= 126) {
-            drawChar = (char)reason_code;
-        } else {
-            drawChar = '?';
+            drawCode = std::to_string((char) reason_code);
         }
     }
 
-    if (drawChar) {
+    if (!drawCode.empty()) {
         // set font size to fit the bitmap
         int fontSize = std::min(width, height) / 2;
         dc.SetFont(wxFont(fontSize, wxFONTFAMILY_DEFAULT, wxFONTWEIGHT_NORMAL, wxFONTSTYLE_NORMAL));
         // center the text
-        wxSize extent = dc.GetTextExtent(wxString(1, drawChar));
+        wxSize extent = dc.GetTextExtent(drawCode);
         int left = (width - extent.GetWidth()) / 2;
         int top = (height - extent.GetHeight()) / 2;
         // set text color
         dc.SetTextForeground(mode.m_color);
-        dc.DrawText(wxString(1, drawChar), left, top);
+        dc.DrawText(drawCode, left, top);
     }
     return bmp;
 }
