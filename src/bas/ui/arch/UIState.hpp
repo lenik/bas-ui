@@ -43,12 +43,12 @@ struct UIStateValueDescriptor {
     ImageSet icon;
     int m_id{-1};
 
-    int id(BuildViewContext* context) {
+    int id(BuildViewContext* context, int parent, int index) {
         if (m_id == -1) {
             if (context == nullptr) {
                 throw std::runtime_error("context is required");
             } else {
-                m_id = context->getNextId();
+                m_id = context->getNextId(parent, index, label, description);
             }
         }
         return m_id;

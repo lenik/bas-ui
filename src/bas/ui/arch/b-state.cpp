@@ -105,7 +105,7 @@ void StateVB::enum2Menu(wxMenu* menu, int val) {
             printf("val/menu: no descriptor for value %d\n", v);
             continue;
         }
-        int itemId = d->id(context);
+        int itemId = d->id(context, state->id, v);
         wxMenuItem* item = submenu->AppendRadioItem(itemId, d->label, d->description);
         if (v == val) {
             submenu->Check(itemId, true);
@@ -131,7 +131,7 @@ void StateVB::enum2RadioTools(wx::ToolBar toolbar, int val) {
             continue;
         }
 
-        int id = d->id(context);
+        int id = d->id(context, state->id, v);
         auto kind = wxITEM_RADIO;
         wxBitmap bmp = d->icon.toBitmap1(toolIconSize, toolIconSize, wxART_TOOLBAR);
         toolbar.AddTool //

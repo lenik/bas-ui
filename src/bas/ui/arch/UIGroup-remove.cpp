@@ -113,7 +113,7 @@ void removeState(UIState* state, wxAuiToolBar* toolbar) {
                 if (!d) {
                     continue;
                 }
-                int toolId = d->id(nullptr);
+                int toolId = d->id(nullptr, state->id, v);
                 toolbar->DeleteTool(toolId);
             }
         }
@@ -137,7 +137,7 @@ void removeState(UIState* state, wxToolBar* toolbar) {
                 if (!d) {
                     continue;
                 }
-                int toolId = d->id(nullptr);
+                int toolId = d->id(nullptr, state->id, v);
                 toolbar->DeleteTool(toolId);
             }
         }

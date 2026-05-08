@@ -93,7 +93,7 @@ void UIGroup::addToTree(std::vector<UIElement*>& elements, BuildViewContext* con
             throw std::runtime_error("dir collision: " + dir);
         }
         el->attach(parent);
-        logdebug_fmt("resolved path %s dir %s attached to %s\n", path->str().c_str(), dir.c_str(),
+        logdebug_fmt("resolved path %s dir %s attached to %s", path->str().c_str(), dir.c_str(),
                      parent->str().c_str());
     }
 }
