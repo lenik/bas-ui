@@ -62,6 +62,7 @@ cpp_sources = files(
     './src/bas/ui/arch/CreateViewContext.cpp',
     './src/bas/ui/arch/EditHistory.cpp',
     './src/bas/ui/arch/ImageSet.cpp',
+    './src/bas/ui/arch/IdManager.cpp',
     './src/bas/ui/arch/UIAction.cpp',
     './src/bas/ui/arch/UIElement.cpp',
     './src/bas/ui/arch/UIFragment.cpp',
