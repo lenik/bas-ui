@@ -10,12 +10,24 @@ void ActionVB::build(wxMenu* menu) {
     }
 
     auto id = action->id;
+
+    if (id < 0 || id > SHRT_MAX || id >= wxID_AUTO_LOWEST && id <= wxID_AUTO_HIGHEST) {
+        std::cerr << "SHRT_MAX: " << SHRT_MAX << std::endl;
+        std::cerr << "wxID_AUTO_LOWEST: " << wxID_AUTO_LOWEST << std::endl;
+        std::cerr << "wxID_AUTO_HIGHEST: " << wxID_AUTO_HIGHEST << std::endl;
+        std::cerr << "action->id: " << action->id << std::endl;
+        std::cerr << "action->name: " << action->name() << std::endl;
+        std::cerr << "action->label: " << action->label.get() << std::endl;
+        std::cerr << "action->description: " << action->description.get() << std::endl;
+        exit(1);
+    }
+
     wxMenuItem* item = new wxMenuItem(menu, action->id, label, shortHelp);
     if (icon.isSet()) {
         int iconSize = context->preferredMenuIconSize();
         auto bmp = icon.toBitmap(iconSize, iconSize, wxART_MENU);
-        if (bmp && bmp->IsOk())
-            item->SetBitmap(*bmp);
+        if (bmp.isOk())
+            item->SetBitmap(bmp);
     }
     menu->Append(item);
 
@@ -32,9 +44,9 @@ void ActionVB::build(wxMenu* menu) {
 
 void ActionVB::build(wxToolBar* toolbar) {
     int iconSize = context->preferredToolIconSize();
-    wxBitmap bitmap;
+    BitmapResult bitmap;
     if (icon.isSet()) {
-        bitmap = *icon.toBitmap(iconSize, iconSize, wxART_TOOLBAR);
+        bitmap = icon.toBitmap(iconSize, iconSize, wxART_TOOLBAR);
     } else {
         wxSize size(iconSize, iconSize);
         bitmap = wxArtProvider::GetBitmap(wxART_MISSING_IMAGE, wxART_TOOLBAR, size);
@@ -60,9 +72,9 @@ void ActionVB::build(wxToolBar* toolbar) {
 
 void ActionVB::build(wxAuiToolBar* toolbar) {
     int iconSize = context->preferredToolIconSize();
-    wxBitmap bitmap;
+    BitmapResult bitmap;
     if (icon.isSet()) {
-        bitmap = *icon.toBitmap(iconSize, iconSize, wxART_TOOLBAR);
+        bitmap = icon.toBitmap(iconSize, iconSize, wxART_TOOLBAR);
     } else {
         wxSize size(iconSize, iconSize);
         bitmap = wxArtProvider::GetBitmap(wxART_MISSING_IMAGE, wxART_TOOLBAR, size);

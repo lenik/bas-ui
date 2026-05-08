@@ -30,8 +30,8 @@ void GroupVB::build(wxMenu* menu) {
 
     if (icon.isSet()) {
         auto bmp = icon.toBitmap(iconSize, iconSize, wxART_MENU);
-        if (bmp && bmp->IsOk())
-            item->SetBitmap(*bmp);
+        if (bmp.isOk())
+            item->SetBitmap(bmp);
     }
 
     std::string menuPath = group->path ? group->path->str() : group->dir();
