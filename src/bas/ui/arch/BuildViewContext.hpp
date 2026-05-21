@@ -5,11 +5,15 @@
 
 #include <bas/util/Path.hpp>
 
-#include <wx/aui/auibar.h>
+#include <wx/brush.h>
+#include <wx/dc.h>
 #include <wx/gdicmn.h>
 #include <wx/menu.h>
+#include <wx/settings.h>
 #include <wx/toolbar.h>
 #include <wx/window.h>
+
+#include <wx/aui/auibar.h>
 
 #include <functional>
 #include <optional>
