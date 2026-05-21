@@ -60,6 +60,10 @@ int uiApp::main(int argc, char** argv) {
         rc = 1;
     }
 
+    // Flush pending GUI log messages while wxTheApp is still valid (GetAppDisplayName).
+    if (wxLog::GetActiveTarget())
+        wxLog::FlushActive();
+
     // Prevent wxEntryCleanup from deleting this stack-allocated instance.
     // We already ran OnExit() above, so just clear the global pointer.
     wxApp::SetInstance(nullptr);

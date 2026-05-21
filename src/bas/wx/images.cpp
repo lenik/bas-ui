@@ -38,7 +38,7 @@ std::optional<wxBitmap> imageLoadAsset(const std::string& path, int width, int h
         extension = path.substr(last_dot + 1);
     }
 
-    auto data = vol->readFile(path);
+    auto data = vol->readFileOpt(path);
     if (!data || data->empty()) {
         logerror_fmt("Asset file is empty: %s", path.c_str());
         return std::nullopt;
