@@ -57,6 +57,7 @@ cpp_args = cpp_nowarn + [
 cpp_pch = 'src/wx_pch.h'
 
 cpp_sources = files(
+    './src/bas/security/wx_login_interaction.cpp',
     './src/bas/ui/arch/BuildViewContext.cpp',
     './src/bas/ui/arch/BuildViewLog.cpp',
     './src/bas/ui/arch/CreateViewContext.cpp',
