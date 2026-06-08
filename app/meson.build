@@ -3,6 +3,7 @@ cpp_pch = '../src/wx_pch.h'
 
 app_cpp_list = [
     'notepad.cpp',
+    'guitanks.cpp',
     'aui.cpp',
     'assets.cpp',
 ]
@@ -26,6 +27,10 @@ foreach app_cpp : app_cpp_list
                 impl_deps += line
             endif
         endforeach
+    endif
+
+    if app_name == 'guitanks'
+        impl_deps += ['tanks_rbac.cpp', 'tanks_sim.cpp']
     endif
 
     if app_name == 'notepad'
