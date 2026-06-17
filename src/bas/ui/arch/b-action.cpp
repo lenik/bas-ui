@@ -1,5 +1,6 @@
 #include "b-action.hpp"
 
+#include "../../wx/wx_compat.hpp"
 #include "UIAction.hpp"
 
 void ActionVB::build(wxMenu* menu) {
@@ -27,7 +28,7 @@ void ActionVB::build(wxMenu* menu) {
         int iconSize = context->preferredMenuIconSize();
         auto bmp = icon.toBitmap(iconSize, iconSize, wxART_MENU);
         if (bmp.isOk())
-            item->SetBitmap(bmp);
+            basWxSetMenuItemBitmap(item, bmp);
     }
     menu->Append(item);
 
@@ -44,20 +45,23 @@ void ActionVB::build(wxMenu* menu) {
 
 void ActionVB::build(wxToolBar* toolbar) {
     int iconSize = context->preferredToolIconSize();
-    BitmapResult bitmap;
+    wxBitmap bmp;
     if (icon.isSet()) {
-        bitmap = icon.toBitmap(iconSize, iconSize, wxART_TOOLBAR);
-    } else {
+        BitmapResult result = icon.toBitmap(iconSize, iconSize, wxART_TOOLBAR);
+        if (result.isOk()) {
+            bmp = result;
+        }
+    }
+    if (!bmp.IsOk()) {
         wxSize size(iconSize, iconSize);
-        bitmap = wxArtProvider::GetBitmap(wxART_MISSING_IMAGE, wxART_TOOLBAR, size);
+        bmp = wxArtProvider::GetBitmap(wxART_MISSING_IMAGE, wxART_TOOLBAR, size);
     }
 
     wxString toolLabel = label;
     toolLabel.Replace("&", "");
 
     auto id = action->id;
-    toolbar->AddTool(id, toolLabel, bitmap, shortHelp, //
-                     wxITEM_NORMAL);
+    basWxToolBarAddTool(toolbar, id, toolLabel, bmp, shortHelp, wxITEM_NORMAL);
 
     toolbar->Bind(
         wxEVT_TOOL,
@@ -72,19 +76,23 @@ void ActionVB::build(wxToolBar* toolbar) {
 
 void ActionVB::build(wxAuiToolBar* toolbar) {
     int iconSize = context->preferredToolIconSize();
-    BitmapResult bitmap;
+    wxBitmap bmp;
     if (icon.isSet()) {
-        bitmap = icon.toBitmap(iconSize, iconSize, wxART_TOOLBAR);
-    } else {
+        BitmapResult result = icon.toBitmap(iconSize, iconSize, wxART_TOOLBAR);
+        if (result.isOk()) {
+            bmp = result;
+        }
+    }
+    if (!bmp.IsOk()) {
         wxSize size(iconSize, iconSize);
-        bitmap = wxArtProvider::GetBitmap(wxART_MISSING_IMAGE, wxART_TOOLBAR, size);
+        bmp = wxArtProvider::GetBitmap(wxART_MISSING_IMAGE, wxART_TOOLBAR, size);
     }
 
     wxString toolLabel = label;
     toolLabel.Replace("&", "");
 
     auto id = action->id;
-    toolbar->AddTool(id, toolLabel, bitmap, shortHelp, wxITEM_NORMAL);
+    basWxAuiToolBarAddTool(toolbar, id, toolLabel, bmp, shortHelp, wxITEM_NORMAL);
 
     toolbar->Bind(
         wxEVT_TOOL,

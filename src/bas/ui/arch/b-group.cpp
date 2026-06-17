@@ -1,6 +1,7 @@
 #include "b-group.hpp"
 
 #include "../../wx/toolbar.hpp"
+#include "../../wx/wx_compat.hpp"
 
 #include <wx/aui/auibar.h>
 #include <wx/toolbar.h>
@@ -31,7 +32,7 @@ void GroupVB::build(wxMenu* menu) {
     if (icon.isSet()) {
         auto bmp = icon.toBitmap(iconSize, iconSize, wxART_MENU);
         if (bmp.isOk())
-            item->SetBitmap(bmp);
+            basWxSetMenuItemBitmap(item, bmp);
     }
 
     std::string menuPath = group->path ? group->path->str() : group->dir();

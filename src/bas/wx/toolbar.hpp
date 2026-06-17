@@ -1,6 +1,8 @@
 #ifndef TOOLBAR_HPP
 #define TOOLBAR_HPP
 
+#include "wx_compat.hpp"
+
 #include <wx/aui/auibar.h>
 #include <wx/toolbar.h>
 
@@ -50,9 +52,9 @@ class ToolBar {
     void AddTool(int id, const wxString& label, const wxBitmap& bitmap, const wxString& help,
                  wxItemKind kind) {
         if (wx)
-            wx->AddTool(id, label, bitmap, help, kind);
+            basWxToolBarAddTool(wx, id, label, bitmap, help, kind);
         else
-            aui->AddTool(id, label, bitmap, help, kind);
+            basWxAuiToolBarAddTool(aui, id, label, bitmap, help, kind);
     }
 
     template <typename EventTag, typename Functor>
@@ -71,9 +73,9 @@ class ToolBar {
     }
     void SetToolBitmap(int id, const wxBitmap& bitmap) {
         if (wx)
-            wx->SetToolNormalBitmap(id, bitmap);
+            basWxToolBarSetNormalBitmap(wx, id, bitmap);
         else
-            aui->SetToolBitmap(id, bitmap);
+            basWxAuiToolBarSetBitmap(aui, id, bitmap);
     }
     void ToggleTool(int id, bool state) {
         if (wx)

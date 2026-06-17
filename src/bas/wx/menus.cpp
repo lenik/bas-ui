@@ -1,5 +1,7 @@
 #include "menus.hpp"
 
+#include "wx_compat.hpp"
+
 #include <wx/menu.h>
 
 namespace wx {
@@ -12,7 +14,7 @@ void dumpMenubar(wxMenuBar* menubar, std::string prefix, std::ostream& out) {
         for (int j = 0; j < menu->GetMenuItemCount(); j++) {
             wxMenuItem* item = menu->FindItemByPosition(j);
             if (item) {
-                out << prefix << "  Item: " << item->GetLabel() << std::endl;
+                out << prefix << "  Item: " << basWxMenuItemLabel(item) << std::endl;
                 if (item->IsSubMenu()) {
                     dumpMenu(item->GetSubMenu(), prefix + "    ", out);
                 }
@@ -25,7 +27,7 @@ void dumpMenu(wxMenu* menu, std::string prefix, std::ostream& out) {
     for (int j = 0; j < menu->GetMenuItemCount(); j++) {
         wxMenuItem* item = menu->FindItemByPosition(j);
         if (item) {
-            out << prefix << "Item: " << item->GetLabel() << std::endl;
+            out << prefix << "Item: " << basWxMenuItemLabel(item) << std::endl;
             if (item->GetSubMenu()) {
                 dumpMenu(item->GetSubMenu(), prefix + "  ", out);
             }
