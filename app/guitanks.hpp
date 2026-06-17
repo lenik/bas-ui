@@ -3,15 +3,15 @@
 #include "tanks_rbac.hpp"
 #include "tanks_sim.hpp"
 
-#include "bas/security/wx_login_interaction.hpp"
+#include "bas/security/wxLoginUi.hpp"
 #include "bas/wx/app.hpp"
 #include "bas/wx/uiframe.hpp"
 
 #include <wx/listbox.h>
+#include <wx/listctrl.h>
 #include <wx/notebook.h>
 #include <wx/panel.h>
 #include <wx/stattext.h>
-#include <wx/textctrl.h>
 #include <wx/timer.h>
 
 #include <deque>
@@ -38,6 +38,8 @@ class TankCanvas : public wxPanel {
 
   private:
     void onPaint(wxPaintEvent& event);
+    void onSize(wxSizeEvent& event);
+    void drawTankShape(wxDC& dc, const wxPoint& center, int cellSize, int facing, bool engine);
 
     TankState m_state;
 };
@@ -58,17 +60,30 @@ class GuitanksBody : public UIFragment {
     std::deque<std::string> m_log;
 
     wxNotebook* m_notebook{nullptr};
-    wxStaticText* m_sessionText{nullptr};
+    wxPanel* m_sessionPanel{nullptr};
+    wxStaticText* m_deviceBadge{nullptr};
+    wxStaticText* m_userBadge{nullptr};
+    wxStaticText* m_roleBadge{nullptr};
+    wxStaticText* m_facingBadge{nullptr};
+    wxStaticText* m_engineBadge{nullptr};
     wxStaticText* m_statusText{nullptr};
-    wxTextCtrl* m_policyText{nullptr};
-    wxListBox* m_logList{nullptr};
+    wxNotebook* m_policyBook{nullptr};
+    wxListCtrl* m_bindingsList{nullptr};
+    wxListCtrl* m_aclsList{nullptr};
+    wxListCtrl* m_grantsList{nullptr};
+    wxListCtrl* m_logList{nullptr};
     std::vector<TankCanvas*> m_canvases;
     wxTimer* m_timer{nullptr};
     wxWindow* m_frame{nullptr};
 
+    std::string m_policyCacheKey;
+    bool m_opInProgress{false};
+
     void initContext();
     std::size_t activeIndex() const;
+    std::string policyCacheKey() const;
     void pushLog(const std::string& line);
+    void refreshCanvases();
     void refreshUi();
     void refreshSessionBar();
     void refreshPolicyPanel();
@@ -93,7 +108,8 @@ class GuitanksBody : public UIFragment {
     void doLeft(PerformContext*) { performOp("left"); }
     void doRight(PerformContext*) { performOp("right"); }
 
-    wxPanel* buildDevicePage(const DeviceSlot& device, TankCanvas* canvas);
+    wxPanel* buildDevicePage(const DeviceSlot& device);
+    wxListCtrl* makePolicyList(wxWindow* parent, const std::vector<wxString>& columns);
 };
 
 class GuitanksFrame : public uiFrame {

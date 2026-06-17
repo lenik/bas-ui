@@ -14,7 +14,7 @@
 #include <wx/aui/auibar.h>
 #include <wx/button.h>
 #include <wx/dcbuffer.h>
-#include <wx/listbox.h>
+#include <wx/listctrl.h>
 #include <wx/msgdlg.h>
 #include <wx/notebook.h>
 #include <wx/sizer.h>
@@ -37,9 +37,25 @@ const std::string dir1 = "streamline-vectors/core/pop/interface-essential";
 const std::string dirEntertainment = "streamline-vectors/core/pop/entertainment";
 const std::string dirMoneyShopping = "streamline-vectors/core/pop/money-shopping";
 
-constexpr int kLogMaxLines = 100;
+constexpr int kLogMaxLines = 80;
 
-const wchar_t kTankGlyph[4] = {L'\u25b2', L'\u25b6', L'\u25bc', L'\u25c0'};
+wxString utf8(const std::string& text) { return wxString::FromUTF8(text.c_str()); }
+
+wxString badgeLabel(const std::string& text) { return wxString(" ") + utf8(text) + wxString(" "); }
+
+wxString loginDialogTitle(const std::string& deviceLabel) {
+    return wxString(_("Login — ")) + utf8(deviceLabel);
+}
+
+wxString authorizeDialogTitle(const std::string& deviceLabel) {
+    return wxString(_("Authorize — ")) + utf8(deviceLabel);
+}
+
+wxString accessDeniedMessage(const std::string& user, const std::string& permission,
+                             const std::string& deviceName) {
+    return utf8(user) + _(" is not allowed to ") + utf8(permission) + _(" on ") +
+           utf8(deviceName) + ".";
+}
 
 class DeviceLoginDialog : public wxDialog {
   public:
@@ -65,7 +81,8 @@ class DeviceLoginDialog : public wxDialog {
         auto* demoBox =
             new wxStaticBoxSizer(wxVERTICAL, this, _("Demo accounts (user / pass / role)"));
         for (const DemoAccount& acct : demoAccountsFor(device)) {
-            wxString line = wxString::Format("%s / %s  (%s)", acct.user, acct.password, acct.role);
+            wxString line = wxString(acct.user) + " / " + wxString(acct.password) + "  (" +
+                            wxString(acct.role) + ")";
             auto* btn = new wxButton(demoBox->GetStaticBox(), wxID_ANY, line);
             demoBox->Add(btn, 0, wxALL | wxEXPAND, 2);
             btn->Bind(wxEVT_BUTTON, [this, acct](wxCommandEvent&) {
@@ -93,48 +110,109 @@ class DeviceLoginDialog : public wxDialog {
     wxTextCtrl* m_pass;
 };
 
-wxButton* makeActionButton(wxWindow* parent, const wxString& label, int id) {
-    auto* btn = new wxButton(parent, id, label, wxDefaultPosition, wxSize(88, 32));
-    return btn;
+wxStaticText* makeBadge(wxWindow* parent, const wxString& label, const wxColour& bg,
+                        const wxColour& fg) {
+    auto* badge = new wxStaticText(parent, wxID_ANY, label, wxDefaultPosition, wxDefaultSize,
+                                   wxST_NO_AUTORESIZE | wxALIGN_CENTER);
+    badge->SetBackgroundColour(bg);
+    badge->SetForegroundColour(fg);
+    badge->SetMinSize(wxSize(72, 22));
+    return badge;
 }
 
 } // namespace
 
 TankCanvas::TankCanvas(wxWindow* parent)
-    : wxPanel(parent, wxID_ANY, wxDefaultPosition, wxSize(360, 320), wxBORDER_THEME) {
+    : wxPanel(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxBORDER_THEME) {
     SetBackgroundStyle(wxBG_STYLE_PAINT);
-    SetMinSize(wxSize(280, 240));
+    SetMinSize(wxSize(320, 280));
     Bind(wxEVT_PAINT, &TankCanvas::onPaint, this);
+    Bind(wxEVT_SIZE, &TankCanvas::onSize, this);
 }
 
 void TankCanvas::setState(const TankState& state) {
     m_state = state;
-    Refresh();
+    Refresh(false);
+}
+
+void TankCanvas::onSize(wxSizeEvent& event) {
+    Refresh(false);
+    event.Skip();
+}
+
+void TankCanvas::drawTankShape(wxDC& dc, const wxPoint& center, int cellSize, int facing,
+                               bool engine) {
+    const int r = std::max(8, cellSize / 2);
+    wxPoint tip = center;
+    wxPoint left = center;
+    wxPoint right = center;
+    switch (facing) {
+    case 0:
+        tip.y -= r;
+        left.x -= r / 2;
+        left.y += r / 2;
+        right.x += r / 2;
+        right.y += r / 2;
+        break;
+    case 1:
+        tip.x += r;
+        left.x -= r / 2;
+        left.y -= r / 2;
+        right.x -= r / 2;
+        right.y += r / 2;
+        break;
+    case 2:
+        tip.y += r;
+        left.x -= r / 2;
+        left.y -= r / 2;
+        right.x += r / 2;
+        right.y -= r / 2;
+        break;
+    default:
+        tip.x -= r;
+        left.x += r / 2;
+        left.y -= r / 2;
+        right.x += r / 2;
+        right.y += r / 2;
+        break;
+    }
+
+    wxPoint tri[3] = {tip, left, right};
+    dc.SetPen(wxPen(engine ? wxColour(255, 210, 80) : wxColour(150, 155, 165), 2));
+    dc.SetBrush(wxBrush(engine ? wxColour(210, 170, 40) : wxColour(110, 115, 125)));
+    dc.DrawPolygon(3, tri);
 }
 
 void TankCanvas::onPaint(wxPaintEvent& event) {
     wxAutoBufferedPaintDC dc(this);
-    dc.SetBackground(wxBrush(GetBackgroundColour()));
+    const wxSize size = GetClientSize();
+    if (size.x < 8 || size.y < 8) {
+        event.Skip();
+        return;
+    }
+
+    dc.SetBackground(wxBrush(wxColour(24, 28, 34)));
     dc.Clear();
 
-    const wxSize size = GetClientSize();
-    const int pad = 12;
+    const int pad = 14;
+    const int footerH = 28;
     const int fieldW = size.x - pad * 2;
-    const int fieldH = size.y - pad * 2;
-    const int cellW = std::max(12, fieldW / kTankFieldW);
-    const int cellH = std::max(12, fieldH / kTankFieldH);
+    const int fieldH = size.y - pad * 2 - footerH;
+    const int cellW = std::max(14, fieldW / kTankFieldW);
+    const int cellH = std::max(14, fieldH / kTankFieldH);
     const int originX = (size.x - cellW * kTankFieldW) / 2;
-    const int originY = (size.y - cellH * kTankFieldH) / 2;
+    const int originY = pad + (fieldH - cellH * kTankFieldH) / 2;
 
-    dc.SetPen(wxPen(wxColour(60, 70, 80)));
-    dc.SetBrush(wxBrush(wxColour(28, 32, 38)));
-    dc.DrawRectangle(originX - 1, originY - 1, cellW * kTankFieldW + 2, cellH * kTankFieldH + 2);
+    dc.SetPen(wxPen(wxColour(70, 80, 95)));
+    dc.SetBrush(wxBrush(wxColour(32, 38, 46)));
+    dc.DrawRectangle(originX - 2, originY - 2, cellW * kTankFieldW + 4, cellH * kTankFieldH + 4);
 
     for (int y = 0; y < kTankFieldH; ++y) {
         for (int x = 0; x < kTankFieldW; ++x) {
-            dc.SetPen(wxPen(wxColour(40, 46, 52)));
-            dc.SetBrush(wxBrush(wxColour(34, 38, 44)));
-            dc.DrawRectangle(originX + x * cellW, originY + y * cellH, cellW - 1, cellH - 1);
+            const bool alt = (x + y) % 2 == 0;
+            dc.SetPen(*wxTRANSPARENT_PEN);
+            dc.SetBrush(wxBrush(alt ? wxColour(38, 44, 52) : wxColour(34, 40, 48)));
+            dc.DrawRectangle(originX + x * cellW, originY + y * cellH, cellW, cellH);
         }
     }
 
@@ -146,7 +224,7 @@ void TankCanvas::onPaint(wxPaintEvent& event) {
     dc.SetBrush(wxBrush(wxColour(230, 70, 60)));
     for (const auto& bullet : m_state.bullets) {
         const wxPoint c = cellCenter(bullet.x, bullet.y);
-        dc.DrawCircle(c, std::max(3, std::min(cellW, cellH) / 4));
+        dc.DrawCircle(c, std::max(4, std::min(cellW, cellH) / 4));
     }
 
     if (m_state.fireFlash > 0) {
@@ -168,18 +246,19 @@ void TankCanvas::onPaint(wxPaintEvent& event) {
         }
         const wxPoint muzzle = cellCenter(m_state.x + dx, m_state.y + dy);
         dc.SetBrush(wxBrush(wxColour(255, 200, 80)));
-        dc.DrawCircle(muzzle, std::max(4, std::min(cellW, cellH) / 3));
+        dc.DrawCircle(muzzle, std::max(5, std::min(cellW, cellH) / 3));
     }
 
     const wxPoint tankCenter = cellCenter(m_state.x, m_state.y);
-    dc.SetFont(wxFont(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD));
-    dc.SetTextForeground(m_state.engine ? wxColour(255, 210, 60) : wxColour(180, 185, 190));
-    const int facing = std::clamp(m_state.facing, 0, 3);
-    dc.DrawText(wxString(kTankGlyph[facing]), tankCenter.x - cellW / 4, tankCenter.y - cellH / 3);
+    drawTankShape(dc, tankCenter, std::min(cellW, cellH), m_state.facing, m_state.engine);
 
-    dc.SetTextForeground(wxColour(120, 130, 140));
+    dc.SetPen(*wxTRANSPARENT_PEN);
+    dc.SetBrush(wxBrush(wxColour(18, 22, 28)));
+    dc.DrawRectangle(0, size.y - footerH, size.x, footerH);
+    dc.SetTextForeground(wxColour(170, 180, 195));
     dc.SetFont(wxFont(9, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL));
-    dc.DrawText(m_state.engine ? _("Engine running") : _("Engine stopped"), pad, size.y - pad - 14);
+    dc.DrawText(_("Tab device  L login  F1/F2 engine  arrows move  Space fire"), pad,
+                size.y - footerH + 7);
     event.Skip();
 }
 
@@ -249,7 +328,6 @@ void GuitanksBody::initContext() {
     for (auto& tank : m_tanks) {
         tankReset(tank);
     }
-    pushLog(_("Tab switch device  L login  F1/F2 engine  arrows move  Space fire"));
     pushLog(_("tank-a: alice drives, bob fires, admin has full access."));
     pushLog(_("tank-b: charlie trains, dana instructs."));
 }
@@ -261,48 +339,37 @@ std::size_t GuitanksBody::activeIndex() const {
     return static_cast<std::size_t>(std::max(0, m_notebook->GetSelection()));
 }
 
-wxPanel* GuitanksBody::buildDevicePage(const DeviceSlot& device, TankCanvas* canvas) {
-    auto* page = new wxPanel(m_notebook);
-    auto* root = new wxBoxSizer(wxHORIZONTAL);
-
-    root->Add(canvas, 2, wxEXPAND | wxALL, 8);
-
-    auto* controls = new wxBoxSizer(wxVERTICAL);
-    auto* box = new wxStaticBoxSizer(wxVERTICAL, page, _("Device controls"));
-
-    box->Add(makeActionButton(page, _("Start"), ID_TANK_START), 0, wxALL, 4);
-    box->Add(makeActionButton(page, _("Stop"), ID_TANK_STOP), 0, wxALL, 4);
-    box->AddSpacer(8);
-    box->Add(makeActionButton(page, _("Forward"), ID_TANK_FORWARD), 0, wxALL, 4);
-    auto* turnRow = new wxBoxSizer(wxHORIZONTAL);
-    turnRow->Add(makeActionButton(page, _("Left"), ID_TANK_LEFT), 0, wxRIGHT, 4);
-    turnRow->Add(makeActionButton(page, _("Right"), ID_TANK_RIGHT), 0, wxLEFT, 4);
-    box->Add(turnRow, 0, wxALL, 4);
-    box->Add(makeActionButton(page, _("Backward"), ID_TANK_BACKWARD), 0, wxALL, 4);
-    box->AddSpacer(8);
-    auto* fireBtn = makeActionButton(page, _("Fire"), ID_TANK_FIRE);
-    fireBtn->SetBackgroundColour(wxColour(120, 30, 30));
-    fireBtn->SetForegroundColour(*wxWHITE);
-    box->Add(fireBtn, 0, wxALL | wxEXPAND, 4);
-
-    controls->Add(box, 0, wxEXPAND | wxALL, 8);
-    controls->AddStretchSpacer();
-    root->Add(controls, 0, wxEXPAND | wxALL, 4);
-    page->SetSizer(root);
-
-    const struct {
-        int id;
-        const char* op;
-    } kBindings[] = {
-        {ID_TANK_START, "start"},     {ID_TANK_STOP, "stop"},         {ID_TANK_FIRE, "fire"},
-        {ID_TANK_FORWARD, "forward"}, {ID_TANK_BACKWARD, "backward"}, {ID_TANK_LEFT, "left"},
-        {ID_TANK_RIGHT, "right"},
-    };
-    for (const auto& binding : kBindings) {
-        page->Bind(
-            wxEVT_BUTTON, [this, op = std::string(binding.op)](wxCommandEvent&) { performOp(op); },
-            binding.id);
+std::string GuitanksBody::policyCacheKey() const {
+    const std::size_t idx = activeIndex();
+    if (idx >= m_ctx.devices.size()) {
+        return {};
     }
+    const auto& device = m_ctx.devices[idx];
+    return device.name + "|" + primaryUser(*m_ctx.sm, device.realm) + "|" +
+           primaryRole(*m_ctx.sm, device.realm);
+}
+
+wxListCtrl* GuitanksBody::makePolicyList(wxWindow* parent,
+                                         const std::vector<wxString>& columns) {
+    auto* list =
+        new wxListCtrl(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+                       wxLC_REPORT | wxLC_SINGLE_SEL | wxBORDER_THEME);
+    for (std::size_t i = 0; i < columns.size(); ++i) {
+        list->AppendColumn(columns[i], i == 0 ? wxLIST_FORMAT_LEFT : wxLIST_FORMAT_LEFT,
+                           i == 0 ? 140 : 120);
+    }
+    list->SetMinSize(wxSize(240, 120));
+    return list;
+}
+
+wxPanel* GuitanksBody::buildDevicePage(const DeviceSlot& /*device*/) {
+    auto* page = new wxPanel(m_notebook);
+    auto* canvas = new TankCanvas(page);
+    m_canvases.push_back(canvas);
+
+    auto* root = new wxBoxSizer(wxVERTICAL);
+    root->Add(canvas, 1, wxEXPAND | wxALL, 6);
+    page->SetSizer(root);
     return page;
 }
 
@@ -310,36 +377,55 @@ wxWindow* GuitanksBody::createFragmentView(CreateViewContext* ctx) {
     auto* panel = new wxPanel(ctx->getParent());
     auto* root = new wxBoxSizer(wxVERTICAL);
 
-    m_sessionText = new wxStaticText(panel, wxID_ANY, wxEmptyString);
-    m_statusText = new wxStaticText(panel, wxID_ANY, wxEmptyString);
-    auto* header = new wxBoxSizer(wxHORIZONTAL);
-    header->Add(m_sessionText, 1, wxALIGN_CENTER_VERTICAL | wxLEFT, 8);
-    header->Add(m_statusText, 2, wxALIGN_CENTER_VERTICAL | wxRIGHT, 8);
-    root->Add(header, 0, wxEXPAND | wxTOP | wxBOTTOM, 6);
+    m_sessionPanel = new wxPanel(panel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxBORDER_THEME);
+    m_sessionPanel->SetBackgroundColour(wxColour(245, 247, 250));
+    auto* sessionRow = new wxBoxSizer(wxHORIZONTAL);
+    sessionRow->Add(new wxStaticText(m_sessionPanel, wxID_ANY, _("Session")), 0,
+                    wxALIGN_CENTER_VERTICAL | wxLEFT, 10);
+    m_deviceBadge = makeBadge(m_sessionPanel, wxEmptyString, wxColour(55, 90, 150), *wxWHITE);
+    m_userBadge = makeBadge(m_sessionPanel, wxEmptyString, wxColour(70, 120, 80), *wxWHITE);
+    m_roleBadge = makeBadge(m_sessionPanel, wxEmptyString, wxColour(110, 90, 150), *wxWHITE);
+    m_facingBadge = makeBadge(m_sessionPanel, wxEmptyString, wxColour(90, 90, 95), *wxWHITE);
+    m_engineBadge = makeBadge(m_sessionPanel, wxEmptyString, wxColour(130, 90, 40), *wxWHITE);
+    sessionRow->Add(m_deviceBadge, 0, wxALIGN_CENTER_VERTICAL | wxLEFT, 8);
+    sessionRow->Add(m_userBadge, 0, wxALIGN_CENTER_VERTICAL | wxLEFT, 6);
+    sessionRow->Add(m_roleBadge, 0, wxALIGN_CENTER_VERTICAL | wxLEFT, 6);
+    sessionRow->Add(m_facingBadge, 0, wxALIGN_CENTER_VERTICAL | wxLEFT, 6);
+    sessionRow->Add(m_engineBadge, 0, wxALIGN_CENTER_VERTICAL | wxLEFT, 6);
+    sessionRow->AddStretchSpacer();
+    m_statusText = new wxStaticText(m_sessionPanel, wxID_ANY, wxEmptyString);
+    sessionRow->Add(m_statusText, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 10);
+    m_sessionPanel->SetSizer(sessionRow);
+    root->Add(m_sessionPanel, 0, wxEXPAND | wxALL, 8);
 
     m_notebook = new wxNotebook(panel, wxID_ANY);
     m_canvases.clear();
     for (const auto& device : m_ctx.devices) {
-        auto* canvas = new TankCanvas(m_notebook);
-        m_canvases.push_back(canvas);
-        m_notebook->AddPage(buildDevicePage(device, canvas),
-                            wxString::FromUTF8(device.label.c_str()));
+        m_notebook->AddPage(buildDevicePage(device), wxString::FromUTF8(device.label.c_str()));
     }
     m_notebook->Bind(wxEVT_NOTEBOOK_PAGE_CHANGED, &GuitanksBody::onNotebookChanged, this);
 
-    m_policyText =
-        new wxTextCtrl(panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(260, -1),
-                       wxTE_MULTILINE | wxTE_READONLY | wxTE_RICH2);
-    m_policyText->SetMinSize(wxSize(220, 200));
+    m_policyBook = new wxNotebook(panel, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+                                  wxNB_LEFT | wxNB_NOPAGETHEME);
+    m_bindingsList = makePolicyList(m_policyBook, {_("Identity"), _("ACL"), _("Active")});
+    m_aclsList = makePolicyList(m_policyBook, {_("ACL"), _("Permission"), _("Effect")});
+    m_grantsList = makePolicyList(m_policyBook, {_("Identity"), _("Permission"), _("Effect")});
+    m_policyBook->AddPage(m_bindingsList, _("Bindings"));
+    m_policyBook->AddPage(m_aclsList, _("ACLs"));
+    m_policyBook->AddPage(m_grantsList, _("Grants"));
+    m_policyBook->SetMinSize(wxSize(280, 260));
 
     auto* middle = new wxBoxSizer(wxHORIZONTAL);
-    middle->Add(m_notebook, 2, wxEXPAND | wxLEFT | wxRIGHT, 8);
-    middle->Add(m_policyText, 1, wxEXPAND | wxRIGHT, 8);
-    root->Add(middle, 3, wxEXPAND);
+    middle->Add(m_notebook, 3, wxEXPAND | wxRIGHT, 8);
+    middle->Add(m_policyBook, 2, wxEXPAND);
+    root->Add(middle, 4, wxEXPAND | wxLEFT | wxRIGHT, 8);
 
-    m_logList = new wxListBox(panel, wxID_ANY);
-    root->Add(new wxStaticText(panel, wxID_ANY, _("Activity log")), 0, wxLEFT | wxTOP, 8);
-    root->Add(m_logList, 1, wxEXPAND | wxALL, 8);
+    auto* logBox = new wxStaticBoxSizer(wxVERTICAL, panel, _("Recent activity"));
+    m_logList = new wxListCtrl(panel, wxID_ANY, wxDefaultPosition, wxSize(-1, 96),
+                               wxLC_REPORT | wxLC_SINGLE_SEL | wxBORDER_THEME);
+    m_logList->AppendColumn(_("Message"), wxLIST_FORMAT_LEFT, 640);
+    logBox->Add(m_logList, 1, wxEXPAND | wxALL, 6);
+    root->Add(logBox, 0, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, 8);
 
     panel->SetSizer(root);
 
@@ -364,17 +450,26 @@ void GuitanksBody::refreshLog() {
     if (!m_logList) {
         return;
     }
-    m_logList->Clear();
-    for (const auto& line : m_log) {
-        m_logList->Append(wxString::FromUTF8(line.c_str()));
+    const long existing = m_logList->GetItemCount();
+    const long target = static_cast<long>(m_log.size());
+    if (existing == target) {
+        return;
     }
-    if (m_logList->GetCount() > 0) {
-        m_logList->SetSelection(m_logList->GetCount() - 1);
+    if (existing > target) {
+        m_logList->DeleteAllItems();
+    }
+    long row = existing > target ? 0 : existing;
+    for (std::size_t i = static_cast<std::size_t>(row); i < m_log.size(); ++i) {
+        m_logList->InsertItem(row, wxString::FromUTF8(m_log[i].c_str()));
+        ++row;
+    }
+    if (m_logList->GetItemCount() > 0) {
+        m_logList->EnsureVisible(m_logList->GetItemCount() - 1);
     }
 }
 
 void GuitanksBody::refreshSessionBar() {
-    if (!m_sessionText || !m_statusText) {
+    if (!m_deviceBadge || !m_statusText) {
         return;
     }
     const std::size_t idx = activeIndex();
@@ -386,24 +481,32 @@ void GuitanksBody::refreshSessionBar() {
     const std::string role = primaryRole(*m_ctx.sm, device.realm);
     const TankState& tank = m_tanks[idx];
 
-    m_sessionText->SetLabel(wxString::Format(
-        _("Device: %s   User: %s   Role: %s   Facing: %s"),
-        wxString::FromUTF8(device.label.c_str()), wxString::FromUTF8(user.c_str()),
-        wxString::FromUTF8(role.c_str()), wxString::FromUTF8(tankFacingName(tank.facing))));
+    m_deviceBadge->SetLabel(badgeLabel(device.label));
+    m_userBadge->SetLabel(badgeLabel(user));
+    m_roleBadge->SetLabel(badgeLabel(role));
+    m_facingBadge->SetLabel(badgeLabel(tankFacingName(tank.facing)));
+    m_engineBadge->SetLabel(tank.engine ? _(" ON ") : _(" OFF "));
+    m_engineBadge->SetBackgroundColour(tank.engine ? wxColour(40, 120, 70) : wxColour(120, 70, 40));
 
     wxString status = wxString::FromUTF8(tank.lastMessage.c_str());
     if (status.empty()) {
-        status = _("Ready — actions are checked against device policy.");
+        status = _("Use toolbar or keyboard shortcuts to operate the tank.");
     }
     m_statusText->SetLabel(status);
     m_statusText->SetForegroundColour(
-        tank.lastMessage.rfind("DENIED", 0) == 0 ? wxColour(200, 60, 60) : wxColour(40, 40, 40));
+        tank.lastMessage.rfind("DENIED", 0) == 0 ? wxColour(180, 50, 50) : wxColour(50, 50, 55));
 }
 
 void GuitanksBody::refreshPolicyPanel() {
-    if (!m_policyText) {
+    if (!m_bindingsList || !m_aclsList || !m_grantsList) {
         return;
     }
+    const std::string key = policyCacheKey();
+    if (key == m_policyCacheKey) {
+        return;
+    }
+    m_policyCacheKey = key;
+
     const std::size_t idx = activeIndex();
     if (idx >= m_ctx.devices.size()) {
         return;
@@ -411,68 +514,75 @@ void GuitanksBody::refreshPolicyPanel() {
     const auto& device = m_ctx.devices[idx];
     const auto* policy = defaultPolicyFor(m_ctx, device.realm);
 
-    wxString text;
-    text << wxString::Format(_("Realm policy: %s\n\n"), wxString::FromUTF8(device.name.c_str()));
-
-    text << _("BINDINGS\nidentity      aclId\n");
+    m_bindingsList->DeleteAllItems();
     if (policy && !policy->bindings().empty()) {
+        long row = 0;
         for (const auto& binding : policy->bindings()) {
             const bool active = identityMatchesCurrent(m_ctx, device.realm, binding.identity);
-            text << wxString::Format("  %-13s %s%s\n",
-                                     wxString::FromUTF8(formatIdentity(binding.identity).c_str()),
-                                     wxString::FromUTF8(binding.aclId.c_str()),
-                                     active ? " *" : "");
+            m_bindingsList->InsertItem(row, wxString::FromUTF8(formatIdentity(binding.identity).c_str()));
+            m_bindingsList->SetItem(row, 1, wxString::FromUTF8(binding.aclId.c_str()));
+            if (active) {
+                m_bindingsList->SetItem(row, 2, _("yes"));
+            }
+            ++row;
         }
-    } else {
-        text << "  (none)\n";
     }
 
-    text << "\nACLS\n";
+    m_aclsList->DeleteAllItems();
     if (policy && !policy->acls().empty()) {
+        long row = 0;
         for (const auto& acl : policy->acls()) {
             const bool aclActive =
                 isAclActiveForCurrent(m_ctx, device.realm, policy, acl.id);
-            text << wxString::Format("  %s (%zu entries)%s\n", wxString::FromUTF8(acl.id.c_str()),
-                                     acl.entries.size(), aclActive ? " *" : "");
             for (const auto& entry : acl.entries) {
-                text << wxString::Format("    %-16s %c\n",
-                                         wxString::FromUTF8(entry.permission.toString().c_str()),
-                                         policyEffectChar(entry.effect));
+                wxString aclLabel = wxString::FromUTF8(acl.id.c_str());
+                if (aclActive) {
+                    aclLabel += " *";
+                }
+                m_aclsList->InsertItem(row, aclLabel);
+                m_aclsList->SetItem(row, 1, wxString::FromUTF8(entry.permission.toString().c_str()));
+                wxString effect = policyEffectChar(entry.effect) == 'A' ? _("Allow") : _("Deny");
+                m_aclsList->SetItem(row, 2, effect);
+                ++row;
             }
         }
-    } else {
-        text << "  (none)\n";
     }
 
-    text << "\nGRANTS\nidentity       permission       M\n";
+    m_grantsList->DeleteAllItems();
     if (policy && !policy->grants().empty()) {
+        long row = 0;
         for (const auto& grant : policy->grants()) {
             const bool highlight = shouldHighlightGrant(m_ctx, device.realm, grant);
-            text << wxString::Format("  %-14s %-16s %c%s\n",
-                                     wxString::FromUTF8(formatIdentity(grant.identity).c_str()),
-                                     wxString::FromUTF8(grant.permission.toString().c_str()),
-                                     policyEffectChar(grant.effect), highlight ? " *" : "");
+            wxString identity = wxString::FromUTF8(formatIdentity(grant.identity).c_str());
+            if (highlight) {
+                identity += " *";
+            }
+            m_grantsList->InsertItem(row, identity);
+            m_grantsList->SetItem(row, 1, wxString::FromUTF8(grant.permission.toString().c_str()));
+            wxString effect = policyEffectChar(grant.effect) == 'A' ? _("Allow") : _("Deny");
+            m_grantsList->SetItem(row, 2, effect);
+            ++row;
         }
-    } else {
-        text << "  (none)\n";
     }
-
-    text << _("\n* marks rules matching the current session.");
-    m_policyText->SetValue(text);
 }
 
-void GuitanksBody::refreshUi() {
+void GuitanksBody::refreshCanvases() {
     for (std::size_t i = 0; i < m_canvases.size() && i < m_tanks.size(); ++i) {
         m_canvases[i]->setState(m_tanks[i]);
     }
+}
+
+void GuitanksBody::refreshUi() {
+    refreshCanvases();
     refreshSessionBar();
+    m_policyCacheKey.clear();
     refreshPolicyPanel();
-    refreshLog();
 }
 
 void GuitanksBody::onNotebookChanged(wxBookCtrlEvent& event) {
     (void)event;
     refreshSessionBar();
+    m_policyCacheKey.clear();
     refreshPolicyPanel();
 }
 
@@ -483,7 +593,9 @@ void GuitanksBody::switchDevice() {
     const int next = (m_notebook->GetSelection() + 1) % m_notebook->GetPageCount();
     m_notebook->SetSelection(next);
     pushLog("switch -> " + m_ctx.devices[static_cast<std::size_t>(next)].name);
-    refreshUi();
+    refreshSessionBar();
+    m_policyCacheKey.clear();
+    refreshPolicyPanel();
 }
 
 void GuitanksBody::onCharHook(wxKeyEvent& event) {
@@ -534,7 +646,7 @@ void GuitanksBody::onTimer(wxTimerEvent& event) {
     for (auto& tank : m_tanks) {
         tankTick(tank);
     }
-    refreshUi();
+    refreshCanvases();
 }
 
 bool GuitanksBody::showCredentialDialog(const DeviceSlot& device, const wxString& title,
@@ -562,9 +674,7 @@ bool GuitanksBody::tryElevatedOp(const DeviceSlot& device, const std::string& op
 
     while (true) {
         wxString title =
-            sessionEmpty
-                ? wxString::Format(_("Login — %s"), wxString::FromUTF8(device.label.c_str()))
-                : wxString::Format(_("Authorize — %s"), wxString::FromUTF8(device.label.c_str()));
+            sessionEmpty ? loginDialogTitle(device.label) : authorizeDialogTitle(device.label);
         wxString message = wxString::FromUTF8(result.message.c_str());
         std::string user;
         std::string pass;
@@ -593,8 +703,7 @@ bool GuitanksBody::tryElevatedOp(const DeviceSlot& device, const std::string& op
         if (m_ctx.sm->checkSubjectPermission(permission, subject, opts) !=
             sec::AccessEffect::Allow) {
             const wxString msg =
-                wxString::Format(_("%s is not allowed to %s on %s."), user.c_str(),
-                                 permission.toString().c_str(), device.name.c_str());
+                accessDeniedMessage(user, permission.toString(), device.name);
             if (wxMessageBox(msg, _("Access denied"), wxOK | wxCANCEL | wxICON_ERROR, m_frame) !=
                 wxOK) {
                 return false;
@@ -615,6 +724,15 @@ bool GuitanksBody::tryElevatedOp(const DeviceSlot& device, const std::string& op
 }
 
 void GuitanksBody::performOp(const std::string& op) {
+    if (m_opInProgress) {
+        return;
+    }
+    m_opInProgress = true;
+    struct Guard {
+        bool& flag;
+        ~Guard() { flag = false; }
+    } guard{m_opInProgress};
+
     const std::size_t idx = activeIndex();
     if (idx >= m_ctx.devices.size()) {
         return;
@@ -627,10 +745,22 @@ void GuitanksBody::performOp(const std::string& op) {
     tankApplyAction(m_tanks[idx], op, res.allowed);
     m_tanks[idx].lastMessage = res.message;
     pushLog(res.message);
-    refreshUi();
+    refreshCanvases();
+    refreshSessionBar();
+    m_policyCacheKey.clear();
+    refreshPolicyPanel();
 }
 
 void GuitanksBody::doLogin(PerformContext*) {
+    if (m_opInProgress) {
+        return;
+    }
+    m_opInProgress = true;
+    struct Guard {
+        bool& flag;
+        ~Guard() { flag = false; }
+    } guard{m_opInProgress};
+
     const std::size_t idx = activeIndex();
     if (idx >= m_ctx.devices.size()) {
         return;
@@ -639,12 +769,10 @@ void GuitanksBody::doLogin(PerformContext*) {
     while (true) {
         std::string user;
         std::string pass;
-        if (!showCredentialDialog(device,
-                                  wxString::Format(_("Login — %s"),
-                                                   wxString::FromUTF8(device.label.c_str())),
-                                  wxEmptyString, true, user, pass)) {
+        if (!showCredentialDialog(device, loginDialogTitle(device.label), wxEmptyString, true,
+                                  user, pass)) {
             pushLog(device.name + ": login cancelled");
-            refreshUi();
+            refreshSessionBar();
             return;
         }
         if (loginUser(m_ctx, device, user, pass)) {
@@ -654,10 +782,9 @@ void GuitanksBody::doLogin(PerformContext*) {
             return;
         }
         pushLog("DENIED " + device.name + " login failed for " + user);
-        if (wxMessageBox(wxString::Format(_("Invalid credentials for %s."),
-                                          wxString::FromUTF8(device.label.c_str())),
-                         _("Login failed"), wxOK | wxCANCEL | wxICON_ERROR, m_frame) != wxOK) {
-            refreshUi();
+        if (wxMessageBox(utf8(device.label) + _(": invalid credentials."), _("Login failed"),
+                         wxOK | wxCANCEL | wxICON_ERROR, m_frame) != wxOK) {
+            refreshSessionBar();
             return;
         }
     }
@@ -698,7 +825,7 @@ wxAuiToolBar* GuitanksFrame::makeDefaultAuiToolbar(std::string_view path) {
 
 bool Guitanks::OnUserInit() {
     GuitanksFrame* frame = new GuitanksFrame(_("Tank Access Control"));
-    frame->SetSize(920, 640);
+    frame->SetSize(980, 680);
     frame->CenterOnScreen();
     frame->Show();
     return true;
