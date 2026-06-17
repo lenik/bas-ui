@@ -31,6 +31,13 @@ bas_cpp_dep = dependency('bas-cpp', required: true)
 bas_c_static_dep = dependency('bas-c-static', required: true)
 bas_cpp_static_dep = dependency('bas-cpp-static', required: true)
 
+if fs.is_dir('subprojects/boost')
+    boost_sub = subproject('boost')
+    boost_json_dep = boost_sub.get_variable('boost_json_dep')
+else
+    boost_json_dep = dependency('boost', modules: ['json'], required: true)
+endif
+
 if fs.is_dir('subprojects/nanosvg')
     nanosvg_dep = subproject('nanosvg').get_variable('nanosvg_dep')
 else
@@ -41,6 +48,7 @@ wx_sub = subproject('wx_logic')
 wx_dep = wx_sub.get_variable('wx_dep')
 wx_lib_ver = wx_sub.get_variable('wx_lib_ver')
 wx_aui_dep = cpp.find_library('wx_gtk3u_aui-' + wx_lib_ver, required: true)
+
 intl_dep = dependency('intl', required: false)
 if not intl_dep.found()
     intl_dep = cpp.find_library('intl', required: true)
@@ -131,6 +139,7 @@ assets_o = custom_target(
 exe_deps = [
     bas_c_dep,
     bas_cpp_dep,
+    boost_json_dep,
     intl_dep,
     nanosvg_dep,
     wx_dep,
@@ -140,6 +149,7 @@ exe_deps = [
 exe_static_deps = [
     bas_c_static_dep,
     bas_cpp_static_dep,
+    boost_json_dep,
     intl_dep,
     nanosvg_dep,
     wx_dep,
