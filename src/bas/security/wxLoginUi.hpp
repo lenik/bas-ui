@@ -1,5 +1,5 @@
-#ifndef BAS_SECURITY_WX_LOGIN_INTERACTION_HPP
-#define BAS_SECURITY_WX_LOGIN_INTERACTION_HPP
+#ifndef BAS_SECURITY_WX_LOGIN_UI_HPP
+#define BAS_SECURITY_WX_LOGIN_UI_HPP
 
 #include <bas/security/LoginUi.hpp>
 
@@ -31,4 +31,4 @@ std::optional<Credential> showWxLoginDialog(wxWindow* parent, const LoginFormSpe
 
 } // namespace bas::security
 
-#endif // BAS_SECURITY_WX_LOGIN_INTERACTION_HPP
+#endif // BAS_SECURITY_WX_LOGIN_UI_HPP
