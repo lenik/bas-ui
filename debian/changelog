@@ -1,3 +1,22 @@
+bas-ui (1.0.2) testing; urgency=medium
+
+  * Add bas.security: ACManager, CredentialManager, wxLoginUi sign-in dialog,
+    and tanks RBAC demo with policy helpers.
+  * Add guitanks demo: simulation state/tick logic, wx GUI with shortcuts,
+    policy panel, and streamline SVG toolbar icons.
+  * Add wx_compat for wxWidgets 3.0 vs 3.1+ (menu/toolbar bitmaps, AUI link
+    suffix from wx_logic); fix guitanks wx 3.0 crashes and panel flicker.
+  * Integrate gettext i18n pipeline and localize core UI labels.
+  * Migrate to AssetsRegistry with OverlapVolume zip embedding; move wx and
+    nanosvg into Meson subprojects; relocate sources under src/bas.
+  * UI architecture: IdManager, BitmapResult, CreateViewContext fragment layout,
+    unified toolbar abstraction, state-driven notepad editing; fragment views
+    return wxWindow*.
+  * Image loading: optional readFileOpt, reason-aware bitmap fallbacks, clearer
+    missing-vs-empty asset diagnostics.
+
+ -- Lenik (谢继雷) <lenik@bodz.net>  Wed, 17 Jun 2026 00:00:00 +0000
+
 bas-ui (1.0.1) testing; urgency=medium
 
   * Refactor image loading: add wx/images module with imageLoadAsset, imageLoadFile,
