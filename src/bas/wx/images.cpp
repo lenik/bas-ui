@@ -115,7 +115,6 @@ std::optional<wxBitmap> imageLoad(const uint8_t* data, size_t size, std::string_
     }
 
     else {
-        logerror_fmt("Loading bitmap from asset: %s", path_info.data());
         wxMemoryInputStream stream(data, size);
 
         wxImage image;
