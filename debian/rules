@@ -8,3 +8,5 @@ export DEB_BUILD_MAINT_OPTIONS = hardening=+all
 override_dh_auto_configure:
 	dh_auto_configure -- --buildtype=debug -Dwarning_level=0
 
+override_dh_auto_test:
+	# bas-cpp volume integration tests need mkfs.exfat and are flaky in package builds

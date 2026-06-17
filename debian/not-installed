@@ -1,0 +1,14 @@
+# bas-cpp subproject artifacts (packaged separately)
+usr/bin/reg
+usr/bin/acdemo
+usr/bin/vols
+usr/bin/tanks_game
+usr/include/bulk.h
+usr/include/wx_pch.h
+usr/lib/*/libbas-cpp.so*
+usr/lib/*/libbas-cpp.a
+usr/lib/*/pkgconfig/bas-cpp.pc
+usr/lib/*/pkgconfig/bas-cpp-static.pc
+usr/share/bas-cpp/app/*
+usr/share/bash-completion/completions/vols
+usr/share/man/man1/vols.1

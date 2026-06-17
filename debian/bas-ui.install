@@ -1,5 +1,6 @@
-usr/bin/*
+usr/bin/notepad
 usr/share/bas-ui/app/*
+usr/share/locale/*
 usr/share/man/man*/*
 usr/share/bash-completion/completions/*
 

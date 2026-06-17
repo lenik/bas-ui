@@ -53,7 +53,7 @@ foreach app_cpp : app_cpp_list
         ],
         cpp_pch: cpp_pch,
         link_args: ['-rdynamic', '-no-pie'],
-        install: false,
+        install: true,
         install_dir: install_dir,
     )
 endforeach

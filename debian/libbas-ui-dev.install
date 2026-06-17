@@ -1,4 +1,6 @@
 usr/include/bas
 usr/lib/*/libbas-ui.so
+usr/lib/*/libbas-ui.a
 usr/lib/*/pkgconfig/bas-ui.pc
+usr/lib/*/pkgconfig/bas-ui-static.pc
 
