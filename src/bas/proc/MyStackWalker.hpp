@@ -1,5 +1,9 @@
-#include <wx/stackwalk.h>
+#ifndef MY_STACK_WALKER_HPP
+#define MY_STACK_WALKER_HPP
+
 #include <wx/string.h>
+
+#include <wx/stackwalk.h>
 
 #include <array>
 #include <cstdint>
@@ -13,6 +17,7 @@
 #include <vector>
 
 #include <dlfcn.h>
+#include <unistd.h>
 
 #define COLOR_RED "\033[31m"
 #define COLOR_GREEN "\033[32m"
@@ -189,3 +194,5 @@ class MyStackWalker : public wxStackWalker {
         std::cout << COLOR_RESET << std::endl;
     }
 };
+
+#endif // MY_STACK_WALKER_HPP
