@@ -39,7 +39,8 @@ endif
 
 wx_sub = subproject('wx_logic')
 wx_dep = wx_sub.get_variable('wx_dep')
-wx_aui_dep = cpp.find_library('wx_gtk3u_aui-3.0', required: true)
+wx_lib_ver = wx_sub.get_variable('wx_lib_ver')
+wx_aui_dep = cpp.find_library('wx_gtk3u_aui-' + wx_lib_ver, required: true)
 intl_dep = dependency('intl', required: false)
 if not intl_dep.found()
     intl_dep = cpp.find_library('intl', required: true)
