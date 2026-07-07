@@ -1,3 +1,11 @@
+bas-ui (1.0.3) testing; urgency=medium
+
+  * bas-ui-static.pc: link libbas-ui.a by path; chain bas-c-static and
+    bas-cpp-static in Requires for one-line static linking.
+  * icu-config: default icu_major to auto via bas-c subproject.
+
+ -- Lenik (谢继雷) <lenik@bodz.net>  Tue, 07 Jul 2026 23:15:00 +0800
+
 bas-ui (1.0.2) testing; urgency=medium
 
   * Add bas.security: ACManager, CredentialManager, wxLoginUi sign-in dialog,

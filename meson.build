@@ -19,7 +19,7 @@ fs = import('fs')
 cpp = meson.get_compiler('cpp')
 
 if fs.is_dir('subprojects/bas-c')
-    subproject('bas-c')
+    subproject('bas-c', default_options: ['icu-config:icu_major=auto'])
 endif
 if fs.is_dir('subprojects/bas-cpp')
     subproject('bas-cpp')
@@ -218,13 +218,18 @@ pkgconfig.generate(
     requires: ['bas-c', 'bas-cpp'],
 )
 
+# Static .pc: explicit .a path; chain bas-c-static and bas-cpp-static.
 pkgconfig.generate(
-    lib_bas_ui_static,
     name: 'bas-ui-static',
+    filebase: 'bas-ui-static',
     description: 'bas-ui',
     version: meson.project_version(),
     subdirs: 'bas',
-    requires: ['bas-c', 'bas-cpp'],
+    install_dir: get_option('libdir') / 'pkgconfig',
+    requires: ['bas-c-static', 'bas-cpp-static'],
+    libraries: ['${bas_ui_static_lib}'],
+    variables: ['bas_ui_static_lib=${libdir}/libbas-ui.a'],
+    uninstalled_variables: ['bas_ui_static_lib=${prefix}/libbas-ui.a'],
 )
 
 # ---- Headers for libbas-c package (includedir/bas-c) ----
