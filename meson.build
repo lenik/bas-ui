@@ -19,7 +19,7 @@ fs = import('fs')
 cpp = meson.get_compiler('cpp')
 
 if fs.is_dir('subprojects/bas-c')
-    subproject('bas-c', default_options: ['icu-config:icu_major=auto'])
+    subproject('bas-c')
 endif
 if fs.is_dir('subprojects/bas-cpp')
     subproject('bas-cpp')
