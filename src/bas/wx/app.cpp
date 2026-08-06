@@ -10,6 +10,8 @@
 #include <clocale>
 #include <cstring>
 
+#include <sys/stat.h>
+
 #include <glib.h>
 #include <libintl.h>
 
@@ -26,7 +28,22 @@ static void ibus_log_filter(const gchar* log_domain, GLogLevelFlags log_level, c
     g_log_default_handler(log_domain, log_level, message, nullptr);
 }
 
+static void initGettext() {
+    // Without setlocale(), gettext ignores LANGUAGE/LANG and always returns msgid.
+    setlocale(LC_ALL, "");
+#ifdef BAS_UI_LOCALEDIR
+    // Prefer build-tree catalogs when present (uninstalled runs); otherwise libc
+    // default (/usr/share/locale) is used for packaged installs.
+    struct stat st {};
+    if (stat(BAS_UI_LOCALEDIR, &st) == 0 && S_ISDIR(st.st_mode)) {
+        bindtextdomain(TEXT_DOMAIN, BAS_UI_LOCALEDIR);
+    }
+#endif
+    bind_textdomain_codeset(TEXT_DOMAIN, "UTF-8");
+}
+
 bool uiApp::OnInit() {
+    initGettext();
     if (!wxApp::OnInit()) {
         return false;
     }
