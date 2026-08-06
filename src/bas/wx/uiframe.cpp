@@ -27,7 +27,8 @@ uiFrame::uiFrame(const wxString& title,                             //
                  long style,                                        //
                  const wxString& name                               //
                  )
-    : wxFrame(parent, id, title, pos, size, style, name) //
+    : wxFrame(parent, id, title, pos, size, style, name), //
+      Automatable(this) //
 {
     m_auiManager.SetManagedWindow(this);
     create();
@@ -43,17 +44,16 @@ uiFrame::~uiFrame() { m_auiManager.UnInit(); }
 
 void uiFrame::create() {
     std::string dir = "streamline-vectors/core/pop/interface-essential";
-    std::string dir2 = "streamline-vectors/core/pop/map-travel";
 
     group(1, "", "file", 10, _("&File")).install();
     group(2, "", "edit", 20, _("&Edit")).install();
     group(3, "", "view", 30, _("&View")).install();
 
     int seq = 100000;
-    action(wxID_EXIT, "file", "exit", seq++, _("E&xit"), _("Exit"))
-        .icon(wxART_QUIT, dir2, "emergency-exit.svg")
-        .shortcut("Ctrl+Q")
-        .performFn([this](PerformContext* ctx) { onExit(ctx); })
+    action(wxID_CLOSE, "file", "close", seq++, _("&Close"), _("Close"))
+        .icon(wxART_CLOSE)
+        .shortcut("Ctrl+W")
+        .performFn([this](PerformContext* ctx) { onClose(ctx); })
         .no_tool()
         .install();
 
@@ -66,7 +66,7 @@ void uiFrame::create() {
     //     .install();
 
     state(ID_TOOLBAR_SHOW_LABEL, "view", _("toolbar_show_label"), seq++, //
-          _("AuiToolbar &Show Label"), _("AuiToolbar show label"))
+          _("Tool &Label"), _("Tool label"))
         .icon(wxART_LIST_VIEW, dir, "text-square.svg")
         .shortcut("Ctrl+L")
         .stateType(UIStateType::BOOL)
@@ -199,6 +199,12 @@ void uiFrame::createView() {
     } else if (m_toolbar) {
         m_buildViewContext.forToolbars([](wxToolBar* toolbar) { toolbar->Realize(); });
     }
+
+    bindAutomationArch();
+}
+
+void uiFrame::bindAutomationArch() {
+    automation().bindArch(&m_root);
 }
 
 void uiFrame::getDefaultMenubarsSupported(std::unordered_set<std::string>& set) const {
@@ -277,10 +283,10 @@ void uiFrame::exitOnShow(bool exit) {
 }
 
 void uiFrame::onShowExit(wxShowEvent& event) {
-    // Simulate exit command after window is shown (for testing)
-    std::cout << "Window shown, simulating exit..." << std::endl;
-    wxCommandEvent exitEvent(wxEVT_MENU, wxID_EXIT);
-    GetEventHandler()->AddPendingEvent(exitEvent);
+    // Simulate close command after window is shown (for testing)
+    std::cout << "Window shown, simulating close..." << std::endl;
+    wxCommandEvent closeEvent(wxEVT_MENU, wxID_CLOSE);
+    GetEventHandler()->AddPendingEvent(closeEvent);
 }
 
 void uiFrame::onCommand(wxCommandEvent& event, UIAction* action) {
@@ -288,7 +294,7 @@ void uiFrame::onCommand(wxCommandEvent& event, UIAction* action) {
     action->perform(&ctx);
 }
 
-void uiFrame::onExit(PerformContext* ctx) { Close(); }
+void uiFrame::onClose(PerformContext* ctx) { Close(); }
 
 void uiFrame::setToolbarSize(int size) {
     // m_toolbar->SetToolBarStyle(wxTB_TEXT | wxTB_HORIZONTAL);

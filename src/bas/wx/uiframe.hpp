@@ -5,6 +5,7 @@
 #include "../ui/arch/UIFragment.hpp"
 #include "../ui/arch/UIGroup.hpp"
 #include "../ui/arch/UIState.hpp"
+#include "../ui/automation/Automatable.hpp"
 
 #include <wx/aui/auibar.h>
 #include <wx/aui/framemanager.h>
@@ -16,7 +17,9 @@
 
 #include <vector>
 
-class uiFrame : public wxFrame, public UIFragment {
+class uiFrame : public wxFrame,
+                public UIFragment,
+                public bas::ui::automation::Automatable {
   public:
     enum {
         ID_TOOLBAR_SMALL = wxID_HIGHEST + 1000,
@@ -39,6 +42,9 @@ class uiFrame : public wxFrame, public UIFragment {
     void removeFragment(UIFragment* fragment);
 
     void createView();
+
+    /** Re-bind UIAction/UIState tree into the automation map (after createView). */
+    void bindAutomationArch();
 
     void getDefaultMenubarsSupported(std::unordered_set<std::string>& set) const override;
     void getDefaultToolbarsSupported(std::unordered_set<std::string>& set) const override;
@@ -87,7 +93,7 @@ class uiFrame : public wxFrame, public UIFragment {
     void onShowExit(wxShowEvent& event);
 
     void onCommand(wxCommandEvent& event, UIAction* action);
-    void onExit(PerformContext* ctx);
+    void onClose(PerformContext* ctx);
 
     void setToolbarSize(int size);
     void setToolbarLabel(bool value);
