@@ -1,7 +1,9 @@
 app/aui.cpp
 app/notepad.cpp
 app/assets.cpp
-src/bas/wx/toolbars.cpp
+app/guitanks.cpp
+src/bas/security/wxLoginUi.cpp
+src/bas/wx/toolbar.cpp
 src/bas/wx/menus.cpp
 src/bas/wx/app.cpp
 src/bas/wx/artprovs.cpp

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: bas-ui 1.0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-22 14:30+0800\n"
+"POT-Creation-Date: 2026-07-13 22:57+0800\n"
 "PO-Revision-Date: 2026-04-07 08:04+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -17,407 +17,636 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: app/notepad.cpp:42
-msgid "streamline-vectors/core/pop/interface-essential"
-msgstr "streamline-vectors/core/pop/interface-essential"
-
-#: app/notepad.cpp:43
-msgid "streamline-vectors/core/pop/artificial-intelligence"
-msgstr "streamline-vectors/core/pop/artificial-intelligence"
-
-#: app/notepad.cpp:46 app/notepad.cpp:51 app/notepad.cpp:56 app/notepad.cpp:61
-#: src/bas/wx/uiframe.cpp:49 src/bas/wx/uiframe.cpp:54
-msgid "file"
-msgstr "file"
-
-#: app/notepad.cpp:46
-msgid "new"
-msgstr "new"
-
-#: app/notepad.cpp:46
+#: app/notepad.cpp:45
 msgid "&New"
 msgstr "&New"
 
-#: app/notepad.cpp:46
-msgid "New document"
-msgstr "New document"
-
-#: app/notepad.cpp:47
-msgid "new-file.svg"
-msgstr "new-file.svg"
-
-#: app/notepad.cpp:48
-msgid "Ctrl+N"
-msgstr "Ctrl+N"
-
-#: app/notepad.cpp:51
-msgid "open"
-msgstr "open"
-
-#: app/notepad.cpp:51
+#: app/notepad.cpp:50
 msgid "&Open..."
 msgstr "&Open..."
 
-#: app/notepad.cpp:51
-msgid "Open file"
-msgstr "Open file"
-
-#: app/notepad.cpp:52
-msgid "open-book.svg"
-msgstr "open-book.svg"
-
-#: app/notepad.cpp:53
-msgid "Ctrl+O"
-msgstr "Ctrl+O"
-
-#: app/notepad.cpp:56
-msgid "save"
-msgstr "save"
-
-#: app/notepad.cpp:56
+#: app/notepad.cpp:55
 msgid "&Save"
 msgstr "&Save"
 
-#: app/notepad.cpp:56
-msgid "Save file"
-msgstr "Save file"
-
-#: app/notepad.cpp:57
-msgid "file-add-alternate.svg"
-msgstr "file-add-alternate.svg"
-
-#: app/notepad.cpp:58
-msgid "Ctrl+S"
-msgstr "Ctrl+S"
-
-#: app/notepad.cpp:61
-msgid "saveas"
-msgstr "saveas"
-
-#: app/notepad.cpp:61
+#: app/notepad.cpp:60
 msgid "Save &As..."
 msgstr "Save &As..."
 
-#: app/notepad.cpp:61
-msgid "Save as"
-msgstr "Save as"
-
-#: app/notepad.cpp:62
-msgid "multiple-file-2.svg"
-msgstr "multiple-file-2.svg"
-
-#: app/notepad.cpp:63
-msgid "Ctrl+Shift+S"
-msgstr "Ctrl+Shift+S"
-
-#: app/notepad.cpp:68 app/notepad.cpp:73 app/notepad.cpp:80 app/notepad.cpp:86
-#: app/notepad.cpp:92 app/notepad.cpp:97 app/notepad.cpp:102
-#: src/bas/wx/uiframe.cpp:50
-msgid "edit"
-msgstr "edit"
-
-#: app/notepad.cpp:68
-msgid "undo"
-msgstr "undo"
-
-#: app/notepad.cpp:68
+#: app/notepad.cpp:67
 msgid "Undo"
 msgstr "Undo"
 
-#: app/notepad.cpp:69
-msgid "line-arrow-reload-horizontal-1.svg"
-msgstr "line-arrow-reload-horizontal-1.svg"
-
-#: app/notepad.cpp:70
-msgid "Ctrl+Z"
-msgstr "Ctrl+Z"
-
-#: app/notepad.cpp:73
-msgid "redo"
-msgstr "redo"
-
-#: app/notepad.cpp:73
+#: app/notepad.cpp:72
 msgid "Redo"
 msgstr "Redo"
 
-#: app/notepad.cpp:74
-msgid "ai-redo-spark.svg"
-msgstr "ai-redo-spark.svg"
-
-#: app/notepad.cpp:75
-msgid "Ctrl+Y"
-msgstr "Ctrl+Y"
-
-#: app/notepad.cpp:80
-msgid "select_all"
-msgstr "select_all"
-
-#: app/notepad.cpp:80
+#: app/notepad.cpp:79
 msgid "Select &All"
 msgstr "Select &All"
 
-#: app/notepad.cpp:81
-msgid "Select all"
-msgstr "Select all"
-
-#: app/notepad.cpp:82
-msgid "clipboard-check.svg"
-msgstr "clipboard-check.svg"
-
-#: app/notepad.cpp:83
-msgid "Ctrl+A"
-msgstr "Ctrl+A"
-
-#: app/notepad.cpp:86
-msgid "clear"
-msgstr "clear"
-
-#: app/notepad.cpp:86
+#: app/notepad.cpp:84
 msgid "Clear"
 msgstr "Clear"
 
-#: app/notepad.cpp:87
-msgid "clipboard-remove.svg"
-msgstr "clipboard-remove.svg"
-
-#: app/notepad.cpp:88
-msgid "Ctrl+K"
-msgstr "Ctrl+K"
-
-#: app/notepad.cpp:92
-msgid "cut"
-msgstr "cut"
-
-#: app/notepad.cpp:92
+#: app/notepad.cpp:90
 msgid "Cu&t"
 msgstr "Cu&t"
 
-#: app/notepad.cpp:92
-msgid "Cut"
-msgstr "Cut"
-
-#: app/notepad.cpp:93
-msgid "cut.svg"
-msgstr "cut.svg"
-
-#: app/notepad.cpp:94
-msgid "Ctrl+X"
-msgstr "Ctrl+X"
-
-#: app/notepad.cpp:97
-msgid "copy"
-msgstr "copy"
-
-#: app/notepad.cpp:97
+#: app/notepad.cpp:95
 msgid "&Copy"
 msgstr "&Copy"
 
-#: app/notepad.cpp:97
-msgid "Copy"
-msgstr "Copy"
-
-#: app/notepad.cpp:98
-msgid "clipboard-add.svg"
-msgstr "clipboard-add.svg"
-
-#: app/notepad.cpp:99
-msgid "Ctrl+C"
-msgstr "Ctrl+C"
-
-#: app/notepad.cpp:102
-msgid "paste"
-msgstr "paste"
-
-#: app/notepad.cpp:102
+#: app/notepad.cpp:100
 msgid "&Paste"
 msgstr "&Paste"
 
-#: app/notepad.cpp:102
-msgid "Paste"
-msgstr "Paste"
-
-#: app/notepad.cpp:103
-msgid "empty-clipboard.svg"
-msgstr "empty-clipboard.svg"
-
-#: app/notepad.cpp:104
-msgid "Ctrl+V"
-msgstr "Ctrl+V"
-
-#: app/notepad.cpp:109 app/notepad.cpp:114 app/notepad.cpp:119
-#: src/bas/wx/uiframe.cpp:51 src/bas/wx/uiframe.cpp:69
-msgid "view"
-msgstr "view"
-
-#: app/notepad.cpp:109
-msgid "zoom_in"
-msgstr "zoom_in"
-
-#: app/notepad.cpp:109
+#: app/notepad.cpp:107
 msgid "Zoom &In"
 msgstr "Zoom &In"
 
-#: app/notepad.cpp:109
-msgid "Zoom in"
-msgstr "Zoom in"
-
-#: app/notepad.cpp:110
-msgid "magnifying-glass-circle.svg"
-msgstr "magnifying-glass-circle.svg"
-
-#: app/notepad.cpp:111
-msgid "Ctrl+="
-msgstr "Ctrl+="
-
-#: app/notepad.cpp:111
-msgid "Ctrl++"
-msgstr "Ctrl++"
-
-#: app/notepad.cpp:114
-msgid "zoom_out"
-msgstr "zoom_out"
-
-#: app/notepad.cpp:114
+#: app/notepad.cpp:112
 msgid "Zoom &Out"
 msgstr "Zoom &Out"
 
-#: app/notepad.cpp:114
-msgid "Zoom out"
-msgstr "Zoom out"
-
-#: app/notepad.cpp:115
-msgid "magnifying-glass.svg"
-msgstr "magnifying-glass.svg"
-
-#: app/notepad.cpp:116
-msgid "Ctrl+-"
-msgstr "Ctrl+-"
-
-#: app/notepad.cpp:119
-msgid "zoom_reset"
-msgstr "zoom_reset"
-
-#: app/notepad.cpp:119
+#: app/notepad.cpp:117
 msgid "Zoom &Reset"
 msgstr "Zoom &Reset"
 
-#: app/notepad.cpp:120
-msgid "Zoom reset"
-msgstr "Zoom reset"
+#: app/notepad.cpp:126
+msgid "EOL mode"
+msgstr "EOL mode"
 
-#: app/notepad.cpp:121
-msgid "search-visual.svg"
-msgstr "search-visual.svg"
+#: app/notepad.cpp:127
+msgid "Line ending mode for save"
+msgstr "Line ending mode for save"
 
-#: app/notepad.cpp:122
-msgid "Ctrl+0"
-msgstr "Ctrl+0"
+#: app/notepad.cpp:136
+msgid "Auto"
+msgstr "Auto"
 
-#: app/notepad.cpp:155
+#: app/notepad.cpp:137
+msgid "Use detected line ending"
+msgstr "Use detected line ending"
+
+#: app/notepad.cpp:141
+msgid "Linux"
+msgstr "Linux"
+
+#: app/notepad.cpp:142
+msgid "Use LF"
+msgstr "Use LF"
+
+#: app/notepad.cpp:146
+msgid "Windows"
+msgstr "Windows"
+
+#: app/notepad.cpp:147
+msgid "Use CRLF"
+msgstr "Use CRLF"
+
+#: app/notepad.cpp:162
+msgid "Indent mode"
+msgstr "Indent mode"
+
+#: app/notepad.cpp:163
+msgid "Auto indentation mode"
+msgstr "Auto indentation mode"
+
+#: app/notepad.cpp:172
+msgid "Tab"
+msgstr "Tab"
+
+#: app/notepad.cpp:173
+msgid "Keep indentation with tab"
+msgstr "Keep indentation with tab"
+
+#: app/notepad.cpp:177
+msgid "Space"
+msgstr "Space"
+
+#: app/notepad.cpp:178
+msgid "Keep indentation with spaces"
+msgstr "Keep indentation with spaces"
+
+#: app/notepad.cpp:182
+msgid "None"
+msgstr "None"
+
+#: app/notepad.cpp:183
+msgid "Do not auto indent"
+msgstr "Do not auto indent"
+
+#: app/notepad.cpp:198
+msgid "Tab Size"
+msgstr "Tab Size"
+
+#: app/notepad.cpp:198
+msgid "Tab width"
+msgstr "Tab width"
+
+#: app/notepad.cpp:207
+msgid "Tab Size 2"
+msgstr "Tab Size 2"
+
+#: app/notepad.cpp:208
+msgid "Use 2 spaces for indentation"
+msgstr "Use 2 spaces for indentation"
+
+#: app/notepad.cpp:212
+msgid "Tab Size 4"
+msgstr "Tab Size 4"
+
+#: app/notepad.cpp:213
+msgid "Use 4 spaces for indentation"
+msgstr "Use 4 spaces for indentation"
+
+#: app/notepad.cpp:217
+msgid "Tab Size 8"
+msgstr "Tab Size 8"
+
+#: app/notepad.cpp:218
+msgid "Use 8 spaces for indentation"
+msgstr "Use 8 spaces for indentation"
+
+#: app/notepad.cpp:249
 msgid "Open"
 msgstr "Open"
 
-#: app/notepad.cpp:156 app/notepad.cpp:189
+#: app/notepad.cpp:250 app/notepad.cpp:284
 msgid "All files (*.*)|*.*"
 msgstr "All files (*.*)|*.*"
 
-#: app/notepad.cpp:162
+#: app/notepad.cpp:256
 msgid "Cannot open file."
 msgstr "Cannot open file."
 
-#: app/notepad.cpp:162 app/notepad.cpp:200 app/notepad.cpp:206
+#: app/notepad.cpp:256 app/notepad.cpp:295 app/notepad.cpp:308
+#: app/guitanks.cpp:849
 msgid "Error"
 msgstr "Error"
 
-#: app/notepad.cpp:188
+#: app/notepad.cpp:283
 msgid "Save As"
 msgstr "Save As"
 
-#: app/notepad.cpp:200
+#: app/notepad.cpp:295
 msgid "Cannot save file."
 msgstr "Cannot save file."
 
-#: app/notepad.cpp:206
+#: app/notepad.cpp:308
 msgid "Write failed."
 msgstr "Write failed."
 
-#: app/notepad.cpp:290
+#: app/notepad.cpp:376
 msgid "Notepad"
 msgstr "Notepad"
 
-#: src/bas/wx/app.cpp:28
+#: app/guitanks.cpp:47
+msgid "Login — "
+msgstr "Login — "
+
+#: app/guitanks.cpp:51
+msgid "Authorize — "
+msgstr "Authorize — "
+
+#: app/guitanks.cpp:56
+msgid " is not allowed to "
+msgstr " is not allowed to "
+
+#: app/guitanks.cpp:56
+msgid " on "
+msgstr " on "
+
+#: app/guitanks.cpp:72
+msgid "Username:"
+msgstr "Username:"
+
+#: app/guitanks.cpp:75
+msgid "Password:"
+msgstr "Password:"
+
+#: app/guitanks.cpp:82
+msgid "Demo accounts (user / pass / role)"
+msgstr "Demo accounts (user / pass / role)"
+
+#: app/guitanks.cpp:260
+msgid "Tab device  L login  F1/F2 engine  arrows move  Space fire"
+msgstr "Tab device  L login  F1/F2 engine  arrows move  Space fire"
+
+#: app/guitanks.cpp:269
+msgid "&Device"
+msgstr "&Device"
+
+#: app/guitanks.cpp:270
+msgid "&Tank"
+msgstr "&Tank"
+
+#: app/guitanks.cpp:273
+msgid "Switch &Device"
+msgstr "Switch &Device"
+
+#: app/guitanks.cpp:277
+msgid "&Login"
+msgstr "&Login"
+
+#: app/guitanks.cpp:284
+msgid "Engine &Start"
+msgstr "Engine &Start"
+
+#: app/guitanks.cpp:289
+msgid "Engine S&top"
+msgstr "Engine S&top"
+
+#: app/guitanks.cpp:294
+msgid "&Fire"
+msgstr "&Fire"
+
+#: app/guitanks.cpp:299
+msgid "Move &Forward"
+msgstr "Move &Forward"
+
+#: app/guitanks.cpp:304
+msgid "Move &Backward"
+msgstr "Move &Backward"
+
+#: app/guitanks.cpp:309
+msgid "Turn &Left"
+msgstr "Turn &Left"
+
+#: app/guitanks.cpp:314
+msgid "Turn &Right"
+msgstr "Turn &Right"
+
+#: app/guitanks.cpp:335
+msgid "tank-a: alice drives, bob fires, admin has full access."
+msgstr "tank-a: alice drives, bob fires, admin has full access."
+
+#: app/guitanks.cpp:336
+msgid "tank-b: charlie trains, dana instructs."
+msgstr "tank-b: charlie trains, dana instructs."
+
+#: app/guitanks.cpp:387
+msgid "Session"
+msgstr "Session"
+
+#: app/guitanks.cpp:414 app/guitanks.cpp:416
+msgid "Identity"
+msgstr "Identity"
+
+#: app/guitanks.cpp:414 app/guitanks.cpp:415
+msgid "ACL"
+msgstr "ACL"
+
+#: app/guitanks.cpp:414
+msgid "Active"
+msgstr "Active"
+
+#: app/guitanks.cpp:415 app/guitanks.cpp:416
+msgid "Permission"
+msgstr "Permission"
+
+#: app/guitanks.cpp:415 app/guitanks.cpp:416
+msgid "Effect"
+msgstr "Effect"
+
+#: app/guitanks.cpp:417
+msgid "Bindings"
+msgstr "Bindings"
+
+#: app/guitanks.cpp:418
+msgid "ACLs"
+msgstr "ACLs"
+
+#: app/guitanks.cpp:419
+msgid "Grants"
+msgstr "Grants"
+
+#: app/guitanks.cpp:427
+msgid "Recent activity"
+msgstr "Recent activity"
+
+#: app/guitanks.cpp:430
+msgid "Message"
+msgstr "Message"
+
+#: app/guitanks.cpp:492
+msgid " ON "
+msgstr " ON "
+
+#: app/guitanks.cpp:492
+msgid " OFF "
+msgstr " OFF "
+
+#: app/guitanks.cpp:497
+msgid "Use toolbar or keyboard shortcuts to operate the tank."
+msgstr "Use toolbar or keyboard shortcuts to operate the tank."
+
+#: app/guitanks.cpp:529
+msgid "yes"
+msgstr "yes"
+
+#: app/guitanks.cpp:548 app/guitanks.cpp:566
+msgid "Allow"
+msgstr "Allow"
+
+#: app/guitanks.cpp:548 app/guitanks.cpp:566
+msgid "Deny"
+msgstr "Deny"
+
+#: app/guitanks.cpp:699
+msgid "Invalid username or password."
+msgstr "Invalid username or password."
+
+#: app/guitanks.cpp:699
+msgid "Authentication failed"
+msgstr "Authentication failed"
+
+#: app/guitanks.cpp:711 app/guitanks.cpp:846
+msgid "Access denied"
+msgstr "Access denied"
+
+#: app/guitanks.cpp:789
+msgid ": invalid credentials."
+msgstr ": invalid credentials."
+
+#: app/guitanks.cpp:789
+msgid "Login failed"
+msgstr "Login failed"
+
+#: app/guitanks.cpp:831
+msgid "Tank Access Control"
+msgstr "Tank Access Control"
+
+#: src/bas/security/wxLoginUi.cpp:122 src/bas/security/wxLoginUi.cpp:191
+msgid "Sign in"
+msgstr "Sign in"
+
+#: src/bas/security/wxLoginUi.cpp:187
+msgid "Cancel"
+msgstr "Cancel"
+
+#: src/bas/security/wxLoginUi.cpp:261
+msgid "Please enter "
+msgstr "Please enter "
+
+#: src/bas/wx/app.cpp:57
 #, c-format
 msgid "Assert failed: %ls:%d in %ls: %ls (%ls)\n"
 msgstr "Assert failed: %ls:%d in %ls: %ls (%ls)\n"
 
-#: src/bas/wx/uiframe.cpp:49
+#: src/bas/wx/uiframe.cpp:47
 msgid "&File"
 msgstr "&File"
 
-#: src/bas/wx/uiframe.cpp:50
+#: src/bas/wx/uiframe.cpp:48
 msgid "&Edit"
 msgstr "&Edit"
 
-#: src/bas/wx/uiframe.cpp:51
+#: src/bas/wx/uiframe.cpp:49
 msgid "&View"
 msgstr "&View"
 
-#: src/bas/wx/uiframe.cpp:54
-msgid "exit"
-msgstr "exit"
+#: src/bas/wx/uiframe.cpp:52
+msgid "&Close"
+msgstr "&Close"
 
-#: src/bas/wx/uiframe.cpp:54
-msgid "E&xit"
-msgstr "E&xit"
+#: src/bas/wx/uiframe.cpp:52
+msgid "Close"
+msgstr "Close"
 
-#: src/bas/wx/uiframe.cpp:54
-msgid "Exit"
-msgstr "Exit"
-
-#: src/bas/wx/uiframe.cpp:56
-msgid "Ctrl+Q"
-msgstr "Ctrl+Q"
-
-#: src/bas/wx/uiframe.cpp:69
+#: src/bas/wx/uiframe.cpp:67
 msgid "toolbar_show_label"
 msgstr "toolbar_show_label"
 
-#: src/bas/wx/uiframe.cpp:70
-msgid "AuiToolbar &Show Label"
-msgstr "AuiToolbar &Show Label"
+#: src/bas/wx/uiframe.cpp:68
+msgid "Tool &Label"
+msgstr "Tool &Label"
 
-#: src/bas/wx/uiframe.cpp:70
-msgid "AuiToolbar show label"
-msgstr "AuiToolbar show label"
+#: src/bas/wx/uiframe.cpp:68
+msgid "Tool label"
+msgstr "Tool label"
 
-#: src/bas/wx/uiframe.cpp:71
-msgid "text-square.svg"
-msgstr "text-square.svg"
-
-#: src/bas/wx/uiframe.cpp:72
-msgid "Ctrl+L"
-msgstr "Ctrl+L"
-
-#: src/bas/wx/uiframe.cpp:76
+#: src/bas/wx/uiframe.cpp:74
 msgid "Show Label"
 msgstr "Show Label"
 
-#: src/bas/wx/uiframe.cpp:76
+#: src/bas/wx/uiframe.cpp:74
 msgid "Hide Label"
 msgstr "Hide Label"
 
-#: src/bas/wx/uiframe.cpp:77
+#: src/bas/wx/uiframe.cpp:75
 msgid "Show label"
 msgstr "Show label"
 
-#: src/bas/wx/uiframe.cpp:77
+#: src/bas/wx/uiframe.cpp:75
 msgid "Hide label"
 msgstr "Hide label"
 
-#: src/bas/wx/uiframe.cpp:104
+#: src/bas/wx/uiframe.cpp:102
 msgid "content"
 msgstr "content"
 
-#: src/bas/wx/uiframe.cpp:170
-msgid "<root>"
-msgstr "<root>"
+#~ msgid "AuiToolbar &Show Label"
+#~ msgstr "AuiToolbar &Show Label"
+
+#~ msgid "AuiToolbar show label"
+#~ msgstr "AuiToolbar show label"
+
+#~ msgid "E&xit"
+#~ msgstr "E&xit"
+
+#~ msgid "Exit"
+#~ msgstr "Exit"
+
+#~ msgid "streamline-vectors/core/pop/interface-essential"
+#~ msgstr "streamline-vectors/core/pop/interface-essential"
+
+#~ msgid "streamline-vectors/core/pop/artificial-intelligence"
+#~ msgstr "streamline-vectors/core/pop/artificial-intelligence"
+
+#~ msgid "file"
+#~ msgstr "file"
+
+#~ msgid "new"
+#~ msgstr "new"
+
+#~ msgid "New document"
+#~ msgstr "New document"
+
+#~ msgid "new-file.svg"
+#~ msgstr "new-file.svg"
+
+#~ msgid "Ctrl+N"
+#~ msgstr "Ctrl+N"
+
+#~ msgid "open"
+#~ msgstr "open"
+
+#~ msgid "Open file"
+#~ msgstr "Open file"
+
+#~ msgid "open-book.svg"
+#~ msgstr "open-book.svg"
+
+#~ msgid "Ctrl+O"
+#~ msgstr "Ctrl+O"
+
+#~ msgid "save"
+#~ msgstr "save"
+
+#~ msgid "Save file"
+#~ msgstr "Save file"
+
+#~ msgid "file-add-alternate.svg"
+#~ msgstr "file-add-alternate.svg"
+
+#~ msgid "Ctrl+S"
+#~ msgstr "Ctrl+S"
+
+#~ msgid "saveas"
+#~ msgstr "saveas"
+
+#~ msgid "Save as"
+#~ msgstr "Save as"
+
+#~ msgid "multiple-file-2.svg"
+#~ msgstr "multiple-file-2.svg"
+
+#~ msgid "Ctrl+Shift+S"
+#~ msgstr "Ctrl+Shift+S"
+
+#~ msgid "edit"
+#~ msgstr "edit"
+
+#~ msgid "undo"
+#~ msgstr "undo"
+
+#~ msgid "line-arrow-reload-horizontal-1.svg"
+#~ msgstr "line-arrow-reload-horizontal-1.svg"
+
+#~ msgid "Ctrl+Z"
+#~ msgstr "Ctrl+Z"
+
+#~ msgid "redo"
+#~ msgstr "redo"
+
+#~ msgid "ai-redo-spark.svg"
+#~ msgstr "ai-redo-spark.svg"
+
+#~ msgid "Ctrl+Y"
+#~ msgstr "Ctrl+Y"
+
+#~ msgid "select_all"
+#~ msgstr "select_all"
+
+#~ msgid "Select all"
+#~ msgstr "Select all"
+
+#~ msgid "clipboard-check.svg"
+#~ msgstr "clipboard-check.svg"
+
+#~ msgid "Ctrl+A"
+#~ msgstr "Ctrl+A"
+
+#~ msgid "clear"
+#~ msgstr "clear"
+
+#~ msgid "clipboard-remove.svg"
+#~ msgstr "clipboard-remove.svg"
+
+#~ msgid "Ctrl+K"
+#~ msgstr "Ctrl+K"
+
+#~ msgid "cut"
+#~ msgstr "cut"
+
+#~ msgid "Cut"
+#~ msgstr "Cut"
+
+#~ msgid "cut.svg"
+#~ msgstr "cut.svg"
+
+#~ msgid "Ctrl+X"
+#~ msgstr "Ctrl+X"
+
+#~ msgid "copy"
+#~ msgstr "copy"
+
+#~ msgid "Copy"
+#~ msgstr "Copy"
+
+#~ msgid "clipboard-add.svg"
+#~ msgstr "clipboard-add.svg"
+
+#~ msgid "Ctrl+C"
+#~ msgstr "Ctrl+C"
+
+#~ msgid "paste"
+#~ msgstr "paste"
+
+#~ msgid "Paste"
+#~ msgstr "Paste"
+
+#~ msgid "empty-clipboard.svg"
+#~ msgstr "empty-clipboard.svg"
+
+#~ msgid "Ctrl+V"
+#~ msgstr "Ctrl+V"
+
+#~ msgid "view"
+#~ msgstr "view"
+
+#~ msgid "zoom_in"
+#~ msgstr "zoom_in"
+
+#~ msgid "Zoom in"
+#~ msgstr "Zoom in"
+
+#~ msgid "magnifying-glass-circle.svg"
+#~ msgstr "magnifying-glass-circle.svg"
+
+#~ msgid "Ctrl+="
+#~ msgstr "Ctrl+="
+
+#~ msgid "Ctrl++"
+#~ msgstr "Ctrl++"
+
+#~ msgid "zoom_out"
+#~ msgstr "zoom_out"
+
+#~ msgid "Zoom out"
+#~ msgstr "Zoom out"
+
+#~ msgid "magnifying-glass.svg"
+#~ msgstr "magnifying-glass.svg"
+
+#~ msgid "Ctrl+-"
+#~ msgstr "Ctrl+-"
+
+#~ msgid "zoom_reset"
+#~ msgstr "zoom_reset"
+
+#~ msgid "Zoom reset"
+#~ msgstr "Zoom reset"
+
+#~ msgid "search-visual.svg"
+#~ msgstr "search-visual.svg"
+
+#~ msgid "Ctrl+0"
+#~ msgstr "Ctrl+0"
+
+#~ msgid "exit"
+#~ msgstr "exit"
+
+#~ msgid "Ctrl+Q"
+#~ msgstr "Ctrl+Q"
+
+#~ msgid "text-square.svg"
+#~ msgstr "text-square.svg"
+
+#~ msgid "Ctrl+L"
+#~ msgstr "Ctrl+L"
+
+#~ msgid "<root>"
+#~ msgstr "<root>"

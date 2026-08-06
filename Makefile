@@ -27,9 +27,9 @@ build-assets: l10n-mo
 	rm -f $(MESON_BUILD)/assets.zip
 	ninja -k0 -C $(MESON_BUILD)
 
-# Extract strings into $(PO_DIR)/$(DOMAIN).pot (run from po/ so POTFILES paths resolve).
+# Extract strings into $(PO_DIR)/$(DOMAIN).pot (POTFILES paths are repo-root relative).
 l10n-pot:
-	cd $(PO_DIR) && xgettext $(XGETTEXT_FLAGS) -f POTFILES -d $(DOMAIN) -o $(DOMAIN).pot
+	cd $(PO_DIR) && xgettext $(XGETTEXT_FLAGS) --directory=.. -f POTFILES -d $(DOMAIN) -o $(DOMAIN).pot
 
 # Merge template into each $(LINGUAS).po (updates files in $(PO_DIR)).
 l10n-update-po: l10n-pot

@@ -6,412 +6,641 @@ msgid ""
 msgstr ""
 "Project-Id-Version: bas-ui 1.0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-22 14:30+0800\n"
+"POT-Creation-Date: 2026-07-13 22:57+0800\n"
 "Language: zh_CN\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: app/notepad.cpp:42
-msgid "streamline-vectors/core/pop/interface-essential"
-msgstr "streamline-vectors/core/pop/interface-essential"
-
-#: app/notepad.cpp:43
-msgid "streamline-vectors/core/pop/artificial-intelligence"
-msgstr "streamline-vectors/core/pop/artificial-intelligence"
-
-#: app/notepad.cpp:46 app/notepad.cpp:51 app/notepad.cpp:56 app/notepad.cpp:61
-#: src/bas/wx/uiframe.cpp:49 src/bas/wx/uiframe.cpp:54
-msgid "file"
-msgstr "文件"
-
-#: app/notepad.cpp:46
-msgid "new"
-msgstr "新建"
-
-#: app/notepad.cpp:46
+#: app/notepad.cpp:45
 msgid "&New"
 msgstr "新建(&N)"
 
-#: app/notepad.cpp:46
-msgid "New document"
-msgstr "新建文档"
-
-#: app/notepad.cpp:47
-msgid "new-file.svg"
-msgstr "new-file.svg"
-
-#: app/notepad.cpp:48
-msgid "Ctrl+N"
-msgstr "Ctrl+N"
-
-#: app/notepad.cpp:51
-msgid "open"
-msgstr "打开"
-
-#: app/notepad.cpp:51
+#: app/notepad.cpp:50
 msgid "&Open..."
 msgstr "打开(&O)..."
 
-#: app/notepad.cpp:51
-msgid "Open file"
-msgstr "打开文件"
-
-#: app/notepad.cpp:52
-msgid "open-book.svg"
-msgstr "open-book.svg"
-
-#: app/notepad.cpp:53
-msgid "Ctrl+O"
-msgstr "Ctrl+O"
-
-#: app/notepad.cpp:56
-msgid "save"
-msgstr "保存"
-
-#: app/notepad.cpp:56
+#: app/notepad.cpp:55
 msgid "&Save"
 msgstr "保存(&S)"
 
-#: app/notepad.cpp:56
-msgid "Save file"
-msgstr "保存文件"
-
-#: app/notepad.cpp:57
-msgid "file-add-alternate.svg"
-msgstr "file-add-alternate.svg"
-
-#: app/notepad.cpp:58
-msgid "Ctrl+S"
-msgstr "Ctrl+S"
-
-#: app/notepad.cpp:61
-msgid "saveas"
-msgstr "另存为"
-
-#: app/notepad.cpp:61
+#: app/notepad.cpp:60
 msgid "Save &As..."
 msgstr "另存为(&A)..."
 
-#: app/notepad.cpp:61
-msgid "Save as"
-msgstr "另存为"
-
-#: app/notepad.cpp:62
-msgid "multiple-file-2.svg"
-msgstr "multiple-file-2.svg"
-
-#: app/notepad.cpp:63
-msgid "Ctrl+Shift+S"
-msgstr "Ctrl+Shift+S"
-
-#: app/notepad.cpp:68 app/notepad.cpp:73 app/notepad.cpp:80 app/notepad.cpp:86
-#: app/notepad.cpp:92 app/notepad.cpp:97 app/notepad.cpp:102
-#: src/bas/wx/uiframe.cpp:50
-msgid "edit"
-msgstr "编辑"
-
-#: app/notepad.cpp:68
-msgid "undo"
-msgstr "撤销"
-
-#: app/notepad.cpp:68
+#: app/notepad.cpp:67
 msgid "Undo"
 msgstr "撤销"
 
-#: app/notepad.cpp:69
-msgid "line-arrow-reload-horizontal-1.svg"
-msgstr "line-arrow-reload-horizontal-1.svg"
-
-#: app/notepad.cpp:70
-msgid "Ctrl+Z"
-msgstr "Ctrl+Z"
-
-#: app/notepad.cpp:73
-msgid "redo"
-msgstr "重做"
-
-#: app/notepad.cpp:73
+#: app/notepad.cpp:72
 msgid "Redo"
 msgstr "重做"
 
-#: app/notepad.cpp:74
-msgid "ai-redo-spark.svg"
-msgstr "ai-redo-spark.svg"
-
-#: app/notepad.cpp:75
-msgid "Ctrl+Y"
-msgstr "Ctrl+Y"
-
-#: app/notepad.cpp:80
-msgid "select_all"
-msgstr "全选"
-
-#: app/notepad.cpp:80
+#: app/notepad.cpp:79
 msgid "Select &All"
 msgstr "全选(&A)"
 
-#: app/notepad.cpp:81
-msgid "Select all"
-msgstr "全选"
-
-#: app/notepad.cpp:82
-msgid "clipboard-check.svg"
-msgstr "clipboard-check.svg"
-
-#: app/notepad.cpp:83
-msgid "Ctrl+A"
-msgstr "Ctrl+A"
-
-#: app/notepad.cpp:86
-msgid "clear"
-msgstr "清空"
-
-#: app/notepad.cpp:86
+#: app/notepad.cpp:84
 msgid "Clear"
 msgstr "清除"
 
-#: app/notepad.cpp:87
-msgid "clipboard-remove.svg"
-msgstr "clipboard-remove.svg"
-
-#: app/notepad.cpp:88
-msgid "Ctrl+K"
-msgstr "Ctrl+K"
-
-#: app/notepad.cpp:92
-msgid "cut"
-msgstr "剪切"
-
-#: app/notepad.cpp:92
+#: app/notepad.cpp:90
 msgid "Cu&t"
 msgstr "剪切(&T)"
 
-#: app/notepad.cpp:92
-msgid "Cut"
-msgstr "剪切"
-
-#: app/notepad.cpp:93
-msgid "cut.svg"
-msgstr "cut.svg"
-
-#: app/notepad.cpp:94
-msgid "Ctrl+X"
-msgstr "Ctrl+X"
-
-#: app/notepad.cpp:97
-msgid "copy"
-msgstr "复制"
-
-#: app/notepad.cpp:97
+#: app/notepad.cpp:95
 msgid "&Copy"
 msgstr "复制(&C)"
 
-#: app/notepad.cpp:97
-msgid "Copy"
-msgstr "复制"
-
-#: app/notepad.cpp:98
-msgid "clipboard-add.svg"
-msgstr "clipboard-add.svg"
-
-#: app/notepad.cpp:99
-msgid "Ctrl+C"
-msgstr "Ctrl+C"
-
-#: app/notepad.cpp:102
-msgid "paste"
-msgstr "粘贴"
-
-#: app/notepad.cpp:102
+#: app/notepad.cpp:100
 msgid "&Paste"
 msgstr "粘贴(&P)"
 
-#: app/notepad.cpp:102
-msgid "Paste"
-msgstr "粘贴"
-
-#: app/notepad.cpp:103
-msgid "empty-clipboard.svg"
-msgstr "empty-clipboard.svg"
-
-#: app/notepad.cpp:104
-msgid "Ctrl+V"
-msgstr "Ctrl+V"
-
-#: app/notepad.cpp:109 app/notepad.cpp:114 app/notepad.cpp:119
-#: src/bas/wx/uiframe.cpp:51 src/bas/wx/uiframe.cpp:69
-msgid "view"
-msgstr "视图"
-
-#: app/notepad.cpp:109
-msgid "zoom_in"
-msgstr "放大"
-
-#: app/notepad.cpp:109
+#: app/notepad.cpp:107
 msgid "Zoom &In"
 msgstr "放大(&I)"
 
-#: app/notepad.cpp:109
-msgid "Zoom in"
-msgstr "放大"
-
-#: app/notepad.cpp:110
-msgid "magnifying-glass-circle.svg"
-msgstr "magnifying-glass-circle.svg"
-
-#: app/notepad.cpp:111
-msgid "Ctrl+="
-msgstr "Ctrl+="
-
-#: app/notepad.cpp:111
-msgid "Ctrl++"
-msgstr "Ctrl++"
-
-#: app/notepad.cpp:114
-msgid "zoom_out"
-msgstr "缩小"
-
-#: app/notepad.cpp:114
+#: app/notepad.cpp:112
 msgid "Zoom &Out"
 msgstr "缩小(&O)"
 
-#: app/notepad.cpp:114
-msgid "Zoom out"
-msgstr "缩小"
-
-#: app/notepad.cpp:115
-msgid "magnifying-glass.svg"
-msgstr "magnifying-glass.svg"
-
-#: app/notepad.cpp:116
-msgid "Ctrl+-"
-msgstr "Ctrl+-"
-
-#: app/notepad.cpp:119
-msgid "zoom_reset"
-msgstr "重置缩放"
-
-#: app/notepad.cpp:119
+#: app/notepad.cpp:117
 msgid "Zoom &Reset"
 msgstr "重置缩放(&R)"
 
-#: app/notepad.cpp:120
-msgid "Zoom reset"
-msgstr "重置缩放"
+#: app/notepad.cpp:126
+msgid "EOL mode"
+msgstr "换行模式"
 
-#: app/notepad.cpp:121
-msgid "search-visual.svg"
-msgstr "search-visual.svg"
+#: app/notepad.cpp:127
+msgid "Line ending mode for save"
+msgstr "保存时的换行符模式"
 
-#: app/notepad.cpp:122
-msgid "Ctrl+0"
-msgstr "Ctrl+0"
+#: app/notepad.cpp:136
+msgid "Auto"
+msgstr "自动"
 
-#: app/notepad.cpp:155
+#: app/notepad.cpp:137
+msgid "Use detected line ending"
+msgstr "使用检测到的换行符"
+
+#: app/notepad.cpp:141
+msgid "Linux"
+msgstr "Linux"
+
+#: app/notepad.cpp:142
+msgid "Use LF"
+msgstr "使用 LF"
+
+#: app/notepad.cpp:146
+msgid "Windows"
+msgstr "Windows"
+
+#: app/notepad.cpp:147
+msgid "Use CRLF"
+msgstr "使用 CRLF"
+
+#: app/notepad.cpp:162
+msgid "Indent mode"
+msgstr "缩进模式"
+
+#: app/notepad.cpp:163
+msgid "Auto indentation mode"
+msgstr "自动缩进模式"
+
+#: app/notepad.cpp:172
+msgid "Tab"
+msgstr "Tab"
+
+#: app/notepad.cpp:173
+msgid "Keep indentation with tab"
+msgstr "使用 Tab 缩进"
+
+#: app/notepad.cpp:177
+msgid "Space"
+msgstr "空格"
+
+#: app/notepad.cpp:178
+msgid "Keep indentation with spaces"
+msgstr "使用空格缩进"
+
+#: app/notepad.cpp:182
+msgid "None"
+msgstr "无"
+
+#: app/notepad.cpp:183
+msgid "Do not auto indent"
+msgstr "不自动缩进"
+
+#: app/notepad.cpp:198
+msgid "Tab Size"
+msgstr "Tab 宽度"
+
+#: app/notepad.cpp:198
+msgid "Tab width"
+msgstr "Tab 宽度"
+
+#: app/notepad.cpp:207
+msgid "Tab Size 2"
+msgstr "Tab 宽度 2"
+
+#: app/notepad.cpp:208
+msgid "Use 2 spaces for indentation"
+msgstr "使用 2 个空格缩进"
+
+#: app/notepad.cpp:212
+msgid "Tab Size 4"
+msgstr "Tab 宽度 4"
+
+#: app/notepad.cpp:213
+msgid "Use 4 spaces for indentation"
+msgstr "使用 4 个空格缩进"
+
+#: app/notepad.cpp:217
+msgid "Tab Size 8"
+msgstr "Tab 宽度 8"
+
+#: app/notepad.cpp:218
+msgid "Use 8 spaces for indentation"
+msgstr "使用 8 个空格缩进"
+
+#: app/notepad.cpp:249
 msgid "Open"
 msgstr "打开"
 
-#: app/notepad.cpp:156 app/notepad.cpp:189
+#: app/notepad.cpp:250 app/notepad.cpp:284
 msgid "All files (*.*)|*.*"
 msgstr "所有文件 (*.*)|*.*"
 
-#: app/notepad.cpp:162
+#: app/notepad.cpp:256
 msgid "Cannot open file."
 msgstr "无法打开文件。"
 
-#: app/notepad.cpp:162 app/notepad.cpp:200 app/notepad.cpp:206
+#: app/notepad.cpp:256 app/notepad.cpp:295 app/notepad.cpp:308
+#: app/guitanks.cpp:849
 msgid "Error"
 msgstr "错误"
 
-#: app/notepad.cpp:188
+#: app/notepad.cpp:283
 msgid "Save As"
 msgstr "另存为"
 
-#: app/notepad.cpp:200
+#: app/notepad.cpp:295
 msgid "Cannot save file."
 msgstr "无法保存文件。"
 
-#: app/notepad.cpp:206
+#: app/notepad.cpp:308
 msgid "Write failed."
 msgstr "写入失败。"
 
-#: app/notepad.cpp:290
+#: app/notepad.cpp:376
 msgid "Notepad"
 msgstr "记事本"
 
-#: src/bas/wx/app.cpp:28
+#: app/guitanks.cpp:47
+msgid "Login — "
+msgstr "登录 — "
+
+#: app/guitanks.cpp:51
+msgid "Authorize — "
+msgstr "授权 — "
+
+#: app/guitanks.cpp:56
+msgid " is not allowed to "
+msgstr " 无权执行 "
+
+#: app/guitanks.cpp:56
+msgid " on "
+msgstr " 于 "
+
+#: app/guitanks.cpp:72
+msgid "Username:"
+msgstr "用户名："
+
+#: app/guitanks.cpp:75
+msgid "Password:"
+msgstr "密码："
+
+#: app/guitanks.cpp:82
+msgid "Demo accounts (user / pass / role)"
+msgstr "演示账号（用户 / 密码 / 角色）"
+
+#: app/guitanks.cpp:260
+msgid "Tab device  L login  F1/F2 engine  arrows move  Space fire"
+msgstr "Tab 切换设备  L 登录  F1/F2 引擎  方向键移动  空格开火"
+
+#: app/guitanks.cpp:269
+msgid "&Device"
+msgstr "设备(&D)"
+
+#: app/guitanks.cpp:270
+msgid "&Tank"
+msgstr "坦克(&T)"
+
+#: app/guitanks.cpp:273
+msgid "Switch &Device"
+msgstr "切换设备(&D)"
+
+#: app/guitanks.cpp:277
+msgid "&Login"
+msgstr "登录(&L)"
+
+#: app/guitanks.cpp:284
+msgid "Engine &Start"
+msgstr "启动引擎(&S)"
+
+#: app/guitanks.cpp:289
+msgid "Engine S&top"
+msgstr "停止引擎(&T)"
+
+#: app/guitanks.cpp:294
+msgid "&Fire"
+msgstr "开火(&F)"
+
+#: app/guitanks.cpp:299
+msgid "Move &Forward"
+msgstr "前进(&F)"
+
+#: app/guitanks.cpp:304
+msgid "Move &Backward"
+msgstr "后退(&B)"
+
+#: app/guitanks.cpp:309
+msgid "Turn &Left"
+msgstr "左转(&L)"
+
+#: app/guitanks.cpp:314
+msgid "Turn &Right"
+msgstr "右转(&R)"
+
+#: app/guitanks.cpp:335
+msgid "tank-a: alice drives, bob fires, admin has full access."
+msgstr "tank-a：alice 驾驶，bob 开火，admin 拥有全部权限。"
+
+#: app/guitanks.cpp:336
+msgid "tank-b: charlie trains, dana instructs."
+msgstr "tank-b：charlie 训练，dana 指导。"
+
+#: app/guitanks.cpp:387
+msgid "Session"
+msgstr "会话"
+
+#: app/guitanks.cpp:414 app/guitanks.cpp:416
+msgid "Identity"
+msgstr "身份"
+
+#: app/guitanks.cpp:414 app/guitanks.cpp:415
+msgid "ACL"
+msgstr "ACL"
+
+#: app/guitanks.cpp:414
+msgid "Active"
+msgstr "活动"
+
+#: app/guitanks.cpp:415 app/guitanks.cpp:416
+msgid "Permission"
+msgstr "权限"
+
+#: app/guitanks.cpp:415 app/guitanks.cpp:416
+msgid "Effect"
+msgstr "效果"
+
+#: app/guitanks.cpp:417
+msgid "Bindings"
+msgstr "绑定"
+
+#: app/guitanks.cpp:418
+msgid "ACLs"
+msgstr "ACL"
+
+#: app/guitanks.cpp:419
+msgid "Grants"
+msgstr "授权"
+
+#: app/guitanks.cpp:427
+msgid "Recent activity"
+msgstr "最近活动"
+
+#: app/guitanks.cpp:430
+msgid "Message"
+msgstr "消息"
+
+#: app/guitanks.cpp:492
+msgid " ON "
+msgstr " 开 "
+
+#: app/guitanks.cpp:492
+msgid " OFF "
+msgstr " 关 "
+
+#: app/guitanks.cpp:497
+msgid "Use toolbar or keyboard shortcuts to operate the tank."
+msgstr "使用工具栏或快捷键操作坦克。"
+
+#: app/guitanks.cpp:529
+msgid "yes"
+msgstr "是"
+
+#: app/guitanks.cpp:548 app/guitanks.cpp:566
+msgid "Allow"
+msgstr "允许"
+
+#: app/guitanks.cpp:548 app/guitanks.cpp:566
+msgid "Deny"
+msgstr "拒绝"
+
+#: app/guitanks.cpp:699
+msgid "Invalid username or password."
+msgstr "用户名或密码无效。"
+
+#: app/guitanks.cpp:699
+msgid "Authentication failed"
+msgstr "认证失败"
+
+#: app/guitanks.cpp:711 app/guitanks.cpp:846
+msgid "Access denied"
+msgstr "访问被拒绝"
+
+#: app/guitanks.cpp:789
+msgid ": invalid credentials."
+msgstr "：凭证无效。"
+
+#: app/guitanks.cpp:789
+msgid "Login failed"
+msgstr "登录失败"
+
+#: app/guitanks.cpp:831
+msgid "Tank Access Control"
+msgstr "坦克访问控制"
+
+#: src/bas/security/wxLoginUi.cpp:122 src/bas/security/wxLoginUi.cpp:191
+msgid "Sign in"
+msgstr "登录"
+
+#: src/bas/security/wxLoginUi.cpp:187
+msgid "Cancel"
+msgstr "取消"
+
+#: src/bas/security/wxLoginUi.cpp:261
+msgid "Please enter "
+msgstr "请输入"
+
+#: src/bas/wx/app.cpp:57
 #, c-format
 msgid "Assert failed: %ls:%d in %ls: %ls (%ls)\n"
 msgstr "Assert failed: %ls:%d in %ls: %ls (%ls)\n"
 
-#: src/bas/wx/uiframe.cpp:49
+#: src/bas/wx/uiframe.cpp:47
 msgid "&File"
 msgstr "文件(&F)"
 
-#: src/bas/wx/uiframe.cpp:50
+#: src/bas/wx/uiframe.cpp:48
 msgid "&Edit"
 msgstr "编辑(&E)"
 
-#: src/bas/wx/uiframe.cpp:51
+#: src/bas/wx/uiframe.cpp:49
 msgid "&View"
 msgstr "视图(&V)"
 
-#: src/bas/wx/uiframe.cpp:54
-msgid "exit"
-msgstr "退出"
+#: src/bas/wx/uiframe.cpp:52
+msgid "&Close"
+msgstr "关闭(&C)"
 
-#: src/bas/wx/uiframe.cpp:54
-msgid "E&xit"
-msgstr "退出(&X)"
+#: src/bas/wx/uiframe.cpp:52
+msgid "Close"
+msgstr "关闭"
 
-#: src/bas/wx/uiframe.cpp:54
-msgid "Exit"
-msgstr "退出"
-
-#: src/bas/wx/uiframe.cpp:56
-msgid "Ctrl+Q"
-msgstr "Ctrl+Q"
-
-#: src/bas/wx/uiframe.cpp:69
+#: src/bas/wx/uiframe.cpp:67
 msgid "toolbar_show_label"
 msgstr "toolbar_show_label"
 
-#: src/bas/wx/uiframe.cpp:70
-msgid "AuiToolbar &Show Label"
-msgstr "AuiToolbar 显示标签(&S)"
+#: src/bas/wx/uiframe.cpp:68
+msgid "Tool &Label"
+msgstr "工具标签(&L)"
 
-#: src/bas/wx/uiframe.cpp:70
-msgid "AuiToolbar show label"
-msgstr "AuiToolbar 显示标签"
+#: src/bas/wx/uiframe.cpp:68
+msgid "Tool label"
+msgstr "工具标签"
 
-#: src/bas/wx/uiframe.cpp:71
-msgid "text-square.svg"
-msgstr "text-square.svg"
-
-#: src/bas/wx/uiframe.cpp:72
-msgid "Ctrl+L"
-msgstr "Ctrl+L"
-
-#: src/bas/wx/uiframe.cpp:76
+#: src/bas/wx/uiframe.cpp:74
 msgid "Show Label"
 msgstr "显示标签"
 
-#: src/bas/wx/uiframe.cpp:76
+#: src/bas/wx/uiframe.cpp:74
 msgid "Hide Label"
 msgstr "隐藏标签"
 
-#: src/bas/wx/uiframe.cpp:77
+#: src/bas/wx/uiframe.cpp:75
 msgid "Show label"
 msgstr "显示标签"
 
-#: src/bas/wx/uiframe.cpp:77
+#: src/bas/wx/uiframe.cpp:75
 msgid "Hide label"
 msgstr "隐藏标签"
 
-#: src/bas/wx/uiframe.cpp:104
+#: src/bas/wx/uiframe.cpp:102
 msgid "content"
 msgstr "内容"
 
-#: src/bas/wx/uiframe.cpp:170
-msgid "<root>"
-msgstr "<root>"
+#~ msgid "AuiToolbar &Show Label"
+#~ msgstr "AuiToolbar 显示标签(&S)"
+
+#~ msgid "AuiToolbar show label"
+#~ msgstr "AuiToolbar 显示标签"
+
+#~ msgid "E&xit"
+#~ msgstr "退出(&X)"
+
+#~ msgid "Exit"
+#~ msgstr "退出"
+
+#~ msgid "streamline-vectors/core/pop/interface-essential"
+#~ msgstr "streamline-vectors/core/pop/interface-essential"
+
+#~ msgid "streamline-vectors/core/pop/artificial-intelligence"
+#~ msgstr "streamline-vectors/core/pop/artificial-intelligence"
+
+#~ msgid "file"
+#~ msgstr "文件"
+
+#~ msgid "new"
+#~ msgstr "新建"
+
+#~ msgid "New document"
+#~ msgstr "新建文档"
+
+#~ msgid "new-file.svg"
+#~ msgstr "new-file.svg"
+
+#~ msgid "Ctrl+N"
+#~ msgstr "Ctrl+N"
+
+#~ msgid "open"
+#~ msgstr "打开"
+
+#~ msgid "Open file"
+#~ msgstr "打开文件"
+
+#~ msgid "open-book.svg"
+#~ msgstr "open-book.svg"
+
+#~ msgid "Ctrl+O"
+#~ msgstr "Ctrl+O"
+
+#~ msgid "save"
+#~ msgstr "保存"
+
+#~ msgid "Save file"
+#~ msgstr "保存文件"
+
+#~ msgid "file-add-alternate.svg"
+#~ msgstr "file-add-alternate.svg"
+
+#~ msgid "Ctrl+S"
+#~ msgstr "Ctrl+S"
+
+#~ msgid "saveas"
+#~ msgstr "另存为"
+
+#~ msgid "Save as"
+#~ msgstr "另存为"
+
+#~ msgid "multiple-file-2.svg"
+#~ msgstr "multiple-file-2.svg"
+
+#~ msgid "Ctrl+Shift+S"
+#~ msgstr "Ctrl+Shift+S"
+
+#~ msgid "edit"
+#~ msgstr "编辑"
+
+#~ msgid "undo"
+#~ msgstr "撤销"
+
+#~ msgid "line-arrow-reload-horizontal-1.svg"
+#~ msgstr "line-arrow-reload-horizontal-1.svg"
+
+#~ msgid "Ctrl+Z"
+#~ msgstr "Ctrl+Z"
+
+#~ msgid "redo"
+#~ msgstr "重做"
+
+#~ msgid "ai-redo-spark.svg"
+#~ msgstr "ai-redo-spark.svg"
+
+#~ msgid "Ctrl+Y"
+#~ msgstr "Ctrl+Y"
+
+#~ msgid "select_all"
+#~ msgstr "全选"
+
+#~ msgid "Select all"
+#~ msgstr "全选"
+
+#~ msgid "clipboard-check.svg"
+#~ msgstr "clipboard-check.svg"
+
+#~ msgid "Ctrl+A"
+#~ msgstr "Ctrl+A"
+
+#~ msgid "clear"
+#~ msgstr "清空"
+
+#~ msgid "clipboard-remove.svg"
+#~ msgstr "clipboard-remove.svg"
+
+#~ msgid "Ctrl+K"
+#~ msgstr "Ctrl+K"
+
+#~ msgid "cut"
+#~ msgstr "剪切"
+
+#~ msgid "Cut"
+#~ msgstr "剪切"
+
+#~ msgid "cut.svg"
+#~ msgstr "cut.svg"
+
+#~ msgid "Ctrl+X"
+#~ msgstr "Ctrl+X"
+
+#~ msgid "copy"
+#~ msgstr "复制"
+
+#~ msgid "Copy"
+#~ msgstr "复制"
+
+#~ msgid "clipboard-add.svg"
+#~ msgstr "clipboard-add.svg"
+
+#~ msgid "Ctrl+C"
+#~ msgstr "Ctrl+C"
+
+#~ msgid "paste"
+#~ msgstr "粘贴"
+
+#~ msgid "Paste"
+#~ msgstr "粘贴"
+
+#~ msgid "empty-clipboard.svg"
+#~ msgstr "empty-clipboard.svg"
+
+#~ msgid "Ctrl+V"
+#~ msgstr "Ctrl+V"
+
+#~ msgid "view"
+#~ msgstr "视图"
+
+#~ msgid "zoom_in"
+#~ msgstr "放大"
+
+#~ msgid "Zoom in"
+#~ msgstr "放大"
+
+#~ msgid "magnifying-glass-circle.svg"
+#~ msgstr "magnifying-glass-circle.svg"
+
+#~ msgid "Ctrl+="
+#~ msgstr "Ctrl+="
+
+#~ msgid "Ctrl++"
+#~ msgstr "Ctrl++"
+
+#~ msgid "zoom_out"
+#~ msgstr "缩小"
+
+#~ msgid "Zoom out"
+#~ msgstr "缩小"
+
+#~ msgid "magnifying-glass.svg"
+#~ msgstr "magnifying-glass.svg"
+
+#~ msgid "Ctrl+-"
+#~ msgstr "Ctrl+-"
+
+#~ msgid "zoom_reset"
+#~ msgstr "重置缩放"
+
+#~ msgid "Zoom reset"
+#~ msgstr "重置缩放"
+
+#~ msgid "search-visual.svg"
+#~ msgstr "search-visual.svg"
+
+#~ msgid "Ctrl+0"
+#~ msgstr "Ctrl+0"
+
+#~ msgid "exit"
+#~ msgstr "退出"
+
+#~ msgid "Ctrl+Q"
+#~ msgstr "Ctrl+Q"
+
+#~ msgid "text-square.svg"
+#~ msgstr "text-square.svg"
+
+#~ msgid "Ctrl+L"
+#~ msgstr "Ctrl+L"
+
+#~ msgid "<root>"
+#~ msgstr "<root>"
