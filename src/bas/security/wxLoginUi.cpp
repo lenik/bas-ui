@@ -1,6 +1,7 @@
 #include "wxLoginUi.hpp"
 
 #include <bas/security/LoginUi.hpp>
+#include <bas/ui/automation/Automatable.hpp>
 
 #include <wx/app.h>
 #include <wx/button.h>
@@ -111,15 +112,16 @@ class LoginFieldPanel : public wxPanel {
     }
 };
 
-class LoginFormDialog : public wxDialog {
+class LoginFormDialog : public wxDialog, public bas::ui::automation::Automatable {
   public:
     LoginFormDialog(wxWindow* parent, const LoginFormSpec& form, const CredentialRequest& request)
         : wxDialog(parent, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize,
                    wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER),
+          Automatable(this),
           m_form(form),
           m_request(request) {
         const wxString title =
-            utf8(form.title.empty() ? std::string("Sign in") : form.title);
+            form.title.empty() ? wxString(_("Sign in")) : utf8(form.title);
         const std::string subtitleText = [&]() -> std::string {
             const std::string fromForm = jsonOptionString(form.options, "subtitle");
             if (!fromForm.empty()) {
@@ -168,7 +170,9 @@ class LoginFormDialog : public wxDialog {
 
             bodySizer->Add(new LoginFieldPanel(body, label, ctrl, field.required), 0,
                            wxEXPAND | wxBOTTOM, 14);
+            ctrl->SetName(wxString::FromUTF8(field.name.c_str()));
             m_fields[field.name] = ctrl;
+            automationMap().bind(field.name, ctrl);
         }
 
         m_errorText = new wxStaticText(body, wxID_ANY, wxEmptyString);
@@ -213,6 +217,10 @@ class LoginFormDialog : public wxDialog {
 
         Bind(wxEVT_BUTTON, &LoginFormDialog::onButton, this);
         Bind(wxEVT_TEXT_ENTER, [this](wxCommandEvent&) { trySubmit(); });
+
+        automationMap().bind("ok", wxID_OK);
+        automationMap().bind("cancel", wxID_CANCEL);
+        automationMap().bind("signin", wxID_OK);
     }
 
     std::optional<Credential> buildCredential() {

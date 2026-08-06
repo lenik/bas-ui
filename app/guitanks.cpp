@@ -57,12 +57,13 @@ wxString accessDeniedMessage(const std::string& user, const std::string& permiss
            utf8(deviceName) + ".";
 }
 
-class DeviceLoginDialog : public wxDialog {
+class DeviceLoginDialog : public wxDialog, public bas::ui::automation::Automatable {
   public:
     DeviceLoginDialog(wxWindow* parent, const DeviceSlot& device, const wxString& title,
                       const wxString& message)
         : wxDialog(parent, wxID_ANY, title, wxDefaultPosition, wxDefaultSize,
-                   wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER) {
+                   wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER),
+          Automatable(this) {
         auto* root = new wxBoxSizer(wxVERTICAL);
         if (!message.empty()) {
             root->Add(new wxStaticText(this, wxID_ANY, message), 0, wxALL | wxEXPAND, 10);
@@ -71,10 +72,12 @@ class DeviceLoginDialog : public wxDialog {
         auto* grid = new wxFlexGridSizer(2, wxSize(8, 6));
         grid->Add(new wxStaticText(this, wxID_ANY, _("Username:")), 0, wxALIGN_CENTER_VERTICAL);
         m_user = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(220, -1));
+        m_user->SetName("user");
         grid->Add(m_user, 1, wxEXPAND);
         grid->Add(new wxStaticText(this, wxID_ANY, _("Password:")), 0, wxALIGN_CENTER_VERTICAL);
         m_pass = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(220, -1),
                                 wxTE_PASSWORD);
+        m_pass->SetName("pass");
         grid->Add(m_pass, 1, wxEXPAND);
         root->Add(grid, 0, wxALL | wxEXPAND, 10);
 
@@ -94,6 +97,11 @@ class DeviceLoginDialog : public wxDialog {
         root->Add(CreateButtonSizer(wxOK | wxCANCEL), 0, wxALL | wxEXPAND, 10);
         SetSizerAndFit(root);
         CentreOnParent();
+
+        automationMap().bind("user", m_user);
+        automationMap().bind("pass", m_pass);
+        automationMap().bind("ok", wxID_OK);
+        automationMap().bind("cancel", wxID_CANCEL);
     }
 
     bool runSubmitted(std::string& user, std::string& pass) {
@@ -265,6 +273,10 @@ void TankCanvas::onPaint(wxPaintEvent& event) {
 GuitanksBody::GuitanksBody() { defineActions(); }
 
 void GuitanksBody::defineActions() {
+    // Explicit menu groups so titles are translated (internal auto-groups capitalize the name only).
+    group(ID_GROUP_DEVICE, "", "device", 10, _("&Device")).install();
+    group(ID_GROUP_TANK, "", "tank", 20, _("&Tank")).install();
+
     int seq = 0;
     action(ID_DEVICE_SWITCH, "device", "switch", seq++, _("Switch &Device"), "Switch active device")
         .shortcut("Tab")

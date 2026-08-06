@@ -234,7 +234,7 @@ void NotepadBody::defineStates() {
 wxWindow* NotepadBody::createFragmentView(CreateViewContext* ctx) {
     m_text = new wxTextCtrl(ctx->getParent(), wxID_ANY, "", wxDefaultPosition, wxDefaultSize,
                             wxTE_MULTILINE | wxTE_WORDWRAP | wxTE_PROCESS_TAB);
-                            
+    m_text->SetName("editor");
     m_text->Bind(wxEVT_CHAR, &NotepadBody::onTextChar, this);
 
     return m_text;
@@ -370,6 +370,13 @@ wxAuiToolBar* NotepadFrame::makeDefaultAuiToolbar(std::string_view path) {
         return m_viewTools;
     }
     return nullptr;
+}
+
+bool Notepad::OnUserInit() {
+    NotepadFrame* frame = new NotepadFrame(_("Notepad"));
+    frame->CenterOnScreen();
+    frame->Show();
+    return true;
 }
 
 int main(int argc, char** argv) {

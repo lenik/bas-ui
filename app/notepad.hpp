@@ -58,6 +58,10 @@ class NotepadFrame : public uiFrame {
     explicit NotepadFrame(const wxString& title) : uiFrame(title) {
         addFragment(&m_body);
         createView();
+        // Editor is created in createFragmentView; bind by wxWindow::GetName.
+        if (wxWindow* editor = FindWindowByName("editor")) {
+            automationMap().bind("editor", editor);
+        }
     }
 
     void getDefaultToolbarsSupported(std::unordered_set<std::string>& set) const override {
@@ -84,10 +88,5 @@ class Notepad : public uiApp {
   public:
     Notepad() : uiApp() {}
 
-    bool OnUserInit() override {
-        NotepadFrame* frame = new NotepadFrame(_("Notepad"));
-        frame->CenterOnScreen();
-        frame->Show();
-        return true;
-    }
+    bool OnUserInit() override;
 };

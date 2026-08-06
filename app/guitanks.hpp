@@ -4,6 +4,7 @@
 #include "tanks_sim.hpp"
 
 #include "bas/security/wxLoginUi.hpp"
+#include "bas/ui/automation/Automatable.hpp"
 #include "bas/wx/app.hpp"
 #include "bas/wx/uiframe.hpp"
 
@@ -19,7 +20,9 @@
 #include <vector>
 
 enum {
-    ID_DEVICE_SWITCH = uiFrame::ID_APP_HIGHEST + 1,
+    ID_GROUP_DEVICE = uiFrame::ID_APP_HIGHEST + 1,
+    ID_GROUP_TANK,
+    ID_DEVICE_SWITCH,
     ID_DEVICE_LOGIN,
     ID_TANK_START,
     ID_TANK_STOP,
