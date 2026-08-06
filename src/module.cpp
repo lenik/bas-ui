@@ -13,7 +13,7 @@ define_zip_assets(bas_ui, bas_ui_assets);
 namespace {
 
 struct BasUiAssetsRegistrar {
-    BasUiAssetsRegistrar() { AssetsRegistry::pushLayer(bas_ui_assets.get()); }
+    BasUiAssetsRegistrar() { AssetsRegistry::pushLayer(bas_ui_assets); }
 } bas_ui_assets_registrar;
 
 } // namespace
