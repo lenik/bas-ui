@@ -328,3 +328,5 @@ foreach test_rel_path : all_test_files
 endforeach
 
 subdir('app')
+
+subdir('tests')
