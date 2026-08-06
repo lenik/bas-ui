@@ -83,6 +83,11 @@ cpp_sources = files(
     './src/bas/ui/arch/b-action.cpp',
     './src/bas/ui/arch/b-group.cpp',
     './src/bas/ui/arch/b-state.cpp',
+    './src/bas/ui/automation/AutomationMap.cpp',
+    './src/bas/ui/automation/AutomationQuery.cpp',
+    './src/bas/ui/automation/DefaultAutomation.cpp',
+    './src/bas/ui/automation/EventRegistry.cpp',
+    './src/bas/ui/automation/ScriptRunner.cpp',
     './src/bas/util/mem.cpp',
     './src/bas/wx/app.cpp',
     './src/bas/wx/artprovs.cpp',
@@ -267,7 +272,9 @@ install_subdir(
 
 # List of all test source files (manually enumerated since Meson lacks fs module)
 # This list is automatically generated from: find src -name '*_test.cpp' | sort
-all_test_files = []
+all_test_files = [
+    'bas/ui/automation/automation_test.cpp',
+]
 
 # Build each test using the 'includes' utility to get source dependencies
 foreach test_rel_path : all_test_files
