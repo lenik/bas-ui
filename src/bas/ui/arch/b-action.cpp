@@ -6,8 +6,7 @@
 void ActionVB::build(wxMenu* menu) {
     auto& shortcuts = action->getShortcuts();
     if (!shortcuts.empty()) {
-        label += "\t";
-        label += wxString(shortcuts[0].c_str());
+        basWxAppendMenuShortcut(label, shortcuts[0]);
     }
 
     auto id = action->id;

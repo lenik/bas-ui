@@ -3,9 +3,13 @@
 
 #include <wx/bitmap.h>
 #include <wx/menuitem.h>
+#include <wx/string.h>
 #include <wx/tbarbase.h>
 #include <wx/toolbar.h>
 #include <wx/version.h>
+
+#include <cctype>
+#include <string>
 
 #if defined(BAS_WX_API_3_0)
 #define BAS_WX_MODERN 0
@@ -38,6 +42,65 @@ inline void basWxSetMenuItemBitmap(wxMenuItem* item, const wxBitmap& bitmap) {
 #else
     item->SetBitmap(bitmap);
 #endif
+}
+
+/**
+ * GTK rejects some bare keys as menu accelerators (Tab, arrows, Space, …).
+ * Only use the wx "\tAccel" form when the shortcut is accelerator-safe; otherwise
+ * append a display-only hint so CharHook/game handlers can still document the key.
+ */
+inline bool basWxIsMenuAcceleratorSafe(const std::string& shortcut) {
+    if (shortcut.empty()) {
+        return false;
+    }
+    // Any chord with a modifier is fine.
+    if (shortcut.find("Ctrl") != std::string::npos || shortcut.find("Alt") != std::string::npos ||
+        shortcut.find("Shift") != std::string::npos ||
+        shortcut.find("RawCtrl") != std::string::npos) {
+        return true;
+    }
+
+    auto eqIgnoreCase = [](const std::string& a, const char* b) {
+        for (size_t i = 0;; ++i) {
+            const unsigned char ca = static_cast<unsigned char>(a[i]);
+            const unsigned char cb = static_cast<unsigned char>(b[i]);
+            if (std::tolower(ca) != std::tolower(cb)) {
+                return false;
+            }
+            if (ca == '\0') {
+                return true;
+            }
+        }
+    };
+
+    // Keys GTK will not accept alone as accelerators (wx debug warnings).
+    static const char* kUnsafe[] = {
+        "Tab",    "Up",     "Down",      "Left",      "Right",  "Space",
+        "Return", "Enter",  "Back",      "Backspace", "Escape", "Esc",
+        "Delete", "Insert", "Home",      "End",       "PageUp", "PageDown",
+        "PgUp",   "PgDn",
+    };
+    for (const char* key : kUnsafe) {
+        if (eqIgnoreCase(shortcut, key)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+inline void basWxAppendMenuShortcut(wxString& label, const std::string& shortcut) {
+    if (shortcut.empty()) {
+        return;
+    }
+    const wxString text = wxString::FromUTF8(shortcut.c_str());
+    if (basWxIsMenuAcceleratorSafe(shortcut)) {
+        label += "\t";
+        label += text;
+    } else {
+        label += "\t[";
+        label += text;
+        label += "]";
+    }
 }
 
 inline void basWxToolBarAddTool(wxToolBar* toolbar, int id, const wxString& label,

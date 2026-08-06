@@ -151,3 +151,32 @@ PerformContext UIFragment::toPerformContext(wxEvent& event) {
     }
     return PerformContext(action, 0, nullptr, &event);
 }
+
+void UIFragment::ActionBuilder::install() {
+    auto owned = build();
+    auto action = owned.get();
+    m_owner->m_owned_elements.push_back(std::move(owned));
+    m_owner->m_elements.push_back(action);
+}
+
+void UIFragment::StateBuilder::install() {
+    auto owned = build();
+    auto state = owned.get();
+    m_owner->m_owned_elements.push_back(std::move(owned));
+    m_owner->m_elements.push_back(state);
+}
+
+void UIFragment::GroupBuilder::install() {
+    auto owned = build();
+    auto group = owned.get();
+
+    // find same id in m_elements, skip install if found
+    for (auto& el : m_owner->m_elements) {
+        if (el->id == group->id) {
+            return;
+        }
+    }
+
+    m_owner->m_owned_elements.push_back(std::move(owned));
+    m_owner->m_elements.push_back(group);
+}

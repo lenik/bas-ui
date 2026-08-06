@@ -1,16 +1,17 @@
 #include "b-state.hpp"
 
 #include "../../wx/toolbar.hpp"
+#include "../../wx/wx_compat.hpp"
 
 #include <wx/tbarbase.h>
 
+#include <utility>
 #include <vector>
 
 void StateVB::build(wxMenu* menu) {
     auto& shortcuts = state->getShortcuts();
     if (!shortcuts.empty()) {
-        label += "\t";
-        label += shortcuts[0];
+        basWxAppendMenuShortcut(label, shortcuts[0]);
     }
 
     switch (type) {
@@ -32,7 +33,10 @@ void StateVB::build(wxToolBar* toolbar) {
         bool2Tool(wx::ToolBar(toolbar), val<bool>(false));
         break;
     case UIStateType::ENUM:
-        enum2ToolCycled(wx::ToolBar(toolbar), val<int>(0));
+        if (cycled)
+            enum2ToolCycled(wx::ToolBar(toolbar), val<int>(0));
+        else
+            enum2RadioTools(wx::ToolBar(toolbar), val<int>(0));
         break;
     default:
         std::cout << "StateVB::build: not supported type: " << static_cast<int>(type) << std::endl;
@@ -46,7 +50,10 @@ void StateVB::build(wxAuiToolBar* toolbar) {
         bool2Tool(wx::ToolBar(toolbar), val<bool>(false));
         break;
     case UIStateType::ENUM:
-        enum2ToolCycled(wx::ToolBar(toolbar), val<int>(0));
+        if (cycled)
+            enum2ToolCycled(wx::ToolBar(toolbar), val<int>(0));
+        else
+            enum2RadioTools(wx::ToolBar(toolbar), val<int>(0));
         break;
     default:
         std::cout << "StateVB::build: not supported type: " << static_cast<int>(type) << std::endl;
@@ -97,6 +104,7 @@ void StateVB::bool2Tool(wx::ToolBar toolbar, bool val) {
 
 void StateVB::enum2Menu(wxMenu* menu, int val) {
     const std::vector<int> enumValues = state->getEnumValues();
+    int iconSize = context->preferredMenuIconSize();
 
     wxMenu* submenu = new wxMenu();
     for (int v : enumValues) {
@@ -106,10 +114,22 @@ void StateVB::enum2Menu(wxMenu* menu, int val) {
             continue;
         }
         int itemId = d->id(context, state->id, v);
-        wxMenuItem* item = submenu->AppendRadioItem(itemId, d->label, d->description);
+        wxMenuItem* item = new wxMenuItem(submenu, itemId, d->label, d->description, wxITEM_RADIO);
+        if (d->icon.isSet()) {
+            auto bmp = d->icon.toBitmap(iconSize, iconSize, wxART_MENU);
+            if (bmp.isOk())
+                basWxSetMenuItemBitmap(item, bmp);
+        }
+        submenu->Append(item);
         if (v == val) {
             submenu->Check(itemId, true);
         }
+
+        auto st = this->state;
+        submenu->Bind(
+            wxEVT_MENU,
+            [st, v](wxCommandEvent&) { st->value.set(v); },
+            itemId);
     }
 
     // Add as submenu
@@ -120,7 +140,7 @@ void StateVB::enum2Menu(wxMenu* menu, int val) {
 
 void StateVB::enum2RadioTools(wx::ToolBar toolbar, int val) {
     const std::vector<int> enumValues = state->getEnumValues();
-    std::vector<int> tools;
+    std::vector<std::pair<int, int>> tools; // value -> tool id
 
     toolbar.addNecessarySeparator();
 
@@ -134,25 +154,17 @@ void StateVB::enum2RadioTools(wx::ToolBar toolbar, int val) {
         int id = d->id(context, state->id, v);
         auto kind = wxITEM_RADIO;
         wxBitmap bmp = d->icon.toBitmap1(toolIconSize, toolIconSize, wxART_TOOLBAR);
-        toolbar.AddTool //
-            (id, d->label, bmp, d->description, kind);
+        wxString toolLabel = d->label;
+        toolLabel.Replace("&", "");
+        toolbar.AddTool(id, toolLabel, bmp, d->description, kind);
 
         auto st = this->state;
         toolbar.Bind(
             wxEVT_TOOL,
-            [st](wxCommandEvent& event) {
-                int id = event.GetId();
-
-                std::optional<int> value = st->findValueById(id);
-                if (!value) {
-                    std::cout << "Enum state change: unknown id " << id << std::endl;
-                    return;
-                }
-                st->value.set(*value);
-            },
+            [st, v](wxCommandEvent&) { st->value.set(v); },
             id);
 
-        tools.push_back(id);
+        tools.emplace_back(v, id);
 
         log(toolbar, id);
     }
@@ -160,12 +172,19 @@ void StateVB::enum2RadioTools(wx::ToolBar toolbar, int val) {
     toolbar.addNecessarySeparator();
 
     // toggle radio
+    for (const auto& [v, id] : tools) {
+        if (v == val)
+            toolbar.ToggleTool(id, true);
+    }
     state->value.connect(
         [toolbar, tools](UIStateVariant const value, UIStateVariant const) mutable {
             int n = std::get<int>(value);
-            int id = tools[n];
-            printf("val/radio\n");
-            toolbar.ToggleTool(id, true);
+            for (const auto& [v, id] : tools) {
+                if (v == n) {
+                    toolbar.ToggleTool(id, true);
+                    return;
+                }
+            }
         });
 }
 

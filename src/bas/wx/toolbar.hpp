@@ -78,10 +78,13 @@ class ToolBar {
             basWxAuiToolBarSetBitmap(aui, id, bitmap);
     }
     void ToggleTool(int id, bool state) {
-        if (wx)
+        if (wx) {
             wx->ToggleTool(id, state);
-        else
+        } else {
             aui->ToggleTool(id, state);
+            aui->Realize();
+            aui->Layout();
+        }
     }
     bool GetToolToggled(int id) {
         if (wx)

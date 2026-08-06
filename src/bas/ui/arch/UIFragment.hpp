@@ -96,12 +96,7 @@ class UIFragment : public IScriptSymbols {
             : m_owner(owner),
               UIAction::_Builder<ActionBuilder, UIAction>(
                   id, dir, name, priority, label, description, doc, icon, visible, enabled) {}
-        void install() {
-            auto owned = build();
-            auto action = owned.get();
-            m_owner->m_owned_elements.push_back(std::move(owned));
-            m_owner->m_elements.push_back(action);
-        }
+        void install();
 
       private:
         UIFragment* m_owner;
@@ -118,12 +113,7 @@ class UIFragment : public IScriptSymbols {
               UIState::_Builder<StateBuilder, UIState>(id, dir, name, priority, label, description,
                                                        doc, icon, visible, enabled) {}
 
-        void install() {
-            auto owned = build();
-            auto state = owned.get();
-            m_owner->m_owned_elements.push_back(std::move(owned));
-            m_owner->m_elements.push_back(state);
-        }
+        void install();
 
       private:
         UIFragment* m_owner;
@@ -140,12 +130,7 @@ class UIFragment : public IScriptSymbols {
               UIGroup::_Builder<GroupBuilder, UIGroup>(id, dir, name, priority, label, description,
                                                        doc, icon, visible, enabled) {}
 
-        void install() {
-            auto owned = build();
-            auto group = owned.get();
-            m_owner->m_owned_elements.push_back(std::move(owned));
-            m_owner->m_elements.push_back(group);
-        }
+        void install();
 
       private:
         UIFragment* m_owner;
