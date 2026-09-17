@@ -1,6 +1,6 @@
 # Automation / e2e demo tests under tests/
 
-test_inc = include_directories('../src', '.')
+test_inc = include_directories('..', '../src', '.')
 
 e2e_automation_test = executable(
     'e2e_automation_test',

@@ -5,7 +5,9 @@
 #include <wx/frame.h>
 #include <wx/string.h>
 #include <bas/locale/i18n.h>
+extern "C" {
 #include <bas/proc/env.h>
+}
 
 #include <config.h>
 

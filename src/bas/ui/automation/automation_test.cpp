@@ -23,7 +23,9 @@
 #include <iostream>
 #include <string>
 #include <bas/locale/i18n.h>
+extern "C" {
 #include <bas/proc/env.h>
+}
 #include <config.h>
 
 

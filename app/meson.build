@@ -1,4 +1,4 @@
-exe_inc = include_directories('../src')
+exe_inc = include_directories('..', '../src')
 cpp_pch = '../src/wx_pch.h'
 
 app_cpp_list = [

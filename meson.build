@@ -85,6 +85,8 @@ else
     nanosvg_dep = dependency('nanosvg', required: true)
 endif
 
+date_dep = subproject('date_tz').get_variable('date_dep')
+
 wx_sub = subproject('wx_logic')
 wx_dep = wx_sub.get_variable('wx_dep')
 wx_lib_ver = wx_sub.get_variable('wx_lib_ver')
@@ -186,6 +188,7 @@ exe_deps = [
     bas_c_dep,
     bas_cpp_dep,
     boost_json_dep,
+    date_dep,
     intl_dep,
     nanosvg_dep,
     wx_dep,
@@ -196,6 +199,7 @@ exe_static_deps = [
     bas_c_static_dep,
     bas_cpp_static_dep,
     boost_json_dep,
+    date_dep,
     intl_dep,
     nanosvg_dep,
     wx_dep,
@@ -203,6 +207,7 @@ exe_static_deps = [
 ]
 
 exe_inc = [
+    include_directories('.'),
     include_directories('src'),
 ]
 

@@ -12,3 +12,5 @@ usr/lib/*/pkgconfig/bas-cpp-static.pc
 usr/share/bas-cpp/app/*
 usr/share/bash-completion/completions/vols
 usr/share/man/man1/vols.1
+# date-tz is an internal Meson subproject; do not ship its pkg-config file.
+usr/lib/*/pkgconfig/date-tz.pc
