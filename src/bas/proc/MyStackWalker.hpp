@@ -126,8 +126,59 @@ std::optional<SourceLocation> addr2line(size_t offset, std::string_view lib_path
     return result;
 }
 
+enum StackdumpMode {
+    Highlighted,
+    RawFast,
+};
+
 class MyStackWalker : public wxStackWalker {
+    bool opt_highlight = false;
+    bool opt_addr2line = false;
+
+    std::string clrReset = COLOR_RESET;
+    std::string clrLevel = COLOR_CYAN;
+    std::string clrFunc = COLOR_GREEN;
+    std::string clrParameters = COLOR_LIGHTGREEN;
+    std::string clrFile = COLOR_YELLOW;
+    std::string clrDirname = COLOR_LIGHTGRAY;
+    std::string clrBase = COLOR_YELLOW;
+    std::string clrNumber = COLOR_CYAN;
+    std::string clrAddr = COLOR_BLUE;
+    std::string clrOffset = COLOR_MAGENTA;
+    std::string clrComment = COLOR_LIGHTGRAY;
+
   public:
+
+    MyStackWalker() {
+        StackdumpMode mode = Highlighted;
+
+        const char *stackdump_env = getenv("STACKDUMP");
+        if (stackdump_env != NULL) {
+            if (strcasecmp(stackdump_env, "highlight") == 0) {
+                opt_highlight = true;
+                opt_addr2line = true;
+            } else if (strcasecmp(stackdump_env, "raw") == 0
+                    || strcasecmp(stackdump_env, "fast") == 0) {
+                opt_highlight = true;
+                opt_addr2line = false;
+            }
+        }
+
+        if (!opt_highlight) {
+            clrReset = "";
+            clrLevel = "";
+            clrFunc = "";
+            clrParameters = "";
+            clrFile = "";
+            clrDirname = "";
+            clrBase = "";
+            clrNumber = "";
+            clrAddr = "";
+            clrOffset = "";
+            clrComment = "";
+        }
+    }
+
     virtual void OnStackFrame(const wxStackFrame& frame) override {
         // Get details like function name, file, and line number
         wxString name = frame.GetName();
@@ -138,20 +189,20 @@ class MyStackWalker : public wxStackWalker {
         if (name.empty())
             return;
 
-        std::cout << COLOR_RESET << "    "                       //
-                  << COLOR_LEVEL << std::dec << frame.GetLevel() //
-                  << COLOR_COMMENT << ": "                       //
-                  << COLOR_FUNC << name.ToStdString();
+        std::cout << clrReset << "    "                       //
+                  << clrLevel << std::dec << frame.GetLevel() //
+                  << clrComment << ": "                       //
+                  << clrFunc << name.ToStdString();
 
         if (frame.HasSourceLocation()) {
             std::filesystem::path path(file.ToStdString());
             std::string dirname = path.parent_path().string();
             std::string base = path.filename().string();
-            std::cout << COLOR_COMMENT << " at "         //
-                      << COLOR_DIRNAME << dirname << "/" //
-                      << COLOR_BASE << base              //
-                      << COLOR_COMMENT << ":"            //
-                      << COLOR_NUMBER << std::dec << line;
+            std::cout << clrComment << " at "         //
+                      << clrDirname << dirname << "/" //
+                      << clrBase << base              //
+                      << clrComment << ":"            //
+                      << clrNumber << std::dec << line;
         } else {
             void* addr = frame.GetAddress();
             Dl_info info;
@@ -164,35 +215,42 @@ class MyStackWalker : public wxStackWalker {
                 // Now use this 'offset' with addr2line manually or in your log
                 std::filesystem::path path(info.dli_fname);
 
-                std::optional<SourceLocation> sl = addr2line(offset, info.dli_fname);
-                if (sl) {
-                    std::cout << COLOR_COMMENT << " at "         //
-                              << COLOR_DIRNAME << sl->dir << "/" //
-                              << COLOR_BASE << sl->base          //
-                              << COLOR_COMMENT << ":"            //
-                              << COLOR_NUMBER << sl->line;
-                } else {
+                bool handled = false;
+                if (opt_addr2line) {
+                    std::optional<SourceLocation> sl = addr2line(offset, info.dli_fname);
+                    if (sl) {
+                        std::cout << clrComment << " at "         //
+                                << clrDirname << sl->dir << "/" //
+                                << clrBase << sl->base          //
+                                << clrComment << ":"            //
+                                << clrNumber << sl->line;
+                        handled = true;
+                    }
+                }
+                
+                if (!handled) {
                     std::string dirname = path.parent_path().string();
                     std::string base = path.filename().string();
-                    std::cout << COLOR_COMMENT << " [Offset: "              //
-                              << COLOR_OFFSET << "0x" << std::hex << offset //
-                              << COLOR_COMMENT << " in "                    //
-                              << COLOR_DIRNAME << dirname << "/"            //
-                              << COLOR_BASE << base                         //
-                              << COLOR_COMMENT << "]";
+                    std::cout << clrComment << " [Offset: "              //
+                              << clrOffset << "0x" << std::hex << offset //
+                              << clrComment << " in "                    //
+                              << clrDirname << dirname << "/"            //
+                              << clrBase << base                         //
+                              << clrComment << "]";
                 }
             } else {
                 int offset = frame.GetOffset();
                 // std::cout << " (no source location)";
-                std::cout << COLOR_COMMENT << " (address: " //
-                          << COLOR_ADDR << addr             //
-                          << COLOR_COMMENT << ", offset: "  //
-                          << COLOR_OFFSET << offset         //
-                          << COLOR_COMMENT << ")";
+                std::cout << clrComment << " (address: " //
+                          << clrAddr << addr             //
+                          << clrComment << ", offset: "  //
+                          << clrOffset << offset         //
+                          << clrComment << ")";
             }
         }
-        std::cout << COLOR_RESET << std::endl;
+        std::cout << clrReset << std::endl;
     }
+    
 };
 
 #endif // MY_STACK_WALKER_HPP

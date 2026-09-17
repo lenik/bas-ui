@@ -326,11 +326,11 @@ msgstr "メッセージ"
 
 #: app/guitanks.cpp:492
 msgid " ON "
-msgstr " ON "
+msgstr " オン "
 
 #: app/guitanks.cpp:492
 msgid " OFF "
-msgstr " OFF "
+msgstr " オフ "
 
 #: app/guitanks.cpp:497
 msgid "Use toolbar or keyboard shortcuts to operate the tank."

@@ -1,0 +1,26 @@
+= notepad(1)
+{project-author} <{project-email}>
+v{project-version}, {project-year}
+:doctype: manpage
+:manmanual: User Commands
+:mansource: notepad
+:man-linkstyle: blue R <>
+:nofooter:
+
+== NAME
+
+notepad - simple graphical notepad
+
+== SYNOPSIS
+
+*notepad*
+
+== DESCRIPTION
+
+*notepad* is a minimal graphical text editor built with the bas+ UI architecture (menubar/toolbar from action/group models).
+
+It provides File (New, Open, Save, Save As, Exit) and Edit (Cut, Copy, Paste) menus and a toolbar.
+
+== SEE ALSO
+
+*bas+*(1)

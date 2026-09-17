@@ -22,6 +22,10 @@
 #include <cstdlib>
 #include <iostream>
 #include <string>
+#include <bas/locale/i18n.h>
+#include <bas/proc/env.h>
+#include <config.h>
+
 
 namespace {
 
@@ -153,6 +157,8 @@ int runSmoke() {
 wxIMPLEMENT_APP_NO_MAIN(SmokeApp);
 
 int main(int argc, char** argv) {
+    const char *exe = self_exe();
+    init_i18n(LOCALEDIR);
     wxApp::SetInstance(new SmokeApp());
     if (!wxEntryStart(argc, argv)) {
         std::cerr << "wxEntryStart failed (display available?)\n";

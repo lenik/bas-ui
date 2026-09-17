@@ -1,0 +1,26 @@
+= notepad(1)
+{project-author} <{project-email}>
+v{project-version}, {project-year}
+:doctype: manpage
+:manmanual: 用户命令
+:mansource: notepad
+:man-linkstyle: blue R <>
+:nofooter:
+
+== NAME
+
+notepad - 简易图形记事本
+
+== SYNOPSIS
+
+*notepad*
+
+== DESCRIPTION
+
+*notepad* 是一个基于 bas+ UI 架构（由 action/group 模型构建菜单栏与工具栏）的简易图形文本编辑器。
+
+它提供文件（新建、打开、保存、另存为、退出）与编辑（剪切、复制、粘贴）菜单以及工具栏。
+
+== SEE ALSO
+
+*bas+*(1)

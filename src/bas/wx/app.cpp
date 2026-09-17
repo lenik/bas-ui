@@ -61,7 +61,7 @@ void uiApp::OnAssertFailure(const wxChar* file, int line, const wxChar* func, co
     walker.Walk();
 }
 
-int uiApp::main(int argc, char** argv) {
+int uiApp::run(int argc, char** argv) {
     g_log_set_handler("IBUS", G_LOG_LEVEL_WARNING, ibus_log_filter, nullptr);
 
     wxApp::SetInstance(this);

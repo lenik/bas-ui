@@ -266,7 +266,7 @@ class LoginFormDialog : public wxDialog, public bas::ui::automation::Automatable
             const auto it = m_fields.find(field.name);
             if (it == m_fields.end() || it->second->GetValue().empty()) {
                 const wxString label = utf8(field.label.empty() ? field.name : field.label);
-                showError(_("Please enter ") + label + ".");
+                showError(_("Please enter") + label + ".");
                 if (it != m_fields.end()) {
                     it->second->SetFocus();
                 }

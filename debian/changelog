@@ -1,3 +1,15 @@
+bas-ui (1.1.0) testing; urgency=medium
+
+  * Align project with zephyr packaging style (zfr ize/lint): AGPL
+    LICENSE, AsciiDoc man pages, bash-completion, VERSION/.githooks,
+    Meson zfr version and LOCALEDIR config.h, packaging/rpm and cross-
+    platform packaging stubs.
+  * STACKDUMP env: highlight/raw stack traces with optional addr2line.
+  * bas i18n: init_i18n(LOCALEDIR) in uiApp::main and automation_test.
+  * Add L1 man translations (en/zh_CN/ja/ko) and fix ja.po ON/OFF.
+
+ -- Lenik (谢继雷) <lenik@bodz.net>  Thu, 17 Sep 2026 17:39:36 +0900
+
 bas-ui (1.0.3) testing; urgency=medium
 
   * bas-ui-static.pc: link libbas-ui.a by path; chain bas-c-static and

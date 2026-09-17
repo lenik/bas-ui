@@ -10,3 +10,6 @@ override_dh_auto_configure:
 
 override_dh_auto_test:
 	# bas-cpp volume integration tests need mkfs.exfat and are flaky in package builds
+
+# Autotools leftovers must not run after Meson conversion.
+override_dh_autoreconf:

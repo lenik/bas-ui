@@ -3,20 +3,58 @@ project(
     ['c', 'cpp'],
     version: run_command(
         'sh',
-        '-c', 'v=$(git describe --tags --always --dirty 2>/dev/null || true); v=${v#v}; [ -n "$v" ] && printf "%s" "$v" || printf "0.0.0"',
+        '-c', '''
+        v=$(
+            command -v zfr >/dev/null 2>&1 && zfr version 2>/dev/null || true
+        )
+        if [ -z "$v" ] && [ -f VERSION ]; then
+            v=$(head -n1 VERSION | tr -d '\r')
+            v=${v#v}
+        fi
+        if [ -z "$v" ]; then
+            v="0.0.0" # FIXED TO 0.0.0, DO NOT MODIFY
+        fi
+        printf '%s' "$v"
+        ''',
         check: false,
     ).stdout().strip(),
+    license: 'AGPL-3.0-or-later',
     default_options: [
         #'warning_level=0',
         'cpp_std=c++17',
         'buildtype=debug',
     ],
 )
-
-pkgdatadir = get_option('datadir') / meson.project_name()
+project_author = 'BAS Developers'
+project_email = 'debian@example.com'
+project_year = 2026
 
 fs = import('fs')
 cpp = meson.get_compiler('cpp')
+
+prefix = get_option('prefix')
+bindir = prefix / get_option('bindir')
+datadir = prefix / get_option('datadir')
+mandir = prefix / get_option('mandir')
+localedir = prefix / get_option('localedir')
+pkgdatadir = datadir / meson.project_name()
+pkgdocdir = datadir / 'doc' / meson.project_name()
+
+config_h = configuration_data()
+config_h.set_quoted('PROJECT_VERSION', meson.project_version())
+config_h.set_quoted('PROJECT_AUTHOR', project_author)
+config_h.set_quoted('PROJECT_EMAIL', project_email)
+config_h.set('PROJECT_YEAR', project_year)
+config_h.set_quoted('PREFIX', prefix)
+config_h.set_quoted('DATADIR', datadir)
+config_h.set_quoted('MANDIR', mandir)
+config_h.set_quoted('PKGDATADIR', pkgdatadir)
+config_h.set_quoted('LOCALEDIR', localedir)
+
+configure_file(
+    output: 'config.h',
+    configuration: config_h,
+)
 
 if fs.is_dir('subprojects/bas-c')
     subproject('bas-c')
@@ -27,6 +65,9 @@ endif
 
 bas_c_dep = dependency('bas-c', required: true)
 bas_cpp_dep = dependency('bas-cpp', required: true)
+bas_args = ['-DLOGGER_NAME=' + meson.project_name(), '-DTEXT_DOMAIN=' + meson.project_name()]
+cpp_args_bas = bas_args
+
 
 bas_c_static_dep = dependency('bas-c-static', required: true)
 bas_cpp_static_dep = dependency('bas-cpp-static', required: true)
@@ -333,3 +374,100 @@ endforeach
 subdir('app')
 
 subdir('tests')
+
+asciidoctor = find_program('asciidoctor', required: true)
+
+run_target(
+    'look',
+    command: [
+        'bash',
+        '-euc', '''
+            tmpdir=$(mktemp -d)
+            DESTDIR=$tmpdir meson install -C "@BUILD_ROOT@"
+            tree "$tmpdir"
+            rm -fr "$tmpdir"
+        ''',
+    ],
+)
+
+install_data(
+    [
+        'LICENSE',
+        'README.md',
+        'README-zh_CN.md',
+    ],
+    install_dir: pkgdocdir,
+)
+
+
+
+bash_files = [
+    'completions/notepad.bash',
+]
+
+foreach file : bash_files
+name = fs.stem(file)
+install_data(
+    file,
+    install_dir: datadir / 'bash-completion' / 'completions',
+    rename: name,
+)
+endforeach
+
+puffs = [
+    'notepad',
+]
+man_i18n_langs = []
+foreach lang : ['en', 'zh_CN', 'ja', 'ko']
+  if fs.is_dir('man' / lang)
+    man_i18n_langs += [lang]
+  endif
+endforeach
+
+foreach puff : puffs
+  custom_target(
+    puff + '-man',
+    input: 'man' / (puff + '.adoc'),
+    output: puff + '.1',
+    command: [
+      asciidoctor,
+      '-b', 'manpage',
+      '-a', 'project-version=' + meson.project_version(),
+      '-a', 'project-year=@0@'.format(project_year),
+      '-a', 'project-author=' + project_author,
+      '-a', 'project-email=' + project_email,
+      '-o', '@OUTPUT@',
+      '@INPUT@',
+    ],
+    build_by_default: true,
+    install: true,
+    install_dir: mandir / 'man1',
+  )
+  foreach lang : man_i18n_langs
+    _man_i18n = custom_target(
+      puff + '-' + lang + '-man',
+      input: 'man' / lang / (puff + '.adoc'),
+      output: puff + '-' + lang + '.1',
+      command: [
+        asciidoctor,
+        '-b', 'manpage',
+        '-a', 'project-version=' + meson.project_version(),
+        '-a', 'project-year=@0@'.format(project_year),
+        '-a', 'project-author=' + project_author,
+        '-a', 'project-email=' + project_email,
+        '-o', '@OUTPUT@',
+        '@INPUT@',
+      ],
+      build_by_default: true,
+    )
+    meson.add_install_script(
+      'sh',
+      '-c',
+      'mkdir -p "${DESTDIR:-}$1" && install -m644 "$2" "${DESTDIR:-}$1/$3.1"',
+      '_',
+      mandir / lang / 'man1',
+      _man_i18n,
+      puff,
+    )
+  endforeach
+endforeach

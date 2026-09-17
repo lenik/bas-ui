@@ -1,0 +1,26 @@
+= notepad(1)
+{project-author} <{project-email}>
+v{project-version}, {project-year}
+:doctype: manpage
+:manmanual: ユーザーコマンド
+:mansource: notepad
+:man-linkstyle: blue R <>
+:nofooter:
+
+== NAME
+
+notepad - 簡易グラフィカルメモ帳
+
+== SYNOPSIS
+
+*notepad*
+
+== DESCRIPTION
+
+*notepad* は、bas+ UI アーキテクチャ（action/group モデルによるメニューバー／ツールバー）で構築された、シンプルなグラフィカルテキストエディタです。
+
+ファイル（新規、開く、保存、名前を付けて保存、終了）と編集（切り取り、コピー、貼り付け）のメニューおよびツールバーを提供します。
+
+== SEE ALSO
+
+*bas+*(1)
